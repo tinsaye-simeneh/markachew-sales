@@ -131,19 +131,24 @@ export default function HousesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search */}
             <div className="lg:col-span-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search by title, location, or description..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex flex-col gap-1">
+            <label htmlFor="search" className='block'>Search</label>
+              
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search by title, location, or description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
-
             {/* Price Range */}
+            <div className="flex flex-col gap-1">
             <Select value={priceRange} onValueChange={setPriceRange}>
+              <label htmlFor="priceRange" className='block'>Price Range</label>
               <SelectTrigger>
                 <SelectValue placeholder="Price Range" />
               </SelectTrigger>
@@ -155,9 +160,11 @@ export default function HousesPage() {
                 <SelectItem value="over-20m">Over 20M ETB</SelectItem>
               </SelectContent>
             </Select>
-
+            </div>
             {/* Property Type */}
+            <div className="flex flex-col gap-1">
             <Select value={propertyType} onValueChange={setPropertyType}>
+              <label htmlFor="propertyType" className='block'>Property Type</label>
               <SelectTrigger>
                 <SelectValue placeholder="Property Type" />
               </SelectTrigger>
@@ -171,19 +178,23 @@ export default function HousesPage() {
                 <SelectItem value="townhouse">Townhouse</SelectItem>
               </SelectContent>
             </Select>
-
+            </div>
             {/* Sort */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-1">
+  <label htmlFor="sortBy" className="text-sm font-medium">Sort By</label>
+  <Select value={sortBy} onValueChange={setSortBy}>
+    <SelectTrigger id="sortBy" className="w-48">
+      <SelectValue placeholder="Sort By" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="newest">Newest First</SelectItem>
+      <SelectItem value="oldest">Oldest First</SelectItem>
+      <SelectItem value="price-low">Price: Low to High</SelectItem>
+      <SelectItem value="price-high">Price: High to Low</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+
           </div>
         </div>
 

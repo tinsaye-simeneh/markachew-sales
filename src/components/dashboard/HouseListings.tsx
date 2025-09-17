@@ -43,6 +43,8 @@ export function HouseListings() {
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
+            <div className="flex flex-col gap-1">
+            <label htmlFor="search" className='block'>Search</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -52,9 +54,12 @@ export function HouseListings() {
                 className="pl-10"
               />
             </div>
+            </div>
           </div>
           
+          <div className="flex flex-col gap-1">
           <Select value={priceRange} onValueChange={setPriceRange}>
+            <label htmlFor="priceRange" className='block'>Price Range</label>
             <SelectTrigger className="w-full lg:w-48">
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
@@ -67,7 +72,10 @@ export function HouseListings() {
             </SelectContent>
           </Select>
           
+          </div>
+          <div className="flex flex-col gap-1">
           <Select value={propertyType} onValueChange={setPropertyType}>
+            <label htmlFor="propertyType" className='block'>Property Type</label>
             <SelectTrigger className="w-full lg:w-48">
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
@@ -81,8 +89,10 @@ export function HouseListings() {
               <SelectItem value="townhouse">Townhouse</SelectItem>
             </SelectContent>
           </Select>
-          
+          </div>
+          <div className="flex flex-col gap-1">
           <Select value={bedrooms} onValueChange={setBedrooms}>
+            <label htmlFor="bedrooms" className='block'>Bedrooms</label>
             <SelectTrigger className="w-full lg:w-32">
               <SelectValue placeholder="Bedrooms" />
             </SelectTrigger>
@@ -94,7 +104,8 @@ export function HouseListings() {
               <SelectItem value="4">4+</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+          </div>
+          </div>
       </div>
       
       {/* Results */}

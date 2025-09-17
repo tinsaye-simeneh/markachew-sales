@@ -13,6 +13,7 @@ interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
   register: (name: string, email: string, password: string, type: User['type']) => Promise<boolean>
+  completeRegistration: (name: string, email: string, type: User['type']) => void
   logout: () => void
   isLoading: boolean
 }
@@ -64,15 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       // Mock registration - in real app, this would be an API call
-      const newUser: User = {
-        id: Date.now().toString(),
-        name,
-        email,
-        type
-      }
-      
-      setUser(newUser)
-      localStorage.setItem('user', JSON.stringify(newUser))
+      // Don't set user immediately - wait for OTP verification
       return true
     } catch (error) {
       console.error('Registration failed:', error)
@@ -82,13 +75,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const completeRegistration = (name: string, email: string, type: User['type']) => {
+    const newUser: User = {
+      id: Date.now().toString(),
+      name,
+      email,
+      type
+    }
+    
+    setUser(newUser)
+    localStorage.setItem('user', JSON.stringify(newUser))
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, completeRegistration, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )

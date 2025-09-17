@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { X, Mail, Phone } from 'lucide-react'
+import { X, Mail, Phone, Link } from 'lucide-react'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -163,6 +163,16 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               onClick={onSwitchToRegister}
             >
               Sign up
+            </button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Forgot Password?{' '}
+            <button
+              type="button"
+              className="text-[#007a7f] hover:underline cursor-pointer"
+              onClick={() => {}}
+            >
+              Reset here
             </button>
           </div>
         </CardContent>

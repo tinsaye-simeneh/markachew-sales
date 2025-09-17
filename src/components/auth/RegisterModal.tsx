@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext'
 import { X } from 'lucide-react'
 import { OTPVerification } from './OTPVerification'
+import { useRouter } from 'next/navigation'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -26,7 +27,9 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [error, setError] = useState('')
   const [showOTP, setShowOTP] = useState(false)
   const [registeredEmail, setRegisteredEmail] = useState('')
-  const { register, isLoading } = useAuth()
+  const [registeredData, setRegisteredData] = useState<{name: string, email: string, userType: 'employee' | 'employer' | 'buyer' | 'seller'} | null>(null)
+  const { register, completeRegistration, isLoading } = useAuth()
+  const router = useRouter()
 
   const validatePhoneNumber = (phone: string): boolean => {
     // Ethiopian phone number validation
@@ -77,11 +80,14 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     }
 
     const success = await register(name, email, password, userType)
+    console.log('Registration success:', success) // Debug
     if (success) {
-      // Show OTP verification instead of closing modal
+      console.log('Setting OTP modal to show') // Debug
       setRegisteredEmail(email)
-      setShowOTP(true)
+      setRegisteredData({ name, email, userType })
       setError('')
+      setShowOTP(true)
+      console.log('OTP modal should be showing now') // Debug
     } else {
       setError('Registration failed. Please try again.')
     }
@@ -90,9 +96,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const handleOTPBack = () => {
     setShowOTP(false)
     setRegisteredEmail('')
+    setRegisteredData(null)
   }
 
   const handleOTPComplete = () => {
+    // Complete the registration with the stored data
+    if (registeredData) {
+      completeRegistration(registeredData.name, registeredData.email, registeredData.userType)
+    }
+    
     // Reset form and close modal
     setName('')
     setEmail('')
@@ -102,15 +114,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     setUserType('buyer')
     setShowOTP(false)
     setRegisteredEmail('')
+    setRegisteredData(null)
     onClose()
-    // Switch to login modal
-    onSwitchToLogin()
+    // Redirect to home page
+    router.push('/')
   }
 
-  if (!isOpen) return null
-
-  // Show OTP verification if registration was successful
+  // Always show OTP modal if it's active, regardless of isOpen state
   if (showOTP) {
+    console.log('Rendering OTP modal') // Debug
     return (
       <OTPVerification
         email={registeredEmail}
@@ -119,6 +131,10 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       />
     )
   }
+
+  if (!isOpen) return null
+
+  console.log('Modal render - showOTP:', showOTP, 'registeredEmail:', registeredEmail) // Debug
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
