@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
 import { Job } from '@/data/sampleData'
+import { toast } from 'sonner'
 
 interface JobCardProps {
   job: Job
@@ -34,8 +35,22 @@ export function JobCard({ job }: JobCardProps) {
     
     if (isFavorite(job.id, 'job')) {
       removeFromFavorites(job.id, 'job')
+      toast.success("Removed from favorites", {
+        description: `${job.title} at ${job.company} has been removed from your saved list`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
     } else {
       addToFavorites(job, 'job')
+      toast.success("Added to favorites!", {
+        description: `${job.title} at ${job.company} has been saved to your favorites`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
     }
   }
 

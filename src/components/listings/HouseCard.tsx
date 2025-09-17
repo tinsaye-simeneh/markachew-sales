@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
 import { House } from '@/data/sampleData'
+import { toast } from 'sonner'
 
 interface HouseCardProps {
   house: House
@@ -49,8 +50,22 @@ export function HouseCard({ house }: HouseCardProps) {
     
     if (isFavorite(house.id, 'house')) {
       removeFromFavorites(house.id, 'house')
+      toast.success("Removed from favorites", {
+        description: `${house.title} has been removed from your saved list`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
     } else {
       addToFavorites(house, 'house')
+      toast.success("Added to favorites!", {
+        description: `${house.title} has been saved to your favorites`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
     }
   }
 
