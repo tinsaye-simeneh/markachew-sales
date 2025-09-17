@@ -54,7 +54,7 @@ export function HouseCard({ house }: HouseCardProps) {
         
         <Badge 
           variant={house.status === 'for-sale' ? 'default' : house.status === 'for-rent' ? 'secondary' : 'destructive'}
-          className="absolute top-2 left-2"
+          className="absolute top-2 left-2 text-white"
         >
           {house.status === 'for-sale' ? 'For Sale' : house.status === 'for-rent' ? 'For Rent' : 'Sold'}
         </Badge>
