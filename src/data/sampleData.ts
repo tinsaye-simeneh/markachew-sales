@@ -8,17 +8,17 @@ export const sampleHouses = [
     bedrooms: 4,
     bathrooms: 3,
     area: 250,
-    image: "/images/house/house6.jpg",
+    image: "/images/house/house-6.png",
     description: "Beautiful modern villa with garden and parking space. This stunning property offers the perfect blend of contemporary design and comfortable living. Located in the prestigious Bole area, this villa provides easy access to shopping centers, restaurants, and business districts.",
     features: ["Garden", "Parking", "Security", "Furnished"],
     type: "villa" as const,
     yearBuilt: 2020,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house6.jpg",
-      "/images/house/house6.jpg",
-      "/images/house/house6.jpg",
-      "/images/house/house6.jpg"
+      "/images/house/house-6.png",
+      "/images/house/house-6.png",
+      "/images/house/house-6.png",
+      "/images/house/house-6.png"
     ],
     amenities: [
       "Swimming Pool",
@@ -46,16 +46,16 @@ export const sampleHouses = [
     bedrooms: 2,
     bathrooms: 2,
     area: 120,
-    image: "/images/house/house5.jpg",
+    image: "/images/house/house-5.png",
     description: "Well-maintained apartment in the heart of the city. This cozy apartment offers modern amenities and is perfect for young professionals or small families.",
     features: ["Balcony", "Elevator", "Security"],
     type: "apartment" as const,
     yearBuilt: 2018,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house5.jpg",
-      "/images/house/house5.jpg",
-      "/images/house/house5.jpg"
+      "/images/house/house-5.png",
+      "/images/house/house-5.png",
+      "/images/house/house-5.png"
     ],
     amenities: [
       "Balcony",
@@ -80,18 +80,16 @@ export const sampleHouses = [
     bedrooms: 5,
     bathrooms: 4,
     area: 400,
-    image: "/images/house/house4.jpg",
+    image: "/images/house/house-4.png",
     description: "Exclusive penthouse with panoramic city views. This luxury penthouse offers the ultimate in urban living with breathtaking views of the city skyline. Features include a private rooftop terrace, premium finishes, and state-of-the-art amenities.",
     features: ["City View", "Rooftop", "Gym", "Pool"],
     type: "penthouse" as const,
     yearBuilt: 2022,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house4.jpg",
-      "/images/house/house4.jpg",
-      "/images/house/house4.jpg",
-      "/images/house/house4.jpg",
-      "/images/house/house4.jpg"
+        "/images/house/house-4.png",
+      "/images/house/house-4.png",
+      "/images/house/house-4.png"
     ],
     amenities: [
       "Private Rooftop",
@@ -119,16 +117,16 @@ export const sampleHouses = [
     bedrooms: 3,
     bathrooms: 2,
     area: 180,
-    image: "/images/house/house3.jpg",
+    image: "/images/house/house-3.png",
     description: "Perfect family home with large backyard. This charming family house offers spacious living areas, a beautiful garden, and a quiet neighborhood perfect for raising children. The property features modern amenities while maintaining a cozy, homey feel.",
     features: ["Garden", "Parking", "Quiet Area"],
     type: "house" as const,
     yearBuilt: 2015,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house3.jpg",
-      "/images/house/house3.jpg",
-      "/images/house/house3.jpg"
+      "/images/house/house-3.png",
+      "/images/house/house-3.png",
+      "/images/house/house3.png"
     ],
     amenities: [
       "Large Garden",
@@ -156,15 +154,15 @@ export const sampleHouses = [
     bedrooms: 1,
     bathrooms: 1,
     area: 45,
-    image: "/images/house/house2.jpg",
+    image: "/images/house/house-2.png",
     description: "Compact studio perfect for young professionals. This modern studio apartment is ideal for young professionals who want to live in the heart of the city. Despite its compact size, it offers all the essential amenities and a great location.",
     features: ["Furnished", "Central Location"],
     type: "studio" as const,
     yearBuilt: 2019,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house2.jpg",
-      "/images/house/house2.jpg"
+      "/images/house/house-2.png",
+      "/images/house/house-2.png"
     ],
     amenities: [
       "Fully Furnished",
@@ -192,16 +190,16 @@ export const sampleHouses = [
     bedrooms: 3,
     bathrooms: 2,
     area: 150,
-    image: "/images/house/house1.jpg",
+    image: "/images/house/house-1.png",
     description: "Modern townhouse with contemporary design. This stylish townhouse features contemporary architecture and modern amenities. Perfect for families who want a modern living space with easy access to the city center.",
     features: ["Modern Design", "Parking", "Security"],
     type: "townhouse" as const,
     yearBuilt: 2021,
-    status: "for-sale",
+    status: "for-sale" as const,
     images: [
-      "/images/house/house1.jpg",
-      "/images/house/house1.jpg",
-      "/images/house/house1.jpg"
+      "/images/house/house-1.png",
+      "/images/house/house-1.png",
+      "/images/house/house1.png"
     ],
     amenities: [
       "Modern Design",

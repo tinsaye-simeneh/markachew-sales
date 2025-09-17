@@ -27,7 +27,7 @@ export function HouseCard({ house }: HouseCardProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'ETB',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price)
@@ -36,11 +36,8 @@ export function HouseCard({ house }: HouseCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
       <div className="relative">
-        <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-          <div className="text-gray-500 text-center">
-            <Image src={house.image} alt={house.title} width={100} height={100} />
-          </div>
-        </div>
+        <Image src={house.image} alt={house.title} width={400} height={100} />
+         
         
         <Button
           variant="ghost"

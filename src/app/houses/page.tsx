@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
 import { sampleHouses } from '@/data/sampleData'
-import { Search, Filter, MapPin, Bed, Bath, Square } from 'lucide-react'
+import { Search, MapPin } from 'lucide-react'
 
 export default function HousesPage() {
   const { user, isLoading } = useAuth()
@@ -196,11 +196,20 @@ export default function HousesPage() {
 
         {/* Houses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {currentHouses.map((house) => (
-            <div key={house.id} onClick={() => handleHouseClick(house.id)} className="cursor-pointer">
-              <HouseCard house={house} />
-            </div>
-          ))}
+        {currentHouses.map((house) => {
+  const clickable = house.status === "for-sale" || house.status === "for-rent";
+
+  return (
+    <div
+      key={house.id}
+      onClick={clickable ? () => handleHouseClick(house.id) : undefined}
+      className={clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}
+    >
+      <HouseCard house={house} />
+    </div>
+  );
+})}
+
         </div>
 
         {/* No Results */}

@@ -5,83 +5,8 @@ import { HouseCard } from '@/components/listings/HouseCard'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { sampleHouses } from '@/data/sampleData'
 import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
-
-// Mock data
-const mockHouses = [
-  {
-    id: '1',
-    title: 'Modern Downtown Apartment',
-    price: 450000,
-    location: 'Downtown, New York',
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 1200,
-    image: '/images/house/house6.jpg  ',
-    type: 'apartment' as const,
-    status: 'for-sale' as const,
-  },
-  {
-    id: '2',
-    title: 'Cozy Family House',
-    price: 320000,
-    location: 'Suburbs, California',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 1800,
-    image: '/images/house/house5.jpg',
-    type: 'house' as const,
-    status: 'for-sale' as const,
-  },
-  {
-    id: '3',
-    title: 'Luxury Condo',
-    price: 750000,
-    location: 'Miami Beach, Florida',
-    bedrooms: 3,
-    bathrooms: 3,
-    area: 2000,
-    image: '/images/house/house4.jpg',
-    type: 'condo' as const,
-    status: 'for-rent' as const,
-  },
-  {
-    id: '4',
-    title: 'Townhouse with Garden',
-    price: 280000,
-    location: 'Austin, Texas',
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 2200,
-    image: '/images/house/house3.jpg',
-    type: 'townhouse' as const,
-    status: 'for-sale' as const,
-  },
-  {
-    id: '5',
-    title: 'Studio Apartment',
-    price: 180000,
-    location: 'Seattle, Washington',
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 600,
-    image: '/images/house/house2.jpg',
-    type: 'apartment' as const,
-    status: 'for-sale' as const,
-  },
-  {
-    id: '6',
-    title: 'Executive Penthouse',
-    price: 1200000,
-    location: 'Manhattan, New York',
-    bedrooms: 4,
-    bathrooms: 4,
-    area: 3000,
-    image: '/images/house/house1.jpg',
-    type: 'condo' as const,
-    status: 'for-sale' as const,
-  },
-]
 
 export function HouseListings() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -91,16 +16,16 @@ export function HouseListings() {
   const [searchQuery, setSearchQuery] = useState('')
   
   const itemsPerPage = 6
-  const totalPages = Math.ceil(mockHouses.length / itemsPerPage)
+  const totalPages = Math.ceil(sampleHouses.length / itemsPerPage)
   
-  const filteredHouses = mockHouses.filter(house => {
+  const filteredHouses = sampleHouses.filter(house => {
     const matchesSearch = house.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          house.location.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesPrice = priceRange === 'all' || 
-      (priceRange === 'under-300k' && house.price < 300000) ||
-      (priceRange === '300k-500k' && house.price >= 300000 && house.price <= 500000) ||
-      (priceRange === '500k-1m' && house.price > 500000 && house.price <= 1000000) ||
-      (priceRange === 'over-1m' && house.price > 1000000)
+      (priceRange === 'under-5m' && house.price < 5000000) ||
+      (priceRange === '5m-10m' && house.price >= 5000000 && house.price <= 10000000) ||
+      (priceRange === '10m-20m' && house.price > 10000000 && house.price <= 20000000) ||
+      (priceRange === 'over-20m' && house.price > 20000000)
     const matchesType = propertyType === 'all' || house.type === propertyType
     const matchesBedrooms = bedrooms === 'all' || house.bedrooms.toString() === bedrooms
     
@@ -135,10 +60,10 @@ export function HouseListings() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Prices</SelectItem>
-              <SelectItem value="under-300k">Under $300K</SelectItem>
-              <SelectItem value="300k-500k">$300K - $500K</SelectItem>
-              <SelectItem value="500k-1m">$500K - $1M</SelectItem>
-              <SelectItem value="over-1m">Over $1M</SelectItem>
+              <SelectItem value="under-5m">Under 5M ETB</SelectItem>
+              <SelectItem value="5m-10m">5M - 10M ETB</SelectItem>
+              <SelectItem value="10m-20m">10M - 20M ETB</SelectItem>
+              <SelectItem value="over-20m">Over 20M ETB</SelectItem>
             </SelectContent>
           </Select>
           
@@ -148,9 +73,11 @@ export function HouseListings() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="villa">Villa</SelectItem>
               <SelectItem value="apartment">Apartment</SelectItem>
               <SelectItem value="house">House</SelectItem>
-              <SelectItem value="condo">Condo</SelectItem>
+              <SelectItem value="penthouse">Penthouse</SelectItem>
+              <SelectItem value="studio">Studio</SelectItem>
               <SelectItem value="townhouse">Townhouse</SelectItem>
             </SelectContent>
           </Select>
