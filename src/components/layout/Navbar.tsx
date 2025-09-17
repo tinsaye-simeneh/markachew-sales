@@ -98,12 +98,18 @@ export function Navbar() {
               >
                 Jobs
               </button>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
+              <button 
+                onClick={() => router.push('/about')}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
                 About
-              </a>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
+              </button>
+              <button 
+                onClick={() => router.push('/contact')}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
                 Contact
-              </a>
+              </button>
             </div>
 
             {/* Desktop Auth Section */}
@@ -190,18 +196,18 @@ export function Navbar() {
                 >
                   Jobs
                 </button>
-                <a 
-                  href="#" 
-                  className="block px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                <button 
+                  onClick={() => { closeMobileMenu(); router.push('/about'); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   About
-                </a>
-                <a 
-                  href="#" 
-                  className="block px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                </button>
+                <button 
+                  onClick={() => { closeMobileMenu(); router.push('/contact'); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   Contact
-                </a>
+                </button>
 
                 {/* Mobile Auth Section */}
                 <div className="pt-4 border-t">
