@@ -35,10 +35,10 @@ export function HeroSection() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white">
+              <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white cursor-pointer">
                 Explore Houses
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white cursor-pointer">
                 Browse Jobs
               </Button>
             </div>

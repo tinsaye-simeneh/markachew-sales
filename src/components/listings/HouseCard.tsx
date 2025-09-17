@@ -47,7 +47,7 @@ export function HouseCard({ house }: HouseCardProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="absolute top-2 right-2 bg-white/90 hover:bg-white"
+          className="absolute top-2 right-2 bg-white/90 hover:bg-white cursor-pointer"
         >
           <Heart className="h-4 w-4" />
         </Button>
@@ -97,7 +97,7 @@ export function HouseCard({ house }: HouseCardProps) {
           </div>
         </div>
         
-        <Button className="w-full" variant="outline">
+        <Button className="w-full cursor-pointer" variant="outline">
           View Details
         </Button>
       </CardContent>

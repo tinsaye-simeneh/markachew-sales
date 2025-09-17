@@ -192,6 +192,7 @@ export function HouseListings() {
             size="sm"
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
+            className="cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
@@ -203,6 +204,7 @@ export function HouseListings() {
               variant={currentPage === page ? "default" : "outline"}
               size="sm"
               onClick={() => setCurrentPage(page)}
+              className="cursor-pointer"
             >
               {page}
             </Button>
@@ -213,6 +215,7 @@ export function HouseListings() {
             size="sm"
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
+            className="cursor-pointer"
           >
             Next
             <ChevronRight className="h-4 w-4" />

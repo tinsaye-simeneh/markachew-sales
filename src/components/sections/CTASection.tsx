@@ -53,7 +53,7 @@ export function CTASection() {
               </p>
               <Button 
                 size="lg" 
-                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform"
+                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
               >
                 Browse Properties
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -74,7 +74,7 @@ export function CTASection() {
               </p>
               <Button 
                 size="lg" 
-                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform"
+                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
               >
                 Find Jobs
                 <ArrowRight className="ml-2 h-4 w-4" />

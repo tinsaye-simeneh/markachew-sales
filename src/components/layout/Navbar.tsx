@@ -7,9 +7,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
-import { Home, User, LogOut } from 'lucide-react'
+import {  User, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function Navbar() {
+  const router = useRouter()
   const { user, logout } = useAuth()
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -46,22 +48,21 @@ export function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <Home className="h-8 w-8 text-[#007a7f]" />
-              <span className="text-xl font-bold text-gray-900">Markachew</span>
+              <button className="text-xl font-bold text-[#007a7f] cursor-pointer" onClick={() => router.push('/')}>MPEM</button>
             </div>
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
                 Houses
               </a>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
                 Jobs
               </a>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
                 About
               </a>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
                 Contact
               </a>
             </div>
@@ -71,7 +72,7 @@ export function Navbar() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="" alt={user.name || 'User'} />
                         <AvatarFallback>
@@ -106,10 +107,10 @@ export function Navbar() {
                 </DropdownMenu>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" onClick={handleLoginClick}>
+                  <Button variant="ghost" onClick={handleLoginClick} className="cursor-pointer">
                     Sign In
                   </Button>
-                  <Button onClick={handleRegisterClick}>
+                  <Button onClick={handleRegisterClick} className="cursor-pointer">
                     Sign Up
                   </Button>
                 </div>

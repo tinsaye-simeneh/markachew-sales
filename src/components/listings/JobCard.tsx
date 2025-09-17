@@ -63,7 +63,7 @@ export function JobCard({ job }: JobCardProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="ml-2"
+            className="ml-2 cursor-pointer"
           >
             <Heart className="h-4 w-4" />
           </Button>
@@ -94,7 +94,7 @@ export function JobCard({ job }: JobCardProps) {
           </div>
         </div>
         
-        <Button className="w-full mt-4" variant="outline">
+        <Button className="w-full mt-4 cursor-pointer" variant="outline">
           Apply Now
         </Button>
       </CardContent>
