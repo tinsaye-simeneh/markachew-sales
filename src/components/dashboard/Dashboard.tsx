@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { HouseListings } from './HouseListings'
-import { JobListings } from './JobListings'
+import { HouseListings } from '@/components/dashboard/HouseListings'
+import { JobListings } from '@/components/dashboard/JobListings'
 
 export function Dashboard() {
   return (
@@ -14,11 +14,11 @@ export function Dashboard() {
       </div>
       
       <Tabs defaultValue="houses" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="houses" className="text-base">
+        <TabsList className="grid w-75 grid-cols-2 mb-8">
+          <TabsTrigger value="houses" className="text-base cursor-pointer">
             🏠 Houses
           </TabsTrigger>
-          <TabsTrigger value="jobs" className="text-base">
+          <TabsTrigger value="jobs" className="text-base cursor-pointer">
             💼 Jobs
           </TabsTrigger>
         </TabsList>
