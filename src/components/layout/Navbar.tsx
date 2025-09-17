@@ -46,22 +46,22 @@ export function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <Home className="h-8 w-8 text-blue-600" />
+              <Home className="h-8 w-8 text-[#007a7f]" />
               <span className="text-xl font-bold text-gray-900">Markachew</span>
             </div>
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
                 Houses
               </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
                 Jobs
               </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
                 About
               </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <a href="#" className="text-gray-700 hover:text-[#007a7f] transition-colors">
                 Contact
               </a>
             </div>

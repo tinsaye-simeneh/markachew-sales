@@ -47,7 +47,7 @@ export function JobCard({ job }: JobCardProps) {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors mb-1">
+            <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors mb-1">
               {job.title}
             </h3>
             <div className="flex items-center text-gray-600 text-sm mb-2">

@@ -22,7 +22,7 @@ export function HeroSection() {
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Find Your
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#007a7f] to-[#005a5f]">
                   {" "}Dream Home{" "}
                 </span>
                 & Perfect Job
@@ -35,10 +35,10 @@ export function HeroSection() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white">
                 Explore Houses
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white">
                 Browse Jobs
               </Button>
             </div>
@@ -46,15 +46,15 @@ export function HeroSection() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 pt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">10K+</div>
+                <div className="text-3xl font-bold text-[#007a7f]">10K+</div>
                 <div className="text-sm text-gray-600">Properties Listed</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">5K+</div>
+                <div className="text-3xl font-bold text-[#007a7f]">5K+</div>
                 <div className="text-sm text-gray-600">Jobs Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600">25K+</div>
+                <div className="text-3xl font-bold text-[#007a7f]">25K+</div>
                 <div className="text-sm text-gray-600">Happy Users</div>
               </div>
             </div>
@@ -65,8 +65,8 @@ export function HeroSection() {
             <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
               <CardContent className="p-0">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-blue-100 rounded-lg">
-                    <Home className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-[#007a7f]/10 rounded-lg">
+                    <Home className="h-6 w-6 text-[#007a7f]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Smart Property Search</h3>
@@ -81,8 +81,8 @@ export function HeroSection() {
             <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
               <CardContent className="p-0">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-purple-100 rounded-lg">
-                    <Briefcase className="h-6 w-6 text-purple-600" />
+                  <div className="p-3 bg-[#007a7f]/10 rounded-lg">
+                    <Briefcase className="h-6 w-6 text-[#007a7f]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Career Matching</h3>
@@ -97,8 +97,8 @@ export function HeroSection() {
             <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
               <CardContent className="p-0">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-green-100 rounded-lg">
-                    <Users className="h-6 w-6 text-green-600" />
+                  <div className="p-3 bg-[#007a7f]/10 rounded-lg">
+                    <Users className="h-6 w-6 text-[#007a7f]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Trusted Community</h3>
@@ -113,8 +113,8 @@ export function HeroSection() {
             <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-xl">
               <CardContent className="p-0">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-orange-100 rounded-lg">
-                    <TrendingUp className="h-6 w-6 text-orange-600" />
+                  <div className="p-3 bg-[#007a7f]/10 rounded-lg">
+                    <TrendingUp className="h-6 w-6 text-[#007a7f]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Market Insights</h3>

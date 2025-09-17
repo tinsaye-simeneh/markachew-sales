@@ -62,7 +62,7 @@ export function HouseCard({ house }: HouseCardProps) {
       
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">
+          <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors">
             {house.title}
           </h3>
           <Badge variant="outline" className="text-xs">
@@ -77,7 +77,7 @@ export function HouseCard({ house }: HouseCardProps) {
       
       <CardContent className="pt-0">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-blue-600">
+          <span className="text-2xl font-bold text-[#007a7f]">
             {formatPrice(house.price)}
           </span>
         </div>

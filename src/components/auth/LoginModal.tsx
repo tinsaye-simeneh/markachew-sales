@@ -73,7 +73,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               onClick={() => setLoginMethod('email')}
               className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 loginMethod === 'email'
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-[#007a7f] shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -85,7 +85,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               onClick={() => setLoginMethod('phone')}
               className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 loginMethod === 'phone'
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-[#007a7f] shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -146,7 +146,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             Don't have an account?{' '}
             <button
               type="button"
-              className="text-blue-600 hover:underline"
+              className="text-[#007a7f] hover:underline"
               onClick={onSwitchToRegister}
             >
               Sign up

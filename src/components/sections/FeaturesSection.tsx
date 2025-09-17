@@ -8,37 +8,37 @@ const features = [
     icon: Shield,
     title: "Verified Listings",
     description: "All properties and job postings are thoroughly verified to ensure authenticity and quality.",
-    color: "bg-blue-100 text-blue-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   },
   {
     icon: Zap,
     title: "AI-Powered Matching",
     description: "Our advanced AI algorithm matches you with the perfect opportunities based on your preferences.",
-    color: "bg-purple-100 text-purple-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   },
   {
     icon: Users,
     title: "Trusted Community",
     description: "Join thousands of verified users who have found their dream homes and careers with us.",
-    color: "bg-green-100 text-green-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   },
   {
     icon: TrendingUp,
     title: "Market Insights",
     description: "Get real-time market data and trends to make informed decisions about your investments.",
-    color: "bg-orange-100 text-orange-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   },
   {
     icon: Smartphone,
     title: "Mobile Optimized",
     description: "Access our platform anywhere, anytime with our fully responsive mobile experience.",
-    color: "bg-pink-100 text-pink-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   },
   {
     icon: Headphones,
     title: "24/7 Support",
     description: "Our dedicated support team is always here to help you with any questions or concerns.",
-    color: "bg-indigo-100 text-indigo-600"
+    color: "bg-[#007a7f]/10 text-[#007a7f]"
   }
 ]
 
@@ -62,7 +62,7 @@ export function FeaturesSection() {
                 <div className={`inline-flex p-3 rounded-lg ${feature.color} mb-4`}>
                   <feature.icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-[#007a7f] transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">

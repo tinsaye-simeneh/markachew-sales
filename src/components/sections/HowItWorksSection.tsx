@@ -49,14 +49,14 @@ export function HowItWorksSection() {
               <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm h-full">
                 <CardContent className="p-8 text-center">
                   <div className="relative mb-6">
-                    <div className="inline-flex p-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white mb-4">
+                    <div className="inline-flex p-4 rounded-full bg-[#007a7f] text-white mb-4">
                       <step.icon className="h-8 w-8" />
                     </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#007a7f] text-white rounded-full flex items-center justify-center text-sm font-bold">
                       {step.step}
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-[#007a7f] transition-colors">
                     {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
@@ -67,7 +67,7 @@ export function HowItWorksSection() {
               
               {/* Connector line for desktop */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transform -translate-y-1/2 z-10" />
+                <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-[#007a7f] transform -translate-y-1/2 z-10" />
               )}
             </div>
           ))}

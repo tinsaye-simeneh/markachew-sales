@@ -35,13 +35,13 @@ const stats = [
 
 export function StatsSection() {
   return (
-    <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+    <section className="py-20 bg-gradient-to-r from-[#007a7f] to-[#005a5f]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
             Trusted by Thousands
           </h2>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+          <p className="text-xl text-white/80 max-w-3xl mx-auto">
             Join our growing community of successful users who have found their perfect match.
           </p>
         </div>
@@ -58,7 +58,7 @@ export function StatsSection() {
               <div className="text-xl font-semibold text-white mb-2">
                 {stat.label}
               </div>
-              <div className="text-blue-100 text-sm">
+              <div className="text-white/70 text-sm">
                 {stat.description}
               </div>
             </div>
