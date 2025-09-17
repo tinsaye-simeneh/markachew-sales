@@ -19,14 +19,37 @@ import {
   Bath, 
   Square, 
   Calendar,
-  Car,
-  Shield,
-  Wifi,
-  TreePine,
   Phone,
   Mail,
-  Star
+  Star,
+  Shield
 } from 'lucide-react'
+import Image from 'next/image'
+
+interface House {
+  id: string
+  title: string
+  price: number
+  location: string
+  bedrooms: number
+  bathrooms: number
+  area: number
+  image: string
+  description: string
+  features: string[]
+  type: string
+  yearBuilt: number
+  status: string
+  images: string[]
+  amenities: string[]
+  agent: {
+    name: string
+    phone: string
+    email: string
+    image: string
+    rating: number
+  }
+}
 
 export default function HouseDetailPage() {
   const { user, isLoading } = useAuth()
@@ -34,7 +57,7 @@ export default function HouseDetailPage() {
   const params = useParams()
   const houseId = parseInt(params.id as string)
   
-  const [house, setHouse] = useState<any>(null)
+  const [house, setHouse] = useState<House | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -48,7 +71,9 @@ export default function HouseDetailPage() {
   // Find house data
   useEffect(() => {
     const foundHouse = getHouseById(houseId.toString())
-    setHouse(foundHouse)
+    if (foundHouse) {
+      setHouse(foundHouse)
+    }
   }, [houseId])
 
   const handleBack = () => {
@@ -115,7 +140,7 @@ export default function HouseDetailPage() {
             {/* Image Gallery */}
             <div className="mb-6">
               <div className="relative">
-                <img
+                <Image
                   src={house.images[currentImageIndex]}
                   alt={house.title}
                   className="w-full h-96 object-cover rounded-lg"
@@ -141,11 +166,12 @@ export default function HouseDetailPage() {
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
+                    aria-label={`View image ${index + 1} of ${house.title}`}
                     className={`w-20 h-16 rounded-lg overflow-hidden border-2 ${
                       currentImageIndex === index ? 'border-[#007a7f]' : 'border-gray-200'
                     } cursor-pointer`}
                   >
-                    <img src={image} alt={`${house.title} ${index + 1}`} className="w-full h-full object-cover" />
+                    <Image src={image} alt={`${house.title} ${index + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -231,7 +257,7 @@ export default function HouseDetailPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">Contact Agent</h3>
                 <div className="flex items-center mb-4">
-                  <img
+                  <Image
                     src={house.agent.image}
                     alt={house.agent.name}
                     className="w-12 h-12 rounded-full mr-3"

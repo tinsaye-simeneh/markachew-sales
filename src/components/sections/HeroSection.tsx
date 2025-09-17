@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Home, Briefcase, Users, TrendingUp, Sparkles, ArrowRight, Star } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, Variants  } from 'framer-motion'
 
 export function HeroSection() {
   const containerVariants = {
@@ -98,19 +98,19 @@ export function HeroSection() {
       {/* Floating Animated Elements */}
       <motion.div 
         className="absolute top-20 left-10 w-20 h-20 bg-[#007a7f]/20 rounded-full"
-        variants={floatingVariants}
+        variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '0s' }}
       />
       <motion.div 
         className="absolute top-40 right-20 w-16 h-16 bg-[#007a7f]/15 rounded-full"
-        variants={floatingVariants}
+        variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '2s' }}
       />
       <motion.div 
         className="absolute bottom-20 left-1/4 w-12 h-12 bg-[#007a7f]/25 rounded-full"
-        variants={floatingVariants}
+        variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '4s' }}
       />
@@ -118,14 +118,14 @@ export function HeroSection() {
       {/* Sparkle Effects */}
       <motion.div
         className="absolute top-32 right-1/3"
-        variants={pulseVariants}
+        variants={pulseVariants as Variants}
         animate="pulse"
       >
         <Sparkles className="h-6 w-6 text-[#007a7f]" />
       </motion.div>
       <motion.div
         className="absolute bottom-32 left-1/3"
-        variants={pulseVariants}
+        variants={pulseVariants as Variants}
         animate="pulse"
         style={{ animationDelay: '1.5s' }}
       >
@@ -135,20 +135,20 @@ export function HeroSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          variants={containerVariants}
+          variants={containerVariants as Variants}
           initial="hidden"
           animate="visible"
         >
           {/* Left Content */}
-          <motion.div className="space-y-8" variants={itemVariants}>
+          <motion.div className="space-y-8" variants={itemVariants as Variants}>
             <div className="space-y-6">
               <motion.div
-                variants={textRevealVariants}
+                variants={textRevealVariants as Variants}
                 className="relative"
               >
                 <motion.h1 
                   className="text-5xl lg:text-7xl font-bold text-gray-900 leading-tight"
-                  variants={textRevealVariants}
+                  variants={textRevealVariants as Variants}
                 >
                   Find Your
                   <motion.span 
@@ -171,20 +171,20 @@ export function HeroSection() {
               
               <motion.p 
                 className="text-xl text-gray-600 leading-relaxed"
-                variants={textRevealVariants}
+                variants={textRevealVariants as Variants}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.8 }}
               >
-                Connect with opportunities that matter. Whether you're looking for your next home 
-                or your next career move, we've got you covered with AI-powered matching and 
+                Connect with opportunities that matter. Whether you&apos;re looking for your next home 
+                or your next career move, we&apos;ve got you covered with AI-powered matching and 
                 personalized recommendations.
               </motion.p>
             </div>
             
             <motion.div 
               className="flex flex-col sm:flex-row gap-4"
-              variants={itemVariants}
+              variants={itemVariants as Variants}
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -215,7 +215,7 @@ export function HeroSection() {
             {/* Animated Stats */}
             <motion.div 
               className="grid grid-cols-3 gap-8 pt-8"
-              variants={itemVariants}
+              variants={itemVariants as Variants}
             >
               {[
                 { number: "10K+", label: "Properties Listed" },
@@ -268,7 +268,7 @@ export function HeroSection() {
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                variants={cardVariants}
+                variants={cardVariants as Variants}
                 whileHover="hover"
                 initial="hidden"
                 animate="visible"

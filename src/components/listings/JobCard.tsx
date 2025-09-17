@@ -6,8 +6,20 @@ import { Button } from '@/components/ui/button'
 import { MapPin, Clock, Building, Heart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+interface Job {
+  id: string
+  title: string
+  company: string
+  location: string
+  salary: string
+  type: string
+  experience: string
+  description: string
+  postedDate: string
+}
+
 interface JobCardProps {
-  job: any
+  job: Job
 }
 
 export function JobCard({ job }: JobCardProps) {

@@ -20,12 +20,31 @@ import {
   Briefcase,
   Users,
   Calendar,
-  Phone,
-  Mail,
-  Star,
   CheckCircle,
   ExternalLink
 } from 'lucide-react'
+
+interface Job {
+  id: string
+  title: string
+  company: string
+  location: string
+  salary: string
+  type: string
+  experience: string
+  description: string
+  requirements: string[]
+  benefits: string[]
+  postedDate: string
+  category: string
+  companyInfo: {
+    size: string
+    industry: string
+    website: string
+    description: string
+  }
+  responsibilities: string[]
+}
 
 export default function JobDetailPage() {
   const { user, isLoading } = useAuth()
@@ -33,7 +52,7 @@ export default function JobDetailPage() {
   const params = useParams()
   const jobId = parseInt(params.id as string)
   
-  const [job, setJob] = useState<any>(null)
+  const [job, setJob] = useState<Job | null>(null)
   const [isFavorite, setIsFavorite] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
 
@@ -47,7 +66,9 @@ export default function JobDetailPage() {
   // Find job data
   useEffect(() => {
     const foundJob = getJobById(jobId.toString())
-    setJob(foundJob)
+    if (foundJob) {
+      setJob(foundJob)
+    }
   }, [jobId])
 
   const handleBack = () => {
@@ -60,10 +81,6 @@ export default function JobDetailPage() {
     alert(`Application submitted for ${job?.title} at ${job?.company}`)
   }
 
-  const handleContactCompany = () => {
-    // In a real app, this would open a contact form
-    alert(`Contacting ${job?.company}`)
-  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -198,7 +215,7 @@ export default function JobDetailPage() {
                     ))}
                   </div>
                   <ul className="space-y-2">
-                    {job.qualifications.map((qualification: string, index: number) => (
+                    {job.requirements.map((qualification: string, index: number) => (
                       <li key={index} className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-[#007a7f] mr-2 mt-0.5 flex-shrink-0" />
                         <span className="text-gray-700">{qualification}</span>

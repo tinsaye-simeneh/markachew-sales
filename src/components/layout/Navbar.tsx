@@ -76,7 +76,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white shadow-sm border-b sticky top-0 z-50 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -139,12 +139,12 @@ export function Navbar() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/profile')} className='cursor-pointer'>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={logout} className='cursor-pointer'>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>
@@ -228,7 +228,7 @@ export function Navbar() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => { closeMobileMenu(); /* Add profile navigation */ }}
+                        onClick={() => { closeMobileMenu(); router.push('/profile'); }}
                         className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                       >
                         <User className="inline h-4 w-4 mr-2" />

@@ -156,7 +156,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
           </form>
           
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               type="button"
               className="text-[#007a7f] hover:underline cursor-pointer"

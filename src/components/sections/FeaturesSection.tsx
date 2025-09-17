@@ -51,7 +51,7 @@ export function FeaturesSection() {
             Why Choose Markachew?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We combine cutting-edge technology with personalized service to help you find exactly what you're looking for.
+            We combine cutting-edge technology with personalized service to help you find exactly what you&apos;re looking for.
           </p>
         </div>
         

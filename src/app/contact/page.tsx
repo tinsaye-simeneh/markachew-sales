@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,7 +41,7 @@ export default function ContactPage() {
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
           </p>
         </div>
 
@@ -181,15 +182,15 @@ export default function ContactPage() {
                 <CardTitle className="text-xl">Quick Links</CardTitle>
               </CardHeader>
               <CardContent>
-                <a href="/houses" className="text-[#007a7f] hover:underline cursor-pointer">
+                <Link href="/houses" className="text-[#007a7f] hover:underline cursor-pointer">
                     Browse Properties
-                  </a> {' - '}
-                  <a href="/jobs" className="text-[#007a7f] hover:underline cursor-pointer">
+                  </Link> {' - '}
+                  <Link href="/jobs" className="text-[#007a7f] hover:underline cursor-pointer">
                     Find Jobs
-                  </a> {' - '}
-                  <a href="/about" className=" text-[#007a7f] hover:underline cursor-pointer">
+                  </Link> {' - '}
+                  <Link href="/about" className=" text-[#007a7f] hover:underline cursor-pointer">
                     About Us
-                  </a>
+                  </Link>
                  
               </CardContent>
             </Card>
