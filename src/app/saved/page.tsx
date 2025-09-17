@@ -8,7 +8,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Heart, Home, Briefcase } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export default function SavedPage() {
   const { user, isLoading } = useAuth()
