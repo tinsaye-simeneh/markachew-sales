@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { X } from 'lucide-react'
+import { X, Mail, Phone } from 'lucide-react'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -15,7 +15,9 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const { login, isLoading } = useAuth()
@@ -24,18 +26,21 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     e.preventDefault()
     setError('')
     
-    if (!email || !password) {
+    const identifier = loginMethod === 'email' ? email : phone
+    
+    if (!identifier || !password) {
       setError('Please fill in all fields')
       return
     }
 
-    const success = await login(email, password)
+    const success = await login(identifier, password)
     if (success) {
       onClose()
       setEmail('')
+      setPhone('')
       setPassword('')
     } else {
-      setError('Invalid email or password')
+      setError(`Invalid ${loginMethod} or password`)
     }
   }
 
@@ -61,15 +66,55 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         </CardHeader>
         
         <CardContent>
+          {/* Login Method Switcher */}
+          <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+            <button
+              type="button"
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMethod === 'email'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMethod('phone')}
+              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMethod === 'phone'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Phone
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor={loginMethod}>
+                {loginMethod === 'email' ? 'Email' : 'Phone Number'}
+              </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id={loginMethod}
+                type={loginMethod === 'email' ? 'email' : 'tel'}
+                placeholder={
+                  loginMethod === 'email' 
+                    ? 'Enter your email' 
+                    : 'Enter your phone number'
+                }
+                value={loginMethod === 'email' ? email : phone}
+                onChange={(e) => {
+                  if (loginMethod === 'email') {
+                    setEmail(e.target.value)
+                  } else {
+                    setPhone(e.target.value)
+                  }
+                }}
                 required
               />
             </div>
