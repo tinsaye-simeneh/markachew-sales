@@ -66,7 +66,9 @@ export default function JobDetailPage() {
   // Find job data
   useEffect(() => {
     const foundJob = getJobById(jobId.toString())
-    setJob(foundJob)
+    if (foundJob) {
+      setJob(foundJob)
+    }
   }, [jobId])
 
   const handleBack = () => {
@@ -213,7 +215,7 @@ export default function JobDetailPage() {
                     ))}
                   </div>
                   <ul className="space-y-2">
-                    {job.qualifications.map((qualification: string, index: number) => (
+                    {job.requirements.map((qualification: string, index: number) => (
                       <li key={index} className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-[#007a7f] mr-2 mt-0.5 flex-shrink-0" />
                         <span className="text-gray-700">{qualification}</span>

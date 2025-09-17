@@ -40,10 +40,10 @@ export default function ProfilePage() {
       setProfileData({
         name: user.name || '',
         email: user.email || '',
-        phone: user.phone || '',
-        location: user.location || 'Addis Ababa, Ethiopia',
+        phone: '',
+        location: 'Addis Ababa, Ethiopia',
         userType: user.type || '',
-        joinDate: user.joinDate || 'January 2024'
+        joinDate: 'January 2024'
       })
     }
   }, [user])
@@ -65,10 +65,10 @@ export default function ProfilePage() {
       setProfileData({
         name: user.name || '',
         email: user.email || '',
-        phone: user.phone || '',
-        location: user.location || 'Addis Ababa, Ethiopia',
+        phone: '',
+        location: 'Addis Ababa, Ethiopia',
         userType: user.type || '',
-        joinDate: user.joinDate || 'January 2024'
+        joinDate: 'January 2024'
       })
     }
     setIsEditing(false)

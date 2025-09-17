@@ -203,7 +203,7 @@ export default function JobsPage() {
         {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentJobs.map((job) => (
-            <div key={job.id} onClick={() => handleJobClick(job.id)} className="cursor-pointer">
+            <div key={job.id} onClick={() => handleJobClick(job.id as unknown as number)} className="cursor-pointer">
               <JobCard job={job} />
             </div>
           ))}
