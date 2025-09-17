@@ -1,0 +1,282 @@
+"use client"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginModal } from '@/components/auth/LoginModal'
+import { RegisterModal } from '@/components/auth/RegisterModal'
+import {  User, LogOut, Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
+export function Navbar() {
+  const router = useRouter()
+  const { user, logout } = useAuth()
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleLoginClick = () => {
+    setIsLoginOpen(true)
+    setIsRegisterOpen(false)
+  }
+
+  const handleRegisterClick = () => {
+    setIsRegisterOpen(true)
+    setIsLoginOpen(false)
+  }
+
+  const handleSwitchToRegister = () => {
+    setIsLoginOpen(false)
+    setIsRegisterOpen(true)
+  }
+
+  const handleSwitchToLogin = () => {
+    setIsRegisterOpen(false)
+    setIsLoginOpen(true)
+  }
+
+  const handleCloseModals = () => {
+    setIsLoginOpen(false)
+    setIsRegisterOpen(false)
+  }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleHousesClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    closeMobileMenu()
+    if (user) {
+      // User is logged in, navigate to houses page
+      router.push('/houses')
+    } else {
+      // User is not logged in, show sign-in modal
+      setIsLoginOpen(true)
+    }
+  }
+
+  const handleJobsClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    closeMobileMenu()
+    if (user) {
+      // User is logged in, navigate to jobs page
+      router.push('/jobs')
+    } else {
+      // User is not logged in, show sign-in modal
+      setIsLoginOpen(true)
+    }
+  }
+
+  return (
+    <>
+      <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <button className="text-xl font-bold text-[#007a7f] cursor-pointer" onClick={() => router.push('/')}>MPEM</button>
+            </div>
+
+            {/* Desktop Navigation Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <button 
+                onClick={handleHousesClick}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
+                Houses
+              </button>
+              <button 
+                onClick={handleJobsClick}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
+                Jobs
+              </button>
+              <button 
+                onClick={() => router.push('/about')}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => router.push('/contact')}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
+                Contact
+              </button>
+            </div>
+
+            {/* Desktop Auth Section */}
+            <div className="hidden md:flex items-center space-x-4">
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="" alt={user.name || 'User'} />
+                        <AvatarFallback>
+                          {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground capitalize">
+                          {user.type}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" onClick={handleLoginClick} className="cursor-pointer">
+                    Sign In
+                  </Button>
+                  <Button onClick={handleRegisterClick} className="cursor-pointer">
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleMobileMenu}
+                className="cursor-pointer"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
+                {/* Mobile Navigation Links */}
+                <button 
+                  onClick={handleHousesClick}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                >
+                  Houses
+                </button>
+                <button 
+                  onClick={handleJobsClick}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                >
+                  Jobs
+                </button>
+                <button 
+                  onClick={() => { closeMobileMenu(); router.push('/about'); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                >
+                  About
+                </button>
+                <button 
+                  onClick={() => { closeMobileMenu(); router.push('/contact'); }}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                >
+                  Contact
+                </button>
+
+                {/* Mobile Auth Section */}
+                <div className="pt-4 border-t">
+                  {user ? (
+                    <div className="space-y-2">
+                      <div className="px-3 py-2">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src="" alt={user.name || 'User'} />
+                            <AvatarFallback>
+                              {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                            <p className="text-xs text-gray-500">{user.email}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => { closeMobileMenu(); /* Add profile navigation */ }}
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <User className="inline h-4 w-4 mr-2" />
+                        Profile
+                      </button>
+                      <button 
+                        onClick={() => { closeMobileMenu(); logout(); }}
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <LogOut className="inline h-4 w-4 mr-2" />
+                        Log out
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => { closeMobileMenu(); handleLoginClick(); }} 
+                        className="w-full justify-start cursor-pointer"
+                      >
+                        Sign In
+                      </Button>
+                      <Button 
+                        onClick={() => { closeMobileMenu(); handleRegisterClick(); }} 
+                        className="w-full cursor-pointer"
+                      >
+                        Sign Up
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={handleCloseModals}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+      
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={handleCloseModals}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
+    </>
+  )
+}
