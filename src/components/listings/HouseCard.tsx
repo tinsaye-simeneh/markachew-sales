@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Bed, Bath, Square, Heart } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 interface House {
   id: string
@@ -24,6 +25,7 @@ interface HouseCardProps {
 }
 
 export function HouseCard({ house }: HouseCardProps) {
+  const router = useRouter()
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -33,9 +35,13 @@ export function HouseCard({ house }: HouseCardProps) {
     }).format(price)
   }
 
+  const handleHouseClick = (houseId: string) => {
+    router.push(`/houses/${houseId}`)
+  }
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden p-0 pb-6">
-      <div className="relative overflow-hidden rounded-t-lg">
+      <div className="relative overflow-hidden rounded-t-lg cursor-pointer" onClick={() => handleHouseClick(house.id)}>
         <Image 
           src={house.image} 
           alt={house.title} 
@@ -63,7 +69,7 @@ export function HouseCard({ house }: HouseCardProps) {
       
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors">
+          <h3 className="font-semibold cursor-pointer text-lg group-hover:text-[#007a7f] transition-colors" onClick={() => handleHouseClick(house.id)}>
             {house.title}
           </h3>
           <Badge variant="outline" className="text-xs">
