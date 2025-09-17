@@ -15,7 +15,7 @@ export function Dashboard() {
       </div>
       
       <Tabs defaultValue="houses" className="w-full">
-        <TabsList className="grid w-75 grid-cols-2 mb-8">
+        <TabsList className="grid md:w-75 w-full grid-cols-2 mb-8">
           <TabsTrigger value="houses" className="text-base cursor-pointer">
             🏠 Houses
           </TabsTrigger>

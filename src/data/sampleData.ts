@@ -218,6 +218,43 @@ export const sampleHouses = [
       rating: 4.6,
       image: "/api/placeholder/100/100"
     }
+  },
+  {
+    id: "7",
+    title: "Luxury Apartment in Bole",
+    price: 15000000,
+    location: "Bole, Addis Ababa",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 150,
+    image: "/images/house/house-7.png", 
+    description: "Luxury apartment with panoramic city views. This stunning apartment offers the ultimate in urban living with breathtaking views of the city skyline. Features include a private rooftop terrace, premium finishes, and state-of-the-art amenities.",
+    features: ["City View", "Rooftop", "Gym", "Pool"],
+    type: "apartment" as const,
+    yearBuilt: 2022,
+    status: "for-sale" as const,
+    images: [
+      "/images/house/house-7.png",
+      "/images/house/house-7.png",
+      "/images/house/house-7.png"
+    ],
+    amenities: [
+      "Private Rooftop",
+      "City Views",
+      "Gym",
+      "Swimming Pool",
+      "Concierge Service",
+      "Premium Finishes",
+      "Smart Home System",
+      "Private Elevator"
+    ],
+    agent: {
+      name: "David Wilson",
+      phone: "+251 93 345 6789",
+      email: "david@realestate.com",
+      rating: 4.9,
+      image: "/api/placeholder/100/100"
+    }
   }
 ]
 

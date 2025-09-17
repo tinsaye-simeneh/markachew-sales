@@ -3,9 +3,10 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Bed, Bath, Square, Heart } from 'lucide-react'
+import { MapPin, Bed, Bath, Square, Heart, Home } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 interface House {
   id: string
@@ -26,6 +27,8 @@ interface HouseCardProps {
 
 export function HouseCard({ house }: HouseCardProps) {
   const router = useRouter()
+  const [imageError, setImageError] = useState(false)
+  
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -39,16 +42,29 @@ export function HouseCard({ house }: HouseCardProps) {
     router.push(`/houses/${houseId}`)
   }
 
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden p-0 pb-6">
       <div className="relative overflow-hidden rounded-t-lg cursor-pointer" onClick={() => handleHouseClick(house.id)}>
-        <Image 
-          src={house.image} 
-          alt={house.title} 
-          width={400} 
-          height={250}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        {!imageError ? (
+          <Image 
+            src={house.image} 
+            alt={house.title} 
+            width={400} 
+            height={250}
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-100 flex flex-col items-center justify-center text-gray-500">
+            <Home className="h-12 w-12 mb-2 text-gray-400" />
+            <p className="text-sm font-medium">Image not available</p>
+            <p className="text-xs text-gray-400">{house.title}</p>
+          </div>
+        )}
          
         
         <Button
