@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { LoadingPage } from '@/components/ui/loading'
 import { 
   ArrowLeft, 
   Heart, 
@@ -286,11 +287,7 @@ export default function HouseDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#007a7f]"></div>
-      </div>
-    )
+    return <LoadingPage />
   }
 
   if (!user) {

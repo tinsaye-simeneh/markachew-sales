@@ -9,6 +9,7 @@ import { HouseCard } from '@/components/listings/HouseCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { LoadingPage } from '@/components/ui/loading'
 import { Search, Filter, MapPin, Bed, Bath, Square } from 'lucide-react'
 
 // Sample house data
@@ -194,11 +195,7 @@ export default function HousesPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#007a7f]"></div>
-      </div>
-    )
+    return <LoadingPage />
   }
 
   if (!user) {
