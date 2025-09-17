@@ -110,15 +110,7 @@ export function Navbar() {
               >
                 Jobs
               </button>
-              {user && (
-                <button 
-                  onClick={handleSavedClick}
-                  className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors flex items-center"
-                >
-                  <Heart className="h-4 w-4 mr-1" />
-                  Saved
-                </button>
-              )}
+             
               <button 
                 onClick={() => router.push('/about')}
                 className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
