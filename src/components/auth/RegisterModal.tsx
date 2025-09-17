@@ -64,7 +64,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         <Button
           variant="ghost"
           size="sm"
-          className="absolute right-2 top-2 z-10"
+          className="absolute right-2 top-2 z-10 cursor-pointer"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
@@ -148,7 +148,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               </div>
             )}
             
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Create Account'}
             </Button>
           </form>
@@ -157,7 +157,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             Already have an account?{' '}
             <button
               type="button"
-              className="text-[#007a7f] hover:underline"
+              className="text-[#007a7f] hover:underline cursor-pointer"
               onClick={onSwitchToLogin}
             >
               Sign in

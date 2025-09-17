@@ -1,10 +1,32 @@
 "use client"
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Home, Briefcase, ArrowRight } from 'lucide-react'
+import { RegisterModal } from '@/components/auth/RegisterModal'
+import { LoginModal } from '@/components/auth/LoginModal'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function CTASection() {
+  const { user } = useAuth()
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
+
+  const handleLoginClick = () => {
+    setIsLoginOpen(true)
+  }
+
+  const handleSwitchToRegister = () => {
+    setIsLoginOpen(false)
+    setIsRegisterOpen(true)
+  }
+
+  const handleSwitchToLogin = () => {
+    setIsRegisterOpen(false)
+    setIsLoginOpen(true)
+  }
+
   return (
     <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,15 +82,20 @@ export function CTASection() {
             </CardContent>
           </Card>
         </div>
-        
+        {!user && (
         <div className="text-center mt-12">
           <p className="text-gray-400 mb-4">
             Already have an account?
           </p>
-          <Button variant="outline" size="lg" className="border-white text-gray-900 hover:bg-white hover:text-primary hover:border-primary cursor-pointer">
+          <Button variant="outline"
+          onClick={handleLoginClick}
+          size="lg" className="border-white text-gray-900 hover:bg-white hover:text-primary hover:border-primary cursor-pointer">
             Sign In
           </Button>
         </div>
+        )}
+        {isLoginOpen && <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSwitchToRegister={handleSwitchToRegister}/>}
+        {isRegisterOpen && <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} onSwitchToLogin={handleSwitchToLogin}/>}
       </div>
     </section>
   )

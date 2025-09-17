@@ -11,7 +11,7 @@ import { X, Mail, Phone } from 'lucide-react'
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
-  onSwitchToRegister: () => void
+  onSwitchToRegister?: () => void
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
@@ -52,7 +52,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         <Button
           variant="ghost"
           size="sm"
-          className="absolute right-2 top-2 z-10"
+          className="absolute right-2 top-2 z-10 cursor-pointer"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
@@ -71,7 +71,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             <button
               type="button"
               onClick={() => setLoginMethod('email')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 loginMethod === 'email'
                   ? 'bg-white text-[#007a7f] shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
@@ -83,7 +83,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             <button
               type="button"
               onClick={() => setLoginMethod('phone')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 loginMethod === 'phone'
                   ? 'bg-white text-[#007a7f] shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
@@ -137,7 +137,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               </div>
             )}
             
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
@@ -146,7 +146,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             Don't have an account?{' '}
             <button
               type="button"
-              className="text-[#007a7f] hover:underline"
+              className="text-[#007a7f] hover:underline cursor-pointer"
               onClick={onSwitchToRegister}
             >
               Sign up
