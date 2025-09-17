@@ -97,6 +97,151 @@ const sampleHouses = [
       rating: 4.6,
       image: "/api/placeholder/100/100"
     }
+  },
+  {
+    id: 3,
+    title: "Luxury Penthouse in Cazanchis",
+    price: 45000000,
+    location: "Cazanchis, Addis Ababa",
+    bedrooms: 5,
+    bathrooms: 4,
+    area: 400,
+    image: "/api/placeholder/800/600",
+    description: "Exclusive penthouse with panoramic city views. This luxury penthouse offers the ultimate in urban living with breathtaking views of the city skyline. Features include a private rooftop terrace, premium finishes, and state-of-the-art amenities.",
+    features: ["City View", "Rooftop", "Gym", "Pool"],
+    type: "Penthouse",
+    yearBuilt: 2022,
+    images: [
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600"
+    ],
+    amenities: [
+      "Private Rooftop",
+      "City Views",
+      "Gym",
+      "Swimming Pool",
+      "Concierge Service",
+      "Premium Finishes",
+      "Smart Home System",
+      "Private Elevator"
+    ],
+    agent: {
+      name: "David Wilson",
+      phone: "+251 93 345 6789",
+      email: "david@realestate.com",
+      rating: 4.9,
+      image: "/api/placeholder/100/100"
+    }
+  },
+  {
+    id: 4,
+    title: "Family House in Gerji",
+    price: 18000000,
+    location: "Gerji, Addis Ababa",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 180,
+    image: "/api/placeholder/800/600",
+    description: "Perfect family home with large backyard. This charming family house offers spacious living areas, a beautiful garden, and a quiet neighborhood perfect for raising children. The property features modern amenities while maintaining a cozy, homey feel.",
+    features: ["Garden", "Parking", "Quiet Area"],
+    type: "House",
+    yearBuilt: 2015,
+    images: [
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600"
+    ],
+    amenities: [
+      "Large Garden",
+      "Parking Space",
+      "Quiet Neighborhood",
+      "Family-Friendly",
+      "Modern Kitchen",
+      "Spacious Living Areas",
+      "Storage Space",
+      "Security"
+    ],
+    agent: {
+      name: "Emily Rodriguez",
+      phone: "+251 94 456 7890",
+      email: "emily@realestate.com",
+      rating: 4.7,
+      image: "/api/placeholder/100/100"
+    }
+  },
+  {
+    id: 5,
+    title: "Studio Apartment in Piassa",
+    price: 3500000,
+    location: "Piassa, Addis Ababa",
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 45,
+    image: "/api/placeholder/800/600",
+    description: "Compact studio perfect for young professionals. This modern studio apartment is ideal for young professionals who want to live in the heart of the city. Despite its compact size, it offers all the essential amenities and a great location.",
+    features: ["Furnished", "Central Location"],
+    type: "Studio",
+    yearBuilt: 2019,
+    images: [
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600"
+    ],
+    amenities: [
+      "Fully Furnished",
+      "Central Location",
+      "Modern Appliances",
+      "High-Speed Internet",
+      "Security",
+      "Elevator",
+      "Laundry Facilities",
+      "Near Public Transport"
+    ],
+    agent: {
+      name: "James Kim",
+      phone: "+251 95 567 8901",
+      email: "james@realestate.com",
+      rating: 4.5,
+      image: "/api/placeholder/100/100"
+    }
+  },
+  {
+    id: 6,
+    title: "Townhouse in CMC",
+    price: 12000000,
+    location: "CMC, Addis Ababa",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 150,
+    image: "/api/placeholder/800/600",
+    description: "Modern townhouse with contemporary design. This stylish townhouse features contemporary architecture and modern amenities. Perfect for families who want a modern living space with easy access to the city center.",
+    features: ["Modern Design", "Parking", "Security"],
+    type: "Townhouse",
+    yearBuilt: 2021,
+    images: [
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600",
+      "/api/placeholder/800/600"
+    ],
+    amenities: [
+      "Modern Design",
+      "Parking Space",
+      "Security System",
+      "Contemporary Finishes",
+      "Open Plan Living",
+      "Private Garden",
+      "Energy Efficient",
+      "Near Amenities"
+    ],
+    agent: {
+      name: "Lisa Thompson",
+      phone: "+251 96 678 9012",
+      email: "lisa@realestate.com",
+      rating: 4.6,
+      image: "/api/placeholder/100/100"
+    }
   }
 ]
 
