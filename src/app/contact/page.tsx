@@ -132,7 +132,7 @@ export default function ContactPage() {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl mb-4">Get in Touch</CardTitle>
+                <CardTitle className="text-2xl">Get in Touch</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-start space-x-4">
@@ -178,7 +178,7 @@ export default function ContactPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl mb-4">Quick Links</CardTitle>
+                <CardTitle className="text-xl">Quick Links</CardTitle>
               </CardHeader>
               <CardContent>
                 <a href="/houses" className="text-[#007a7f] hover:underline cursor-pointer">
