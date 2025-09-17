@@ -5,18 +5,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Clock, Building, Heart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
-interface Job {
-  id: string
-  title: string
-  company: string
-  location: string
-  salary: string
-  type: string
-  experience: string
-  description: string
-  postedDate: string
-}
+import { useState, useEffect } from 'react'
+import { useFavorites } from '@/contexts/FavoritesContext'
+import { Job } from '@/data/sampleData'
+import { toast } from 'sonner'
 
 interface JobCardProps {
   job: Job
@@ -24,9 +16,45 @@ interface JobCardProps {
 
 export function JobCard({ job }: JobCardProps) {
   const router = useRouter()
+  const [isClient, setIsClient] = useState(false)
+  
+  // Always call the hook, but handle client-side logic inside
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+  
   const handleJobClick = (jobId: string) => {
     router.push(`/jobs/${jobId}`)
   }
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!isClient) return // Don't handle clicks during SSR
+    
+    if (isFavorite(job.id, 'job')) {
+      removeFromFavorites(job.id, 'job')
+      toast.success("Removed from favorites", {
+        description: `${job.title} at ${job.company} has been removed from your saved list`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
+    } else {
+      addToFavorites(job, 'job')
+      toast.success("Added to favorites!", {
+        description: `${job.title} at ${job.company} has been saved to your favorites`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
+    }
+  }
+
+  const isJobFavorited = isClient ? isFavorite(job.id, 'job') : false
 
   const getExperienceColor = (exp: string) => {
     if (exp.includes('1-2')) return 'bg-green-100 text-green-800 hover:text-white'
@@ -68,8 +96,9 @@ export function JobCard({ job }: JobCardProps) {
             variant="ghost"
             size="sm"
             className="ml-2 cursor-pointer"
+            onClick={handleFavoriteClick}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={`h-4 w-4 ${isJobFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
           </Button>
         </div>
       </CardHeader>

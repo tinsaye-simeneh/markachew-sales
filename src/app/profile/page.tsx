@@ -12,12 +12,20 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LoadingPage } from '@/components/ui/loading'
-import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X } from 'lucide-react'
+import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Lock } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -76,6 +84,67 @@ export default function ProfilePage() {
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handlePasswordChange = (field: string, value: string) => {
+    setPasswordData(prev => ({ ...prev, [field]: value }))
+    setPasswordError('')
+  }
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordError('')
+    setIsChangingPassword(true)
+
+    // Validation
+    if (!passwordData.currentPassword) {
+      setPasswordError('Current password is required')
+      setIsChangingPassword(false)
+      return
+    }
+
+    if (!passwordData.newPassword) {
+      setPasswordError('New password is required')
+      setIsChangingPassword(false)
+      return
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters')
+      setIsChangingPassword(false)
+      return
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      setIsChangingPassword(false)
+      return
+    }
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Reset form and close modal
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    })
+    setShowChangePassword(false)
+    setIsChangingPassword(false)
+    
+    // You could show a success message here
+    console.log('Password changed successfully')
+  }
+
+  const handleClosePasswordModal = () => {
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    })
+    setPasswordError('')
+    setShowChangePassword(false)
   }
 
   if (isLoading) {
@@ -271,7 +340,7 @@ export default function ProfilePage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button 
                     variant="outline" 
                     className="cursor-pointer"
@@ -286,12 +355,108 @@ export default function ProfilePage() {
                   >
                     Find Jobs
                   </Button>
+                  <Button 
+                    variant="outline" 
+                    className="cursor-pointer"
+                    onClick={() => setShowChangePassword(true)}
+                  >
+                    <Lock className="h-4 w-4 mr-2" />
+                    Change Password
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-2 top-2 z-10 cursor-pointer"
+              onClick={handleClosePasswordModal}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            
+            <CardHeader>
+              <CardTitle>Change Password</CardTitle>
+              <p className="text-sm text-gray-600">
+                Enter your current password and choose a new one
+              </p>
+            </CardHeader>
+            
+            <CardContent>
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    placeholder="Enter your current password"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">New Password</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    placeholder="Enter your new password (min 6 characters)"
+                    value={passwordData.newPassword}
+                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your new password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                {passwordError && (
+                  <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                    {passwordError}
+                  </div>
+                )}
+                
+                <div className="flex space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1 cursor-pointer"
+                    onClick={handleClosePasswordModal}
+                    disabled={isChangingPassword}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="flex-1 cursor-pointer" 
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? 'Changing...' : 'Change Password'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <Footer />
     </div>

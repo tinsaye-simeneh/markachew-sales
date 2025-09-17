@@ -165,6 +165,16 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
               Sign up
             </button>
           </div>
+          <div className="mt-4 text-center text-sm">
+            Forgot Password?{' '}
+            <button
+              type="button"
+              className="text-[#007a7f] hover:underline cursor-pointer"
+              onClick={() => {}}
+            >
+              Reset here
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -4,8 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Home, Briefcase, Users, TrendingUp, Sparkles, ArrowRight, Star } from 'lucide-react'
 import { motion, Variants  } from 'framer-motion'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { LoginModal } from '../auth/LoginModal'
+import { RegisterModal } from '../auth/RegisterModal'
 
 export function HeroSection() {
+  const { user } = useAuth()
+  const router = useRouter()
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -85,7 +94,33 @@ export function HeroSection() {
     }
   }
 
+  const handleJobsClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (user) {
+      router.push('/jobs')
+    } else {
+      setIsLoginOpen(true)
+    }
+  }
+
+  const handleHousesClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (user) {
+      router.push('/houses')
+    } else {
+      setIsLoginOpen(true)
+    }
+  }
+
+
+  const handleCloseModals = () => {
+    setIsLoginOpen(false)
+    setIsRegisterOpen(false)
+  }
+
+
   return (
+    <>
     <section className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 overflow-hidden min-h-screen flex items-center">
       {/* Animated Background Pattern */}
       <motion.div 
@@ -190,7 +225,7 @@ export function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white cursor-pointer group">
+                <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white cursor-pointer group" onClick={handleHousesClick}>
                   <span>Explore Houses</span>
                   <motion.div
                     className="ml-2"
@@ -206,7 +241,7 @@ export function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white cursor-pointer">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white cursor-pointer" onClick={handleJobsClick}>
                   Browse Jobs
                 </Button>
               </motion.div>
@@ -301,5 +336,22 @@ export function HeroSection() {
         </motion.div>
       </div>
     </section>
+      <LoginModal
+      isOpen={isLoginOpen}
+      onClose={handleCloseModals}
+      onSwitchToRegister={() => {
+        handleCloseModals()
+        setIsRegisterOpen(true)
+      }}
+    />
+     <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={handleCloseModals}
+        onSwitchToLogin={() => {
+          handleCloseModals()
+          setIsLoginOpen(true)
+        }}
+      />
+    </>
   )
 }

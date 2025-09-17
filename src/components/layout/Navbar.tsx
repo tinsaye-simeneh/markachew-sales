@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
-import {  User, LogOut, Menu, X } from 'lucide-react'
+import {  User, LogOut, Menu, X, Heart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function Navbar() {
@@ -74,6 +74,18 @@ export function Navbar() {
     }
   }
 
+  const handleSavedClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    closeMobileMenu()
+    if (user) {
+      // User is logged in, navigate to saved page
+      router.push('/saved')
+    } else {
+      // User is not logged in, show sign-in modal
+      setIsLoginOpen(true)
+    }
+  }
+
   return (
     <>
       <nav className="bg-white shadow-sm border-b sticky top-0 z-50 w-full">
@@ -98,6 +110,7 @@ export function Navbar() {
               >
                 Jobs
               </button>
+             
               <button 
                 onClick={() => router.push('/about')}
                 className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
@@ -142,6 +155,10 @@ export function Navbar() {
                     <DropdownMenuItem onClick={() => router.push('/profile')} className='cursor-pointer'>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/saved')} className='cursor-pointer'>
+                      <Heart className="mr-2 h-4 w-4" />
+                      <span>Saved Items</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className='cursor-pointer'>
@@ -196,6 +213,15 @@ export function Navbar() {
                 >
                   Jobs
                 </button>
+                {user && (
+                  <button 
+                    onClick={handleSavedClick}
+                    className="flex items-center w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                  >
+                    <Heart className="h-4 w-4 mr-2" />
+                    Saved
+                  </button>
+                )}
                 <button 
                   onClick={() => { closeMobileMenu(); router.push('/about'); }}
                   className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
@@ -233,6 +259,13 @@ export function Navbar() {
                       >
                         <User className="inline h-4 w-4 mr-2" />
                         Profile
+                      </button>
+                      <button 
+                        onClick={() => { closeMobileMenu(); router.push('/saved'); }}
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                      >
+                        <Heart className="inline h-4 w-4 mr-2" />
+                        Saved Items
                       </button>
                       <button 
                         onClick={() => { closeMobileMenu(); logout(); }}
