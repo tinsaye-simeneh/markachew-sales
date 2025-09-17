@@ -6,20 +6,9 @@ import { Button } from '@/components/ui/button'
 import { MapPin, Bed, Bath, Square, Heart, Home } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-
-interface House {
-  id: string
-  title: string
-  price: number
-  location: string
-  bedrooms: number
-  bathrooms: number
-  area: number
-  image: string
-  type: 'apartment' | 'house' | 'condo' | 'townhouse' | 'villa' | 'studio' | 'penthouse'
-  status: 'for-sale' | 'for-rent' | 'sold'
-}
+import { useState, useEffect } from 'react'
+import { useFavorites } from '@/contexts/FavoritesContext'
+import { House } from '@/data/sampleData'
 
 interface HouseCardProps {
   house: House
@@ -28,6 +17,14 @@ interface HouseCardProps {
 export function HouseCard({ house }: HouseCardProps) {
   const router = useRouter()
   const [imageError, setImageError] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+  
+  // Always call the hook, but handle client-side logic inside
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -45,6 +42,19 @@ export function HouseCard({ house }: HouseCardProps) {
   const handleImageError = () => {
     setImageError(true)
   }
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!isClient) return // Don't handle clicks during SSR
+    
+    if (isFavorite(house.id, 'house')) {
+      removeFromFavorites(house.id, 'house')
+    } else {
+      addToFavorites(house, 'house')
+    }
+  }
+
+  const isHouseFavorited = isClient ? isFavorite(house.id, 'house') : false
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden p-0 pb-6">
@@ -71,8 +81,9 @@ export function HouseCard({ house }: HouseCardProps) {
           variant="ghost"
           size="sm"
           className="absolute top-2 right-2 bg-white/90 hover:bg-white cursor-pointer"
+          onClick={handleFavoriteClick}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${isHouseFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </Button>
         
         <Badge 
