@@ -20,12 +20,31 @@ import {
   Briefcase,
   Users,
   Calendar,
-  Phone,
-  Mail,
-  Star,
   CheckCircle,
   ExternalLink
 } from 'lucide-react'
+
+interface Job {
+  id: string
+  title: string
+  company: string
+  location: string
+  salary: string
+  type: string
+  experience: string
+  description: string
+  requirements: string[]
+  benefits: string[]
+  postedDate: string
+  category: string
+  companyInfo: {
+    size: string
+    industry: string
+    website: string
+    description: string
+  }
+  responsibilities: string[]
+}
 
 export default function JobDetailPage() {
   const { user, isLoading } = useAuth()
@@ -33,7 +52,7 @@ export default function JobDetailPage() {
   const params = useParams()
   const jobId = parseInt(params.id as string)
   
-  const [job, setJob] = useState<any>(null)
+  const [job, setJob] = useState<Job | null>(null)
   const [isFavorite, setIsFavorite] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
 
@@ -60,10 +79,6 @@ export default function JobDetailPage() {
     alert(`Application submitted for ${job?.title} at ${job?.company}`)
   }
 
-  const handleContactCompany = () => {
-    // In a real app, this would open a contact form
-    alert(`Contacting ${job?.company}`)
-  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

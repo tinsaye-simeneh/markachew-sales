@@ -15,7 +15,7 @@ export default function AboutPage() {
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">About MPEM</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Connecting dreams with opportunities. We're your trusted platform for finding the perfect home and advancing your career.
+            Connecting dreams with opportunities. We&apos;re your trusted platform for finding the perfect home and advancing your career.
           </p>
         </div>
 
@@ -72,12 +72,12 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
             <div className="prose prose-lg max-w-none text-gray-600">
               <p className="mb-4">
-                Founded in 2024, MPEM emerged from a simple observation: finding the right home or job shouldn't be complicated. 
+                Founded in 2024, MPEM emerged from a simple observation: finding the right home or job shouldn&apos;t be complicated. 
                 We noticed that people were struggling with fragmented platforms, unreliable information, and time-consuming processes.
               </p>
               <p className="mb-4">
                 Our founders, experienced in both real estate and recruitment, decided to create a unified platform that addresses 
-                these pain points. We combined the best of both worlds to offer a comprehensive solution for life's most important decisions.
+                these pain points. We combined the best of both worlds to offer a comprehensive solution for life&apos;s most important decisions.
               </p>
               <p>
                 Today, MPEM serves thousands of users across Ethiopia, helping them find their perfect home and advance their careers 

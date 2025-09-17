@@ -147,7 +147,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             
             <div className="space-y-2">
               <Label htmlFor="userType">Account Type</Label>
-              <Select value={userType} onValueChange={(value: any) => setUserType(value)}>
+              <Select value={userType} onValueChange={(value: 'employee' | 'employer' | 'buyer' | 'seller') => setUserType(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select account type" />
                 </SelectTrigger>

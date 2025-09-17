@@ -70,7 +70,7 @@ export function TestimonialsSection() {
             What Our Users Say
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Don't just take our word for it. Here's what real users have to say about their experience with Markachew.
+            Don&apos;t just take our word for it. Here&apos;s what real users have to say about their experience with Markachew.
           </p>
         </div>
         
@@ -85,7 +85,7 @@ export function TestimonialsSection() {
                 </div>
                 
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  "{testimonial.content}"
+                  &ldquo;{testimonial.content}&rdquo;
                 </p>
                 
                 <div className="flex items-center">

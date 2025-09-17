@@ -11,18 +11,18 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
 import { sampleJobs } from '@/data/sampleData'
-import { Search, Briefcase, MapPin, Clock, DollarSign } from 'lucide-react'
+import { Search, Briefcase } from 'lucide-react'
 
 export default function JobsPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
-  const [jobs, setJobs] = useState(sampleJobs)
+  const [jobs] = useState(sampleJobs)
   const [filteredJobs, setFilteredJobs] = useState(sampleJobs)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('all')
   const [category, setCategory] = useState('all')
-  const [experience, setExperience] = useState('all')
+  const [experience] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
 
   const itemsPerPage = 6

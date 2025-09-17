@@ -16,13 +16,13 @@ import { Search, MapPin } from 'lucide-react'
 export default function HousesPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
-  const [houses, setHouses] = useState(sampleHouses)
+  const [houses] = useState(sampleHouses)
   const [filteredHouses, setFilteredHouses] = useState(sampleHouses)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState('all')
   const [propertyType, setPropertyType] = useState('all')
-  const [location, setLocation] = useState('all')
+  const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
 
   const itemsPerPage = 6

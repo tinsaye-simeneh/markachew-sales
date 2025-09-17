@@ -19,14 +19,36 @@ import {
   Bath, 
   Square, 
   Calendar,
-  Car,
-  Shield,
-  Wifi,
-  TreePine,
   Phone,
   Mail,
-  Star
+  Star,
+  Shield
 } from 'lucide-react'
+
+interface House {
+  id: string
+  title: string
+  price: number
+  location: string
+  bedrooms: number
+  bathrooms: number
+  area: number
+  image: string
+  description: string
+  features: string[]
+  type: string
+  yearBuilt: number
+  status: string
+  images: string[]
+  amenities: string[]
+  agent: {
+    name: string
+    phone: string
+    email: string
+    image: string
+    rating: number
+  }
+}
 
 export default function HouseDetailPage() {
   const { user, isLoading } = useAuth()
@@ -34,7 +56,7 @@ export default function HouseDetailPage() {
   const params = useParams()
   const houseId = parseInt(params.id as string)
   
-  const [house, setHouse] = useState<any>(null)
+  const [house, setHouse] = useState<House | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -48,7 +70,9 @@ export default function HouseDetailPage() {
   // Find house data
   useEffect(() => {
     const foundHouse = getHouseById(houseId.toString())
-    setHouse(foundHouse)
+    if (foundHouse) {
+      setHouse(foundHouse)
+    }
   }, [houseId])
 
   const handleBack = () => {

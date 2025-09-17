@@ -176,8 +176,8 @@ export function HeroSection() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.8 }}
               >
-                Connect with opportunities that matter. Whether you're looking for your next home 
-                or your next career move, we've got you covered with AI-powered matching and 
+                Connect with opportunities that matter. Whether you&apos;re looking for your next home 
+                or your next career move, we&apos;ve got you covered with AI-powered matching and 
                 personalized recommendations.
               </motion.p>
             </div>
