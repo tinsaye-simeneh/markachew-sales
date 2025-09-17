@@ -12,15 +12,12 @@ import { useEffect, useState } from 'react'
 
 export default function SavedPage() {
   const { user, isLoading } = useAuth()
-  const [_, setIsClient] = useState(false)
   const router = useRouter()
   
   // Always call the hook, but handle client-side logic inside
   const { favoriteHouses, favoriteJobs } = useFavorites()
 
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
+ 
 
   useEffect(() => {
     if (!isLoading && !user) {
