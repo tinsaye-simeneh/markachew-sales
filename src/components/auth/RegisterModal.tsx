@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/contexts/AuthContext'
 import { X } from 'lucide-react'
+import { OTPVerification } from './OTPVerification'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -23,6 +24,8 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [confirmPassword, setConfirmPassword] = useState('')
   const [userType, setUserType] = useState<'employee' | 'employer' | 'buyer' | 'seller'>('buyer')
   const [error, setError] = useState('')
+  const [showOTP, setShowOTP] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
   const { register, isLoading } = useAuth()
 
   const validatePhoneNumber = (phone: string): boolean => {
@@ -75,19 +78,47 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
     const success = await register(name, email, password, userType)
     if (success) {
-      onClose()
-      setName('')
-      setEmail('')
-      setPhone('')
-      setPassword('')
-      setConfirmPassword('')
-      setUserType('buyer')
+      // Show OTP verification instead of closing modal
+      setRegisteredEmail(email)
+      setShowOTP(true)
+      setError('')
     } else {
       setError('Registration failed. Please try again.')
     }
   }
 
+  const handleOTPBack = () => {
+    setShowOTP(false)
+    setRegisteredEmail('')
+  }
+
+  const handleOTPComplete = () => {
+    // Reset form and close modal
+    setName('')
+    setEmail('')
+    setPhone('')
+    setPassword('')
+    setConfirmPassword('')
+    setUserType('buyer')
+    setShowOTP(false)
+    setRegisteredEmail('')
+    onClose()
+    // Switch to login modal
+    onSwitchToLogin()
+  }
+
   if (!isOpen) return null
+
+  // Show OTP verification if registration was successful
+  if (showOTP) {
+    return (
+      <OTPVerification
+        email={registeredEmail}
+        onBack={handleOTPBack}
+        onComplete={handleOTPComplete}
+      />
+    )
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

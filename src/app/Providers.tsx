@@ -9,7 +9,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <AuthProvider>
       <FavoritesProvider>
         {children}
-        <Toaster position="bottom-center" richColors />
+        <Toaster 
+          position="bottom-center" 
+          richColors 
+          expand={true}
+          closeButton={true}
+        />
       </FavoritesProvider>
     </AuthProvider>
   );
