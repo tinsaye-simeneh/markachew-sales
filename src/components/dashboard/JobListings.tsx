@@ -5,77 +5,8 @@ import { JobCard } from '@/components/listings/JobCard'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { sampleJobs } from '@/data/sampleData'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
-
-// Mock data
-const mockJobs = [
-  {
-    id: '1',
-    title: 'Senior Software Engineer',
-    company: 'TechCorp Inc.',
-    location: 'San Francisco, CA',
-    salary: '$120k - $150k',
-    type: 'full-time' as const,
-    experience: 'senior' as const,
-    postedAt: '2 days ago',
-    description: 'We are looking for a senior software engineer to join our growing team...',
-  },
-  {
-    id: '2',
-    title: 'Marketing Manager',
-    company: 'Creative Agency',
-    location: 'New York, NY',
-    salary: '$80k - $100k',
-    type: 'full-time' as const,
-    experience: 'mid' as const,
-    postedAt: '1 week ago',
-    description: 'Lead our marketing initiatives and drive brand awareness...',
-  },
-  {
-    id: '3',
-    title: 'UX Designer',
-    company: 'Design Studio',
-    location: 'Remote',
-    salary: '$70k - $90k',
-    type: 'remote' as const,
-    experience: 'mid' as const,
-    postedAt: '3 days ago',
-    description: 'Create beautiful and intuitive user experiences...',
-  },
-  {
-    id: '4',
-    title: 'Data Analyst',
-    company: 'Analytics Co.',
-    location: 'Chicago, IL',
-    salary: '$60k - $80k',
-    type: 'full-time' as const,
-    experience: 'entry' as const,
-    postedAt: '5 days ago',
-    description: 'Analyze data to provide insights and recommendations...',
-  },
-  {
-    id: '5',
-    title: 'Product Manager',
-    company: 'StartupXYZ',
-    location: 'Austin, TX',
-    salary: '$100k - $130k',
-    type: 'full-time' as const,
-    experience: 'senior' as const,
-    postedAt: '1 day ago',
-    description: 'Drive product strategy and work with cross-functional teams...',
-  },
-  {
-    id: '6',
-    title: 'Frontend Developer',
-    company: 'Web Solutions',
-    location: 'Seattle, WA',
-    salary: '$85k - $110k',
-    type: 'contract' as const,
-    experience: 'mid' as const,
-    postedAt: '4 days ago',
-    description: 'Build responsive and interactive web applications...',
-  },
-]
 
 export function JobListings() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -84,14 +15,14 @@ export function JobListings() {
   const [searchQuery, setSearchQuery] = useState('')
   
   const itemsPerPage = 6
-  const totalPages = Math.ceil(mockJobs.length / itemsPerPage)
+  const totalPages = Math.ceil(sampleJobs.length / itemsPerPage)
   
-  const filteredJobs = mockJobs.filter(job => {
+  const filteredJobs = sampleJobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.location.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = jobType === 'all' || job.type === jobType
-    const matchesExperience = experience === 'all' || job.experience === experience
+    const matchesType = jobType === 'all' || job.type.toLowerCase() === jobType.toLowerCase()
+    const matchesExperience = experience === 'all' || job.experience.toLowerCase() === experience.toLowerCase()
     
     return matchesSearch && matchesType && matchesExperience
   })
@@ -124,10 +55,10 @@ export function JobListings() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="full-time">Full Time</SelectItem>
-              <SelectItem value="part-time">Part Time</SelectItem>
-              <SelectItem value="contract">Contract</SelectItem>
-              <SelectItem value="remote">Remote</SelectItem>
+              <SelectItem value="Full-time">Full Time</SelectItem>
+              <SelectItem value="Part-time">Part Time</SelectItem>
+              <SelectItem value="Contract">Contract</SelectItem>
+              <SelectItem value="Remote">Remote</SelectItem>
             </SelectContent>
           </Select>
           
@@ -137,10 +68,10 @@ export function JobListings() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Levels</SelectItem>
-              <SelectItem value="entry">Entry Level</SelectItem>
-              <SelectItem value="mid">Mid Level</SelectItem>
-              <SelectItem value="senior">Senior Level</SelectItem>
-              <SelectItem value="executive">Executive</SelectItem>
+              <SelectItem value="1-2 years">1-2 years</SelectItem>
+              <SelectItem value="2-3 years">2-3 years</SelectItem>
+              <SelectItem value="3-5 years">3-5 years</SelectItem>
+              <SelectItem value="5+ years">5+ years</SelectItem>
             </SelectContent>
           </Select>
         </div>

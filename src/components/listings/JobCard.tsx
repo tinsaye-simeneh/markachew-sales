@@ -4,36 +4,28 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Clock, Building, Heart } from 'lucide-react'
-
-interface Job {
-  id: string
-  title: string
-  company: string
-  location: string
-  salary: string
-  type: 'full-time' | 'part-time' | 'contract' | 'remote'
-  experience: 'entry' | 'mid' | 'senior' | 'executive'
-  postedAt: string
-  description: string
-}
+import { useRouter } from 'next/navigation'
 
 interface JobCardProps {
-  job: Job
+  job: any
 }
 
 export function JobCard({ job }: JobCardProps) {
+  const router = useRouter()
+  const handleJobClick = (jobId: string) => {
+    router.push(`/jobs/${jobId}`)
+  }
+
   const getExperienceColor = (exp: string) => {
-    switch (exp) {
-      case 'entry': return 'bg-green-100 text-green-800 hover:text-white'
-      case 'mid': return 'bg-blue-100 text-blue-800 hover:text-white'
-      case 'senior': return 'bg-purple-100 text-purple-800 hover:text-white'
-      case 'executive': return 'bg-orange-100 text-orange-800 hover:text-white'
-      default: return 'bg-gray-100 text-gray-800 hover:text-white'
-    }
+    if (exp.includes('1-2')) return 'bg-green-100 text-green-800 hover:text-white'
+    if (exp.includes('2-3')) return 'bg-blue-100 text-blue-800 hover:text-white'
+    if (exp.includes('3-5')) return 'bg-purple-100 text-purple-800 hover:text-white'
+    if (exp.includes('5+')) return 'bg-orange-100 text-orange-800 hover:text-white'
+    return 'bg-gray-100 text-gray-800 hover:text-white'
   }
 
   const getTypeColor = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case 'full-time': return 'bg-blue-100 text-blue-800 hover:text-white'
       case 'part-time': return 'bg-green-100 text-green-800 hover:text-white'
       case 'contract': return 'bg-yellow-100 text-yellow-800 hover:text-white'
@@ -43,11 +35,11 @@ export function JobCard({ job }: JobCardProps) {
   }
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300">
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => handleJobClick(job.id)}>
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors mb-1">
+            <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors mb-1 cursor-pointer">
               {job.title}
             </h3>
             <div className="flex items-center text-gray-600 text-sm mb-2">
@@ -73,10 +65,10 @@ export function JobCard({ job }: JobCardProps) {
       <CardContent className="pt-0">
         <div className="flex flex-wrap gap-2 mb-3">
           <Badge className={getTypeColor(job.type)}>
-            {job.type.replace('-', ' ')}
+            {job.type}
           </Badge>
           <Badge className={getExperienceColor(job.experience)}>
-            {job.experience} level
+            {job.experience}
           </Badge>
         </div>
         
@@ -85,12 +77,12 @@ export function JobCard({ job }: JobCardProps) {
         </p>
         
         <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold text-green-600">
+          <div className="text-lg font-semibold text-[#007a7f]">
             {job.salary}
           </div>
           <div className="flex items-center text-gray-500 text-sm">
             <Clock className="h-4 w-4 mr-1" />
-            {job.postedAt}
+            {job.postedDate}
           </div>
         </div>
         

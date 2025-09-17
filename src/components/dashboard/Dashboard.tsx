@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from 'react'
+import { Footer } from '../layout/Footer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { HouseListings } from '@/components/dashboard/HouseListings'
 import { JobListings } from '@/components/dashboard/JobListings'
 
 export function Dashboard() {
   return (
+    <>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Your Dashboard</h1>
@@ -31,6 +32,8 @@ export function Dashboard() {
           <JobListings />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+      <Footer />
+      </>
   )
 }
