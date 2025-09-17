@@ -22,6 +22,13 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
   const [error, setError] = useState('')
   const { login, isLoading } = useAuth()
 
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Ethiopian phone number validation
+    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
+    const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
+    return ethiopianPhoneRegex.test(phone)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -30,6 +37,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     
     if (!identifier || !password) {
       setError('Please fill in all fields')
+      return
+    }
+
+    // Validate phone number format if using phone login
+    if (loginMethod === 'phone' && !validatePhoneNumber(phone)) {
+      setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
       return
     }
 
@@ -105,7 +118,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                 placeholder={
                   loginMethod === 'email' 
                     ? 'Enter your email' 
-                    : 'Enter your phone number'
+                    : '09xxxxxxxx or +2519xxxxxxxx'
                 }
                 value={loginMethod === 'email' ? email : phone}
                 onChange={(e) => {

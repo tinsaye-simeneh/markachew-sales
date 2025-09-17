@@ -5,16 +5,12 @@ import { Home, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } fro
 const footerLinks = {
   company: [
     { name: "About Us", href: "#" },
-    { name: "Our Team", href: "#" },
-    { name: "Careers", href: "#" },
     { name: "Press", href: "#" },
     { name: "Blog", href: "#" }
   ],
   services: [
     { name: "Property Listings", href: "#" },
     { name: "Job Search", href: "#" },
-    { name: "AI Matching", href: "#" },
-    { name: "Market Analysis", href: "#" },
     { name: "Premium Features", href: "#" }
   ],
   support: [
@@ -28,8 +24,6 @@ const footerLinks = {
     { name: "Privacy Policy", href: "#" },
     { name: "Terms of Service", href: "#" },
     { name: "Cookie Policy", href: "#" },
-    { name: "GDPR", href: "#" },
-    { name: "Accessibility", href: "#" }
   ]
 }
 
@@ -49,7 +43,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <Home className="h-8 w-8 text-[#007a7f]" />
-              <span className="text-2xl font-bold">Markachew</span>
+              <span className="text-2xl font-bold">MPEM</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Connecting people with their dream homes and perfect career opportunities through AI-powered matching and personalized recommendations.
@@ -59,15 +53,15 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center text-gray-400">
                 <Mail className="h-4 w-4 mr-3" />
-                <span>hello@markachew.com</span>
+                <span>hello@mpem.com</span>
               </div>
               <div className="flex items-center text-gray-400">
                 <Phone className="h-4 w-4 mr-3" />
-                <span>+1 (555) 123-4567</span>
+                <span>+251 911 123 456</span>
               </div>
               <div className="flex items-center text-gray-400">
                 <MapPin className="h-4 w-4 mr-3" />
-                <span>San Francisco, CA</span>
+                <span>Addis Ababa, Ethiopia</span>
               </div>
             </div>
           </div>
@@ -145,7 +139,7 @@ export function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 Markachew. All rights reserved.
+              © {new Date().getFullYear()} MPEM. All rights reserved.
             </div>
             
             {/* Social Links */}

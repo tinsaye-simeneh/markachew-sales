@@ -18,18 +18,48 @@ interface RegisterModalProps {
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [userType, setUserType] = useState<'employee' | 'employer' | 'buyer' | 'seller'>('buyer')
   const [error, setError] = useState('')
   const { register, isLoading } = useAuth()
 
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Ethiopian phone number validation
+    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
+    const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
+    return ethiopianPhoneRegex.test(phone)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields')
+    // Validate required fields
+    if (!name.trim()) {
+      setError('Full name is required')
+      return
+    }
+    
+    if (!email.trim()) {
+      setError('Email is required')
+      return
+    }
+    
+    if (!password) {
+      setError('Password is required')
+      return
+    }
+    
+    if (!confirmPassword) {
+      setError('Please confirm your password')
+      return
+    }
+
+    // Validate phone number format if provided
+    if (phone && !validatePhoneNumber(phone)) {
+      setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
       return
     }
 
@@ -48,6 +78,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       onClose()
       setName('')
       setEmail('')
+      setPhone('')
       setPassword('')
       setConfirmPassword('')
       setUserType('buyer')
@@ -80,7 +111,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Full Name *</Label>
               <Input
                 id="name"
                 type="text"
@@ -92,7 +123,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 type="email"
@@ -100,6 +131,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number (Optional)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="09xxxxxxxx or +2519xxxxxxxx"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </div>
             
@@ -119,11 +161,11 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Password *</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Create a password"
+                placeholder="Create a password (min 6 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -131,7 +173,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">Confirm Password *</Label>
               <Input
                 id="confirmPassword"
                 type="password"

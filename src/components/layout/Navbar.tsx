@@ -41,6 +41,28 @@ export function Navbar() {
     setIsRegisterOpen(false)
   }
 
+  const handleHousesClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (user) {
+      // User is logged in, navigate to houses page
+      router.push('/houses')
+    } else {
+      // User is not logged in, show sign-in modal
+      setIsLoginOpen(true)
+    }
+  }
+
+  const handleJobsClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (user) {
+      // User is logged in, navigate to jobs page
+      router.push('/jobs')
+    } else {
+      // User is not logged in, show sign-in modal
+      setIsLoginOpen(true)
+    }
+  }
+
   return (
     <>
       <nav className="bg-white shadow-sm border-b">
@@ -53,12 +75,18 @@ export function Navbar() {
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
+              <button 
+                onClick={handleHousesClick}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
                 Houses
-              </a>
-              <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
+              </button>
+              <button 
+                onClick={handleJobsClick}
+                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+              >
                 Jobs
-              </a>
+              </button>
               <a href="#" className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors">
                 About
               </a>

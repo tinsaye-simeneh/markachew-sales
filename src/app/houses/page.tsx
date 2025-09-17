@@ -1,0 +1,343 @@
+"use client"
+
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
+import { HouseCard } from '@/components/listings/HouseCard'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Search, Filter, MapPin, Bed, Bath, Square } from 'lucide-react'
+
+// Sample house data
+const sampleHouses = [
+  {
+    id: 1,
+    title: "Modern Villa in Bole",
+    price: 25000000,
+    location: "Bole, Addis Ababa",
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 250,
+    image: "/api/placeholder/400/300",
+    description: "Beautiful modern villa with garden and parking space",
+    features: ["Garden", "Parking", "Security", "Furnished"],
+    type: "Villa",
+    yearBuilt: 2020
+  },
+  {
+    id: 2,
+    title: "Cozy Apartment in Kazanchis",
+    price: 8500000,
+    location: "Kazanchis, Addis Ababa",
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 120,
+    image: "/api/placeholder/400/300",
+    description: "Well-maintained apartment in the heart of the city",
+    features: ["Balcony", "Elevator", "Security"],
+    type: "Apartment",
+    yearBuilt: 2018
+  },
+  {
+    id: 3,
+    title: "Luxury Penthouse in Cazanchis",
+    price: 45000000,
+    location: "Cazanchis, Addis Ababa",
+    bedrooms: 5,
+    bathrooms: 4,
+    area: 400,
+    image: "/api/placeholder/400/300",
+    description: "Exclusive penthouse with panoramic city views",
+    features: ["City View", "Rooftop", "Gym", "Pool"],
+    type: "Penthouse",
+    yearBuilt: 2022
+  },
+  {
+    id: 4,
+    title: "Family House in Gerji",
+    price: 18000000,
+    location: "Gerji, Addis Ababa",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 180,
+    image: "/api/placeholder/400/300",
+    description: "Perfect family home with large backyard",
+    features: ["Garden", "Parking", "Quiet Area"],
+    type: "House",
+    yearBuilt: 2015
+  },
+  {
+    id: 5,
+    title: "Studio Apartment in Piassa",
+    price: 3500000,
+    location: "Piassa, Addis Ababa",
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 45,
+    image: "/api/placeholder/400/300",
+    description: "Compact studio perfect for young professionals",
+    features: ["Furnished", "Central Location"],
+    type: "Studio",
+    yearBuilt: 2019
+  },
+  {
+    id: 6,
+    title: "Townhouse in CMC",
+    price: 12000000,
+    location: "CMC, Addis Ababa",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 150,
+    image: "/api/placeholder/400/300",
+    description: "Modern townhouse with contemporary design",
+    features: ["Modern Design", "Parking", "Security"],
+    type: "Townhouse",
+    yearBuilt: 2021
+  }
+]
+
+export default function HousesPage() {
+  const { user, isLoading } = useAuth()
+  const router = useRouter()
+  const [houses, setHouses] = useState(sampleHouses)
+  const [filteredHouses, setFilteredHouses] = useState(sampleHouses)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [priceRange, setPriceRange] = useState('all')
+  const [propertyType, setPropertyType] = useState('all')
+  const [location, setLocation] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
+
+  const itemsPerPage = 6
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/')
+    }
+  }, [user, isLoading, router])
+
+  // Filter and search logic
+  useEffect(() => {
+    let filtered = houses
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(house =>
+        house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        house.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    // Price filter
+    if (priceRange !== 'all') {
+      filtered = filtered.filter(house => {
+        switch (priceRange) {
+          case 'under-5m':
+            return house.price < 5000000
+          case '5m-10m':
+            return house.price >= 5000000 && house.price < 10000000
+          case '10m-20m':
+            return house.price >= 10000000 && house.price < 20000000
+          case 'over-20m':
+            return house.price >= 20000000
+          default:
+            return true
+        }
+      })
+    }
+
+    // Property type filter
+    if (propertyType !== 'all') {
+      filtered = filtered.filter(house => house.type.toLowerCase() === propertyType.toLowerCase())
+    }
+
+    // Location filter
+    if (location !== 'all') {
+      filtered = filtered.filter(house => 
+        house.location.toLowerCase().includes(location.toLowerCase())
+      )
+    }
+
+    // Sort
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price)
+        break
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case 'newest':
+        filtered.sort((a, b) => b.yearBuilt - a.yearBuilt)
+        break
+      case 'oldest':
+        filtered.sort((a, b) => a.yearBuilt - b.yearBuilt)
+        break
+    }
+
+    setFilteredHouses(filtered)
+    setCurrentPage(1)
+  }, [houses, searchTerm, priceRange, propertyType, location, sortBy])
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredHouses.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentHouses = filteredHouses.slice(startIndex, endIndex)
+
+  const handleHouseClick = (houseId: number) => {
+    router.push(`/houses/${houseId}`)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#007a7f]"></div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Your Dream Home</h1>
+          <p className="text-gray-600">Discover the perfect property for you and your family</p>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Search */}
+            <div className="lg:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by title, location, or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <Select value={priceRange} onValueChange={setPriceRange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Price Range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Prices</SelectItem>
+                <SelectItem value="under-5m">Under 5M ETB</SelectItem>
+                <SelectItem value="5m-10m">5M - 10M ETB</SelectItem>
+                <SelectItem value="10m-20m">10M - 20M ETB</SelectItem>
+                <SelectItem value="over-20m">Over 20M ETB</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Property Type */}
+            <Select value={propertyType} onValueChange={setPropertyType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Property Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="villa">Villa</SelectItem>
+                <SelectItem value="apartment">Apartment</SelectItem>
+                <SelectItem value="house">House</SelectItem>
+                <SelectItem value="penthouse">Penthouse</SelectItem>
+                <SelectItem value="studio">Studio</SelectItem>
+                <SelectItem value="townhouse">Townhouse</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Sort */}
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sort By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="price-low">Price: Low to High</SelectItem>
+                <SelectItem value="price-high">Price: High to Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-gray-600">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredHouses.length)} of {filteredHouses.length} properties
+          </p>
+        </div>
+
+        {/* Houses Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {currentHouses.map((house) => (
+            <div key={house.id} onClick={() => handleHouseClick(house.id)} className="cursor-pointer">
+              <HouseCard house={house} />
+            </div>
+          ))}
+        </div>
+
+        {/* No Results */}
+        {filteredHouses.length === 0 && (
+          <div className="text-center py-12">
+            <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No properties found</h3>
+            <p className="text-gray-600">Try adjusting your search criteria</p>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="cursor-pointer"
+            >
+              Previous
+            </Button>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => setCurrentPage(page)}
+                className="cursor-pointer"
+              >
+                {page}
+              </Button>
+            ))}
+            
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="cursor-pointer"
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  )
+}
