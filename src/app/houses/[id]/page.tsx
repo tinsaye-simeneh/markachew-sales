@@ -25,6 +25,7 @@ import {
   Shield
 } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface House {
   id: string
@@ -81,8 +82,7 @@ export default function HouseDetailPage() {
   }
 
   const handleContactAgent = () => {
-    // In a real app, this would open a contact form or initiate a call
-    alert(`Contacting ${house?.agent.name} at ${house?.agent.phone}`)
+    toast.success('Thank you for your message! We will get back to you soon.')
   }
 
   const formatPrice = (price: number) => {
