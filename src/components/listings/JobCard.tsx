@@ -24,21 +24,21 @@ interface JobCardProps {
 export function JobCard({ job }: JobCardProps) {
   const getExperienceColor = (exp: string) => {
     switch (exp) {
-      case 'entry': return 'bg-green-100 text-green-800'
-      case 'mid': return 'bg-blue-100 text-blue-800'
-      case 'senior': return 'bg-purple-100 text-purple-800'
-      case 'executive': return 'bg-orange-100 text-orange-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'entry': return 'bg-green-100 text-green-800 hover:text-white'
+      case 'mid': return 'bg-blue-100 text-blue-800 hover:text-white'
+      case 'senior': return 'bg-purple-100 text-purple-800 hover:text-white'
+      case 'executive': return 'bg-orange-100 text-orange-800 hover:text-white'
+      default: return 'bg-gray-100 text-gray-800 hover:text-white'
     }
   }
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'full-time': return 'bg-blue-100 text-blue-800'
-      case 'part-time': return 'bg-green-100 text-green-800'
-      case 'contract': return 'bg-yellow-100 text-yellow-800'
-      case 'remote': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'full-time': return 'bg-blue-100 text-blue-800 hover:text-white'
+      case 'part-time': return 'bg-green-100 text-green-800 hover:text-white'
+      case 'contract': return 'bg-yellow-100 text-yellow-800 hover:text-white'
+      case 'remote': return 'bg-purple-100 text-purple-800 hover:text-white'
+      default: return 'bg-gray-100 text-gray-800 hover:text-white'
     }
   }
 
@@ -80,7 +80,7 @@ export function JobCard({ job }: JobCardProps) {
           </Badge>
         </div>
         
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-1">
           {job.description}
         </p>
         
