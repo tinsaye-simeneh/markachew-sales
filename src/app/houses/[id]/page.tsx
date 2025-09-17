@@ -172,18 +172,18 @@ export default function HouseDetailPage() {
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Bed className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{house.bedrooms}</div>
-                    <div className="text-sm text-gray-600">Bedrooms</div>
+                    <div className="text-sm text-gray-600">
+                    <span className="font-semibold mr-1">{house.bedrooms}</span>Bedrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Bath className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{house.bathrooms}</div>
-                    <div className="text-sm text-gray-600">Bathrooms</div>
+                    <div className="text-sm text-gray-600">
+                    <span className="font-semibold mr-1">{house.bathrooms}</span>Bathrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Square className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{house.area}m²</div>
-                    <div className="text-sm text-gray-600">Area</div>
+                    <div className="text-sm text-gray-600">
+                    <span className="font-semibold mr-1">{house.area}m²</span>Area</div>
                   </div>
                 </div>
 
@@ -248,15 +248,15 @@ export default function HouseDetailPage() {
                 <div className="space-y-3">
                   <Button 
                     onClick={handleContactAgent}
-                    className="w-full cursor-pointer"
+                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
                   >
                     <Phone className="h-4 w-4 mr-2" />
                     Call Agent
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full cursor-pointer"
-                  >
+                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
+                    >
                     <Mail className="h-4 w-4 mr-2" />
                     Send Message
                   </Button>
