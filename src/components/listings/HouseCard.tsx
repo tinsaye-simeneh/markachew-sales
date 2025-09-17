@@ -34,9 +34,15 @@ export function HouseCard({ house }: HouseCardProps) {
   }
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
-      <div className="relative">
-        <Image src={house.image} alt={house.title} width={400} height={100} />
+    <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden p-0 pb-6">
+      <div className="relative overflow-hidden rounded-t-lg">
+        <Image 
+          src={house.image} 
+          alt={house.title} 
+          width={400} 
+          height={250}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        />
          
         
         <Button
