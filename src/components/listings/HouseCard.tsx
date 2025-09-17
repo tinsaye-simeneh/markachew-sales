@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MapPin, Bed, Bath, Square, Heart } from 'lucide-react'
+import Image from 'next/image'
 
 interface House {
   id: string
@@ -14,7 +15,7 @@ interface House {
   bathrooms: number
   area: number
   image: string
-  type: 'apartment' | 'house' | 'condo' | 'townhouse'
+  type: 'apartment' | 'house' | 'condo' | 'townhouse' | 'villa' | 'studio' | 'penthouse'
   status: 'for-sale' | 'for-rent' | 'sold'
 }
 
@@ -37,10 +38,7 @@ export function HouseCard({ house }: HouseCardProps) {
       <div className="relative">
         <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
           <div className="text-gray-500 text-center">
-            <div className="w-16 h-16 mx-auto mb-2 bg-gray-400 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">🏠</span>
-            </div>
-            <p className="text-sm">Property Image</p>
+            <Image src={house.image} alt={house.title} width={100} height={100} />
           </div>
         </div>
         

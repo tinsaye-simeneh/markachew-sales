@@ -10,95 +10,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
+import { sampleHouses } from '@/data/sampleData'
 import { Search, Filter, MapPin, Bed, Bath, Square } from 'lucide-react'
-
-// Sample house data
-const sampleHouses = [
-  {
-    id: 1,
-    title: "Modern Villa in Bole",
-    price: 25000000,
-    location: "Bole, Addis Ababa",
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 250,
-    image: "/api/placeholder/400/300",
-    description: "Beautiful modern villa with garden and parking space",
-    features: ["Garden", "Parking", "Security", "Furnished"],
-    type: "Villa",
-    yearBuilt: 2020
-  },
-  {
-    id: 2,
-    title: "Cozy Apartment in Kazanchis",
-    price: 8500000,
-    location: "Kazanchis, Addis Ababa",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 120,
-    image: "/api/placeholder/400/300",
-    description: "Well-maintained apartment in the heart of the city",
-    features: ["Balcony", "Elevator", "Security"],
-    type: "Apartment",
-    yearBuilt: 2018
-  },
-  {
-    id: 3,
-    title: "Luxury Penthouse in Cazanchis",
-    price: 45000000,
-    location: "Cazanchis, Addis Ababa",
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 400,
-    image: "/api/placeholder/400/300",
-    description: "Exclusive penthouse with panoramic city views",
-    features: ["City View", "Rooftop", "Gym", "Pool"],
-    type: "Penthouse",
-    yearBuilt: 2022
-  },
-  {
-    id: 4,
-    title: "Family House in Gerji",
-    price: 18000000,
-    location: "Gerji, Addis Ababa",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 180,
-    image: "/api/placeholder/400/300",
-    description: "Perfect family home with large backyard",
-    features: ["Garden", "Parking", "Quiet Area"],
-    type: "House",
-    yearBuilt: 2015
-  },
-  {
-    id: 5,
-    title: "Studio Apartment in Piassa",
-    price: 3500000,
-    location: "Piassa, Addis Ababa",
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 45,
-    image: "/api/placeholder/400/300",
-    description: "Compact studio perfect for young professionals",
-    features: ["Furnished", "Central Location"],
-    type: "Studio",
-    yearBuilt: 2019
-  },
-  {
-    id: 6,
-    title: "Townhouse in CMC",
-    price: 12000000,
-    location: "CMC, Addis Ababa",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 150,
-    image: "/api/placeholder/400/300",
-    description: "Modern townhouse with contemporary design",
-    features: ["Modern Design", "Parking", "Security"],
-    type: "Townhouse",
-    yearBuilt: 2021
-  }
-]
 
 export default function HousesPage() {
   const { user, isLoading } = useAuth()
@@ -190,7 +103,7 @@ export default function HousesPage() {
   const endIndex = startIndex + itemsPerPage
   const currentHouses = filteredHouses.slice(startIndex, endIndex)
 
-  const handleHouseClick = (houseId: number) => {
+    const handleHouseClick = (houseId: string) => {
     router.push(`/houses/${houseId}`)
   }
 
