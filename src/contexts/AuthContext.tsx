@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const register = async (name: string, email: string, password: string, type: User['type']): Promise<boolean> => {
+  const register = async (): Promise<boolean> => {
     setIsLoading(true)
     try {
       // Simulate API call

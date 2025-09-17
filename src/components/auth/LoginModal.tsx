@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { X, Mail, Phone, Link } from 'lucide-react'
+import { X, Mail, Phone } from 'lucide-react'
 
 interface LoginModalProps {
   isOpen: boolean

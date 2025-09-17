@@ -26,10 +26,10 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [error, setError] = useState('')
   const [showOTP, setShowOTP] = useState(false)
   const [otp, setOtp] = useState('')
-  const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
+  const [timeLeft] = useState(300) // 5 minutes
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const { register, completeRegistration, isLoading } = useAuth()
+  const {  completeRegistration, isLoading } = useAuth()
   const router = useRouter()
 
   // Static OTP for demo
@@ -279,7 +279,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               </div>
               <CardTitle>Verify Your Email</CardTitle>
               <CardDescription>
-                We've sent a 6-digit verification code to
+                We&apos;ve sent a 6-digit verification code to
               </CardDescription>
               <div className="font-medium text-[#007a7f]">{email}</div>
             </CardHeader>

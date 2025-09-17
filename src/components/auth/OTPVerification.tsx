@@ -87,7 +87,7 @@ export function OTPVerification({ email, onBack, onComplete }: OTPVerificationPr
           </div>
           <CardTitle>Verify Your Email</CardTitle>
           <CardDescription>
-            We've sent a 6-digit verification code to
+            We&apos;ve sent a 6-digit verification code to
           </CardDescription>
           <div className="font-medium text-[#007a7f]">{email}</div>
         </CardHeader>
@@ -137,7 +137,7 @@ export function OTPVerification({ email, onBack, onComplete }: OTPVerificationPr
           
           <div className="mt-4 text-center">
             <div className="text-sm text-gray-600 mb-2">
-              Didn't receive the code?
+              Didn&apos;t receive the code?
             </div>
             <Button
               type="button"
