@@ -248,8 +248,8 @@ export default function ProfilePage() {
             <Button onClick={() => window.location.reload()} className='cursor-pointer'>
               Try Again
             </Button>
-            <Button variant="outline" onClick={() => setShowCreateProfile(true)} className='cursor-pointer'>
-              Create New Profile
+            <Button variant="outline" onClick={() => router.push('/')} className='cursor-pointer'>
+              Back to Home
             </Button>
           </div>
         </div>
