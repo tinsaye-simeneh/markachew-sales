@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { useAdminApplications } from '@/hooks/useAdminApi'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Label } from '@/components/ui/label'
 
 export default function AdminApplicationsPage() {
   const [filters, setFilters] = useState({
@@ -99,13 +100,19 @@ export default function AdminApplicationsPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
           <div>
+            <div className='flex justify-between items-center'>
+            <div> 
             <h3 className="text-2xl font-bold leading-tight text-gray-900">Application Management</h3>
             <p className="mt-2 text-sm text-gray-600">
               Manage and monitor all job applications on the platform.
             </p>
-          </div>
+            </div>
+              <Button variant="outline" onClick={() => fetchApplications()} className='cursor-pointer'>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+        </div> 
         </div>
 
         {/* Stats */}
@@ -161,14 +168,20 @@ export default function AdminApplicationsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
+            <div className='mt-1' >
+              <Label htmlFor="search" className='mb-2'>Search</Label>
             <Input
               placeholder="Search applications by applicant name or job title..."
               value={filters.search}
               onChange={(e) => handleSearch(e.target.value)}
               className="w-full"
             />
+            </div>
           </div>
           <div className="flex gap-2">
+            <div>
+              <Label htmlFor="status" className='mb-2'>Status</Label>
+
             <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
@@ -181,10 +194,8 @@ export default function AdminApplicationsPage() {
                 <SelectItem value="rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm" onClick={() => fetchApplications()}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
+            </div>
+           
           </div>
         </div>
 
