@@ -73,10 +73,10 @@ export const API_CONFIG = {
     },
     // Profile endpoints
     PROFILES: {
-      CREATE: '/api/profile',
-      GET: (id: string) => `/api/profile/${id}`,
-      UPDATE: (id: string) => `/api/profile/${id}`,
-      DELETE: (id: string) => `/api/profile/${id}`,
+      CREATE: process.env.NODE_ENV === 'development' ? '/api/profile' : '/api/profile',
+      GET: (id: string) => process.env.NODE_ENV === 'development' ? `/api/profile/${id}` : `/api/profile/${id}`,
+      UPDATE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/profile/${id}` : `/api/profile/${id}`,
+      DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/profile/${id}` : `/api/profile/${id}`,
     },
   },
   TIMEOUT: 10000, // 10 seconds
