@@ -10,29 +10,29 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
-import { sampleHouses } from '@/data/sampleData'
+import { useHouses } from '@/hooks/useApi'
 import { Search, MapPin } from 'lucide-react'
 
 export default function HousesPage() {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [houses] = useState(sampleHouses)
-  const [filteredHouses, setFilteredHouses] = useState(sampleHouses)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState('all')
   const [propertyType, setPropertyType] = useState('all')
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
+  const [filteredHouses, setFilteredHouses] = useState<any[]>([])
 
   const itemsPerPage = 6
+  const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push('/')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
 
   // Filter and search logic
   useEffect(() => {
@@ -107,8 +107,19 @@ export default function HousesPage() {
     router.push(`/houses/${houseId}`)
   }
 
-  if (isLoading) {
+  if (authLoading || housesLoading) {
     return <LoadingPage />
+  }
+
+  if (housesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Houses</h2>
+          <p className="text-gray-600">{housesError}</p>
+        </div>
+      </div>
+    )
   }
 
   if (!user) {

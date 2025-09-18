@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/contexts/AuthContext'
+import { UserType } from '@/lib/api'
 import { X, Mail, Clock, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -22,14 +23,14 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [userType, setUserType] = useState<'employee' | 'employer' | 'buyer' | 'seller'>('buyer')
+  const [userType, setUserType] = useState<UserType>(UserType.BUYER)
   const [error, setError] = useState('')
   const [showOTP, setShowOTP] = useState(false)
   const [otp, setOtp] = useState('')
   const [timeLeft] = useState(300) // 5 minutes
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const {  completeRegistration, isLoading } = useAuth()
+  const { register, completeRegistration, isLoading, error: authError } = useAuth()
   const router = useRouter()
 
   // Static OTP for demo
@@ -83,9 +84,19 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       return
     }
 
-    // Simulate registration and show OTP
-    setShowOTP(true)
-    setError('')
+    // Register user with API
+    const success = await register(name, email, phone, password, userType)
+    if (success) {
+      onClose()
+      setName('')
+      setEmail('')
+      setPhone('')
+      setPassword('')
+      setConfirmPassword('')
+      router.push('/profile')
+    } else {
+      setError(authError || 'Registration failed')
+    }
   }
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
@@ -202,15 +213,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                 
                 <div className="space-y-2">
                   <Label htmlFor="userType">Account Type</Label>
-                  <Select value={userType} onValueChange={(value: 'employee' | 'employer' | 'buyer' | 'seller') => setUserType(value)}>
+                  <Select value={userType} onValueChange={(value: UserType) => setUserType(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select account type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="buyer">House Buyer</SelectItem>
-                      <SelectItem value="seller">House Seller</SelectItem>
-                      <SelectItem value="employee">Job Seeker</SelectItem>
-                      <SelectItem value="employer">Employer</SelectItem>
+                      <SelectItem value={UserType.BUYER}>House Buyer</SelectItem>
+                      <SelectItem value={UserType.SELLER}>House Seller</SelectItem>
+                      <SelectItem value={UserType.EMPLOYEE}>Job Seeker</SelectItem>
+                      <SelectItem value={UserType.EMPLOYER}>Employer</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

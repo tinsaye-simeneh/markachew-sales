@@ -20,7 +20,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { login, isLoading } = useAuth()
+  const { login, isLoading, error: authError } = useAuth()
 
   const validatePhoneNumber = (phone: string): boolean => {
     // Ethiopian phone number validation
@@ -46,14 +46,14 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
       return
     }
 
-    const success = await login(identifier, password)
+    const success = await login(email, password)
     if (success) {
       onClose()
       setEmail('')
       setPhone('')
       setPassword('')
     } else {
-      setError(`Invalid ${loginMethod} or password`)
+      setError(authError || `Invalid ${loginMethod} or password`)
     }
   }
 

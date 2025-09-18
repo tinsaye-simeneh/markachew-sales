@@ -10,29 +10,29 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
-import { sampleJobs } from '@/data/sampleData'
+import { useJobs } from '@/hooks/useApi'
 import { Search, Briefcase } from 'lucide-react'
 
 export default function JobsPage() {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [jobs] = useState(sampleJobs)
-  const [filteredJobs, setFilteredJobs] = useState(sampleJobs)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('all')
   const [category, setCategory] = useState('all')
   const [experience] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
+  const [filteredJobs, setFilteredJobs] = useState<any[]>([])
 
   const itemsPerPage = 6
+  const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push('/')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
 
   // Filter and search logic
   useEffect(() => {
@@ -42,9 +42,8 @@ export default function JobsPage() {
     if (searchTerm) {
       filtered = filtered.filter(job =>
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.requirements.some(req => req.toLowerCase().includes(searchTerm.toLowerCase()))
+        JSON.stringify(job.requirements).toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -112,8 +111,19 @@ export default function JobsPage() {
     router.push(`/jobs/${jobId}`)
   }
 
-  if (isLoading) {
+  if (authLoading || jobsLoading) {
     return <LoadingPage />
+  }
+
+  if (jobsError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
+          <p className="text-gray-600">{jobsError}</p>
+        </div>
+      </div>
+    )
   }
 
   if (!user) {
