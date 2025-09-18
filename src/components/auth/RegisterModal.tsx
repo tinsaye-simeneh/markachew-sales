@@ -2,14 +2,17 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
 import { UserType, CreateProfileRequest } from '@/lib/api'
-import { X, Mail, Clock, ArrowLeft, ArrowRight, User, MapPin, Briefcase, FileText, Upload } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { StepIndicator } from './StepIndicator'
+import { Step1 } from './Step1'
+import { Step2 } from './Step2'
+import { Step3 } from './Step3'
+import { RegistrationNavigation } from './RegistrationNavigation'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -17,7 +20,11 @@ interface RegisterModalProps {
   onSwitchToLogin: () => void
 }
 
+
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
+  // Lock body scroll when modal is open
+  useBodyScrollLock(isOpen)
+
   // Step management
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 3
@@ -247,343 +254,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     }
   }
 
-  // Step indicator component
-  const StepIndicator = () => (
-    <div className="flex items-center justify-center mb-6">
-      {Array.from({ length: totalSteps }, (_, i) => (
-        <div key={i} className="flex items-center">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              i + 1 <= currentStep
-                ? 'bg-[#007a7f] text-white'
-                : 'bg-gray-200 text-gray-600'
-            }`}
-          >
-            {i + 1}
-          </div>
-          {i < totalSteps - 1 && (
-            <div
-              className={`w-12 h-1 mx-2 ${
-                i + 1 < currentStep ? 'bg-[#007a7f]' : 'bg-gray-200'
-              }`}
-            />
-          )}
-        </div>
-      ))}
-    </div>
-  )
 
-  // Step 1: Basic Information
-  const Step1 = () => (
-    <>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <User className="h-5 w-5 mr-2" />
-          Basic Information
-        </CardTitle>
-        
-      </CardHeader>
-      
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name *</Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Enter your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number (Optional)</Label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="09xxxxxxxx or +2519xxxxxxxx"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="userType">Account Type *</Label>
-            <Select value={userType} onValueChange={(value: UserType) => setUserType(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select account type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={UserType.BUYER}>House Buyer</SelectItem>
-                <SelectItem value={UserType.SELLER}>House Seller</SelectItem>
-                <SelectItem value={UserType.EMPLOYEE}>Job Seeker</SelectItem>
-                <SelectItem value={UserType.EMPLOYER}>Employer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password">Password *</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Create a password (min 6 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password *</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-      </CardContent>
-    </>
-  )
-
-  // Step 2: Profile Information
-  const Step2 = () => (
-    <>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <MapPin className="h-5 w-5 mr-2" />
-          Profile Information
-        </CardTitle>
-        <CardDescription>
-          Complete your profile details
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="location">Location *</Label>
-            <Input
-              id="location"
-              type="text"
-              placeholder="e.g., Addis Ababa, Ethiopia"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="address">Address *</Label>
-            <Input
-              id="address"
-              type="text"
-              placeholder="Your full address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Employee-specific fields */}
-          {userType === UserType.EMPLOYEE && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="degree">Degree/Education *</Label>
-                <Input
-                  id="degree"
-                  type="text"
-                  placeholder="e.g., BSc Computer Science"
-                  value={degree}
-                  onChange={(e) => setDegree(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="department">Department *</Label>
-                <Input
-                  id="department"
-                  type="text"
-                  placeholder="e.g., IT, Marketing"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="experience">Years of Experience</Label>
-                  <Input
-                    id="experience"
-                    type="number"
-                    placeholder="e.g., 5"
-                    value={experience}
-                    onChange={(e) => setExperience(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="availability">Availability</Label>
-                  <Select value={availability} onValueChange={(value: 'FULL_TIME' | 'PART_TIME' | 'CONTRACT') => setAvailability(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select availability" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="FULL_TIME">Full Time</SelectItem>
-                      <SelectItem value="PART_TIME">Part Time</SelectItem>
-                      <SelectItem value="CONTRACT">Contract</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="salaryExpectation">Salary Expectation (ETB)</Label>
-                <Input
-                  id="salaryExpectation"
-                  type="number"
-                  placeholder="e.g., 15000"
-                  value={salaryExpectation}
-                  onChange={(e) => setSalaryExpectation(e.target.value)}
-                />
-              </div>
-            </>
-          )}
-
-          {/* Employer/Seller-specific fields */}
-          {(userType === UserType.EMPLOYER || userType === UserType.SELLER) && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="license">Business License (Optional)</Label>
-                <Input
-                  id="license"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleFileUpload(setLicense)}
-                />
-                {license && (
-                  <p className="text-sm text-green-600">✓ {license.name}</p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="document">Business Document (Optional)</Label>
-                <Input
-                  id="document"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleFileUpload(setDocument)}
-                />
-                {document && (
-                  <p className="text-sm text-green-600">✓ {document.name}</p>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* Profile photo for all users */}
-          <div className="space-y-2">
-            <Label htmlFor="photo">Profile Photo (Optional)</Label>
-            <Input
-              id="photo"
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              onChange={handleFileUpload(setPhoto)}
-            />
-            {photo && (
-              <p className="text-sm text-green-600">✓ {photo.name}</p>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </>
-  )
-
-  // Step 3: Email Verification
-  const Step3 = () => (
-    <>
-      <CardHeader className="text-center">
-        <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-          <Mail className="h-6 w-6 text-green-600" />
-        </div>
-        <CardTitle>Verify Your Email</CardTitle>
-        <CardDescription>
-          We&apos;ve sent a 6-digit verification code to
-        </CardDescription>
-        <div className="font-medium text-[#007a7f]">{email}</div>
-      </CardHeader>
-      
-      <CardContent>
-        <form onSubmit={handleOTPSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="otp">Enter Verification Code</Label>
-            <Input
-              id="otp"
-              type="text"
-              placeholder="123456"
-              value={otp}
-              onChange={handleOtpChange}
-              className="text-center text-2xl tracking-widest"
-              maxLength={6}
-              required
-            />
-            <div className="text-center text-sm text-gray-500">
-              <Clock className="h-4 w-4 inline mr-1" />
-              Code expires in {formatTime(timeLeft)}
-            </div>
-          </div>
-
-          {/* Demo OTP Display */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="text-sm text-blue-800 font-medium mb-1">Demo Mode</div>
-            <div className="text-sm text-blue-600">
-              Use this code: <span className="font-mono font-bold">{STATIC_OTP}</span>
-            </div>
-          </div>
-          
-          {otpError && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-              {otpError}
-            </div>
-          )}
-          
-          <Button 
-            type="submit" 
-            className="w-full cursor-pointer" 
-            disabled={isVerifying || otp.length !== 6}
-          >
-            {isVerifying ? 'Verifying...' : 'Complete Registration'}
-          </Button>
-        </form>
-      </CardContent>
-    </>
-  )
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-lg relative">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
+      <Card className="w-full max-w-lg relative max-h-[90vh] flex flex-col">
         <Button
           variant="ghost"
           size="sm"
@@ -593,58 +274,70 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           <X className="h-4 w-4" />
         </Button>
         
-        <div className="p-6">
-          <StepIndicator />
-          
-          {currentStep === 1 && <Step1 />}
-          {currentStep === 2 && <Step2 />}
-          {currentStep === 3 && <Step3 />}
-          
-          {/* Navigation buttons */}
-          {currentStep < 3 && (
-            <div className="flex justify-between mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Previous
-              </Button>
-              
-              <Button
-                type="button"
-                onClick={nextStep}
-                disabled={isLoading}
-              >
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          )}
-          
-          {/* Error display */}
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded mt-4">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <div className="p-6 pb-8">
+            <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+            
+            {currentStep === 1 && (
+              <Step1 
+                name={name} setName={setName}
+                email={email} setEmail={setEmail}
+                phone={phone} setPhone={setPhone}
+                userType={userType} setUserType={setUserType}
+                password={password} setPassword={setPassword}
+                confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step2 
+                location={location} setLocation={setLocation}
+                address={address} setAddress={setAddress}
+                degree={degree} setDegree={setDegree}
+                department={department} setDepartment={setDepartment}
+                experience={experience} setExperience={setExperience}
+                availability={availability} setAvailability={setAvailability}
+                salaryExpectation={salaryExpectation} setSalaryExpectation={setSalaryExpectation}
+                photo={photo} setPhoto={setPhoto}
+                document={document} setDocument={setDocument}
+                license={license} setLicense={setLicense}
+                userType={userType}
+                handleFileUpload={handleFileUpload}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step3 
+                email={email}
+                otp={otp}
+                timeLeft={timeLeft}
+                STATIC_OTP={STATIC_OTP}
+                otpError={otpError}
+                isVerifying={isVerifying}
+                handleOtpChange={handleOtpChange}
+                handleOTPSubmit={handleOTPSubmit}
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Error display */}
+        {error && (
+          <div className="border-t bg-white px-6 py-4">
+            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
               {error}
             </div>
-          )}
-          
-          {/* Login link */}
-          {currentStep === 1 && (
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
-              <button
-                type="button"
-                className="text-[#007a7f] hover:underline cursor-pointer"
-                onClick={onSwitchToLogin}
-              >
-                Sign in
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+        
+        {/* Navigation */}
+        <RegistrationNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          isLoading={isLoading}
+          onPrevStep={prevStep}
+          onNextStep={nextStep}
+          onSwitchToLogin={onSwitchToLogin}
+        />
       </Card>
     </div>
   )
