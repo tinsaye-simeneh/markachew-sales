@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { useJobs } from '@/hooks/useApi'
 import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { Job } from '@/lib/api'
 
 export function JobListings() {
   const [currentPage, setCurrentPage] = useState(1)

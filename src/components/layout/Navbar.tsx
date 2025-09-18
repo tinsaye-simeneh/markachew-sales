@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
-import {  User, LogOut, Menu, X, Heart } from 'lucide-react'
+import {  User, LogOut, Menu, X, Heart, FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function Navbar() {
@@ -156,6 +156,12 @@ export function Navbar() {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
+                    {user.user_type === 'EMPLOYEE' && (
+                      <DropdownMenuItem onClick={() => router.push('/applications')} className='cursor-pointer'>
+                        <FileText className="mr-2 h-4 w-4" />
+                        <span>My Applications</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => router.push('/saved')} className='cursor-pointer'>
                       <Heart className="mr-2 h-4 w-4" />
                       <span>Saved Items</span>
@@ -260,6 +266,15 @@ export function Navbar() {
                         <User className="inline h-4 w-4 mr-2" />
                         Profile
                       </button>
+                      {user.user_type === 'EMPLOYEE' && (
+                        <button 
+                          onClick={() => { closeMobileMenu(); router.push('/applications'); }}
+                          className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                        >
+                          <FileText className="inline h-4 w-4 mr-2" />
+                          My Applications
+                        </button>
+                      )}
                       <button 
                         onClick={() => { closeMobileMenu(); router.push('/saved'); }}
                         className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"

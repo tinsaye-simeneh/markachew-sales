@@ -228,8 +228,8 @@ export interface Application {
   job_id: string;
   cover_letter: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateApplicationRequest {

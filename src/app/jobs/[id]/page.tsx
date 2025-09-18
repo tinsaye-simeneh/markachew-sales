@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { LoadingPage } from '@/components/ui/loading'
 import { useJob } from '@/hooks/useApi'
+import { applicationsService } from '@/lib/api/services'
 import { 
   ArrowLeft, 
   Heart, 
@@ -33,6 +34,9 @@ export default function JobDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
   const [openModal, setOpenModal] = useState(false) // modal state
+  const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [coverLetter, setCoverLetter] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Use API hook to fetch job data
   const { job, loading: jobLoading, error: jobError } = useJob(jobId)
@@ -49,9 +53,37 @@ export default function JobDetailPage() {
   }
 
   const handleApply = () => {
-    // Set applied and open modal
-    setHasApplied(true)
-    setOpenModal(true)
+    if (user?.user_type !== 'EMPLOYEE') {
+      alert('Only employees can apply for jobs')
+      return
+    }
+    setShowApplicationForm(true)
+  }
+
+  const handleSubmitApplication = async () => {
+    if (!user?.id || !coverLetter.trim()) {
+      alert('Please provide a cover letter')
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      await applicationsService.createApplication({
+        user_id: user.id,
+        job_id: jobId,
+        cover_letter: coverLetter.trim()
+      })
+      
+      setHasApplied(true)
+      setShowApplicationForm(false)
+      setOpenModal(true)
+      setCoverLetter('')
+    } catch (error) {
+      console.error('Error submitting application:', error)
+      alert('Failed to submit application. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -215,7 +247,7 @@ export default function JobDetailPage() {
               <CardContent className="p-6">
                 <Button 
                   onClick={handleApply}
-                  disabled={hasApplied || job.status !== 'active' || !job.link}
+                  disabled={hasApplied || job.status !== 'active' || user?.user_type !== 'EMPLOYEE'}
                   className="w-full mb-4 cursor-pointer"
                 >
                   {hasApplied ? (
@@ -223,13 +255,16 @@ export default function JobDetailPage() {
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Applied
                     </>
+                  ) : user?.user_type !== 'EMPLOYEE' ? (
+                    <>
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Employees Only
+                    </>
                   ) : (
-                     
-                      <>
-                      <ExternalLink className="h-4 w-4 mr-2" />
+                    <>
+                      <Briefcase className="h-4 w-4 mr-2" />
                       Apply Now
                     </>
-                    
                   )}
                 </Button>
 
@@ -238,6 +273,61 @@ export default function JobDetailPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Application Form Modal */}
+            {showApplicationForm && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <Card className="w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+                  <CardContent className="p-6">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-semibold mb-2">Apply for {job?.title}</h3>
+                      <p className="text-gray-600">
+                        Apply to <strong>{job?.employer?.full_name}</strong>
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cover Letter *
+                        </label>
+                        <textarea
+                          value={coverLetter}
+                          onChange={(e) => setCoverLetter(e.target.value)}
+                          placeholder="Write your cover letter here..."
+                          className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent resize-none"
+                          required
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Explain why you're interested in this position and how you're qualified.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3 mt-6">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowApplicationForm(false)
+                          setCoverLetter('')
+                        }}
+                        className="flex-1 cursor-pointer"
+                        disabled={isSubmitting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleSubmitApplication}
+                        className="flex-1 cursor-pointer"
+                        disabled={isSubmitting || !coverLetter.trim()}
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Application Success Modal */}
             {openModal && (
@@ -252,12 +342,21 @@ export default function JobDetailPage() {
                       <p className="text-gray-700 mb-4">
                         Your application for <strong>{job?.title}</strong> at <strong>{job?.employer?.full_name}</strong> has been successfully submitted!
                       </p>
-                      <Button 
-                        onClick={() => setOpenModal(false)}
-                        className="w-full cursor-pointer"
-                      >
-                        Close
-                      </Button>
+                      <div className="space-y-2">
+                        <Button 
+                          onClick={() => setOpenModal(false)}
+                          className="w-full cursor-pointer"
+                        >
+                          Close
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          onClick={() => router.push('/applications')}
+                          className="w-full cursor-pointer"
+                        >
+                          View My Applications
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
