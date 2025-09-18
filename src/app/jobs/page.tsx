@@ -133,7 +133,7 @@ export default function JobsPage() {
         break
     }
 
-    setFilteredJobs(filtered)
+    setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
     setCurrentPage(1)
   }, [jobs, searchTerm, jobType, category, experience, sortBy])
 
@@ -248,7 +248,7 @@ export default function JobsPage() {
 
         {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {currentJobs.map((job) => (
+          {currentJobs.map((job: Job) => (
             <div key={job.id} onClick={() => handleJobClick(job.id)} className="cursor-pointer">
               <JobCard job={job} />
             </div>

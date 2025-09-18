@@ -49,7 +49,7 @@ export function JobListings() {
       })
     }
 
-    setFilteredJobs(filtered)
+    setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
   }, [jobs, searchQuery, jobType, experience])
 
   return (
@@ -130,7 +130,7 @@ export function JobListings() {
       {!loading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
+            filteredJobs.map((job: Job) => (
               <JobCard key={job.id} job={job} />
             ))
           ) : (
