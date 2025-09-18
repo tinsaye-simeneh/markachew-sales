@@ -22,7 +22,8 @@ import {
   Phone,
   Mail,
   Star,
-  Shield
+  Shield,
+  Home
 } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
@@ -66,7 +67,7 @@ export default function HouseDetailPage() {
   // Parse images JSON string
   const getHouseImages = () => {
     try {
-      const images = JSON.parse(house.images || '[]');
+      const images = JSON.parse(house?.images || '[]');
       return Array.isArray(images) && images.length > 0 ? images : [];
     } catch {
       return [];
@@ -76,11 +77,11 @@ export default function HouseDetailPage() {
   // Parse features JSON string
   const getHouseFeatures = () => {
     try {
-      const features = JSON.parse(house.features || '{}');
+      const features = JSON.parse(house?.features || '{}');
       return {
         bedrooms: features.bedrooms || 'N/A',
         bathrooms: features.bathrooms || 'N/A',
-        area: features.area || house.area || 'N/A',
+        area: features.area || house?.area || 'N/A',
         yearBuilt: features.yearBuilt || 'N/A',
         amenities: features.amenities || []
       };
@@ -88,7 +89,7 @@ export default function HouseDetailPage() {
       return {
         bedrooms: 'N/A',
         bathrooms: 'N/A',
-        area: house.area || 'N/A',
+        area: house?.area || 'N/A',
         yearBuilt: 'N/A',
         amenities: []
       };
@@ -250,7 +251,7 @@ export default function HouseDetailPage() {
                 {/* Description */}
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold mb-3">Description</h3>
-                  <p className="text-gray-700 leading-relaxed">{house.description}</p>
+                  <p className="text-gray-700 leading-relaxed">{house.description || 'No description available'}</p>
                 </div>
 
                 {/* Amenities */}
@@ -310,14 +311,14 @@ export default function HouseDetailPage() {
                 <div className="space-y-3">
                   <Button 
                     onClick={handleContactAgent}
-                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
+                    className={`w-full cursor-pointer ${house.status !== "active" ? "cursor-not-allowed opacity-60" : ""}`}
                   >
                     <Phone className="h-4 w-4 mr-2" />
                     Call Owner
                   </Button>
                   <Button 
                     variant="outline" 
-                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
+                    className={`w-full cursor-pointer ${house.status !== "active" ? "cursor-not-allowed opacity-60" : ""}`}
                     >
                     <Mail className="h-4 w-4 mr-2" />
                     Send Message
