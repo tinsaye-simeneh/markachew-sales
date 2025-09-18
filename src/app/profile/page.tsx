@@ -390,7 +390,7 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Full Name</Label>
+                      <Label htmlFor="name" className='mb-2'>Full Name</Label>
                       {isEditing ? (
                         <Input
                           id="name"
@@ -406,7 +406,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email" className='mb-2'>Email Address</Label>
                       {isEditing ? (
                         <Input
                           id="email"
@@ -425,7 +425,7 @@ export default function ProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label htmlFor="phone" className='mb-2'>Phone Number</Label>
                       {isEditing ? (
                         <Input
                           id="phone"
@@ -443,7 +443,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="userType">Account Type</Label>
+                      <Label htmlFor="userType" className='mb-2'>Account Type</Label>
                       {isEditing ? (
                         <Select value={profileData.userType} onValueChange={(value) => handleInputChange('userType', value)}>
                           <SelectTrigger>
@@ -466,7 +466,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location" className='mb-2'>Location</Label>
                     {isEditing ? (
                       <Input
                         id="location"
@@ -482,7 +482,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="address">Address</Label>
+                    <Label htmlFor="address" className='mb-2'>Address</Label>
                     {isEditing ? (
                       <Input
                         id="address"
@@ -502,7 +502,7 @@ export default function ProfilePage() {
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="degree">Degree/Education</Label>
+                          <Label htmlFor="degree" className='mb-2'>Degree/Education</Label>
                           {isEditing ? (
                             <Input
                               id="degree"
@@ -519,7 +519,7 @@ export default function ProfilePage() {
                         </div>
 
                         <div>
-                          <Label htmlFor="department">Department</Label>
+                          <Label htmlFor="department" className='mb-2'>Department</Label>
                           {isEditing ? (
                             <Input
                               id="department"
@@ -538,7 +538,7 @@ export default function ProfilePage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="experience">Years of Experience</Label>
+                          <Label htmlFor="experience" className='mb-2'>Years of Experience</Label>
                           {isEditing ? (
                             <Input
                               id="experience"
@@ -556,7 +556,7 @@ export default function ProfilePage() {
                         </div>
 
                         <div>
-                          <Label htmlFor="availability">Availability</Label>
+                          <Label htmlFor="availability" className='mb-2'>Availability</Label>
                           {isEditing ? (
                             <Select value={profileData.availability} onValueChange={(value) => handleInputChange('availability', value)}>
                               <SelectTrigger>
@@ -578,7 +578,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div>
-                        <Label htmlFor="salary_expectation">Salary Expectation (ETB)</Label>
+                        <Label htmlFor="salary_expectation" className='mb-2'  >Salary Expectation (ETB)</Label>
                         {isEditing ? (
                           <Input
                             id="salary_expectation"
@@ -659,7 +659,7 @@ export default function ProfilePage() {
             <CardContent>
               <form onSubmit={handleChangePassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Label htmlFor="currentPassword" className='mb-2'>Current Password</Label>
                   <Input
                     id="currentPassword"
                     type="password"
@@ -671,7 +671,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
+                  <Label htmlFor="newPassword" className='mb-2'>New Password</Label>
                   <Input
                     id="newPassword"
                     type="password"
@@ -683,7 +683,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Label htmlFor="confirmPassword" className='mb-2' >Confirm New Password</Label>
                   <Input
                     id="confirmPassword"
                     type="password"

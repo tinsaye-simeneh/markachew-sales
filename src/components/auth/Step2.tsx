@@ -69,7 +69,7 @@ export function Step2({
       <CardContent className='mt-4'>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="location">Location *</Label>
+            <Label htmlFor="location" className='mb-2'>Location *</Label>
             <Input
               id="location"
               type="text"
@@ -81,7 +81,7 @@ export function Step2({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="address">Address *</Label>
+            <Label htmlFor="address" className='mb-2'>Address *</Label>
             <Input
               id="address"
               type="text"
@@ -96,7 +96,7 @@ export function Step2({
           {userType === UserType.EMPLOYEE && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="degree">Degree/Education *</Label>
+                <Label htmlFor="degree" className='mb-2'>Degree/Education *</Label>
                 <Input
                   id="degree"
                   type="text"
@@ -108,7 +108,7 @@ export function Step2({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="department">Department *</Label>
+                <Label htmlFor="department" className='mb-2'>Department *</Label>
                 <Input
                   id="department"
                   type="text"
@@ -121,7 +121,7 @@ export function Step2({
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="experience">Years of Experience</Label>
+                  <Label htmlFor="experience" className='mb-2'>Years of Experience</Label>
                   <Input
                     id="experience"
                     type="number"
@@ -132,7 +132,7 @@ export function Step2({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="availability">Availability</Label>
+                  <Label htmlFor="availability" className='mb-2'>Availability</Label>
                   <Select value={availability} onValueChange={(value: 'FULL_TIME' | 'PART_TIME' | 'CONTRACT') => setAvailability(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select availability" />
@@ -147,7 +147,7 @@ export function Step2({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="salaryExpectation">Salary Expectation (ETB)</Label>
+                <Label htmlFor="salaryExpectation" className='mb-2'>Salary Expectation (ETB)</Label>
                 <Input
                   id="salaryExpectation"
                   type="number"
@@ -163,7 +163,7 @@ export function Step2({
           {(userType === UserType.EMPLOYER || userType === UserType.SELLER) && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="license">Business License (Optional)</Label>
+                <Label htmlFor="license" className='mb-2'>Business License (Optional)</Label>
                 <Input
                   id="license"
                   type="file"
@@ -176,7 +176,7 @@ export function Step2({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="document">Business Document (Optional)</Label>
+                <Label htmlFor="document" className='mb-2'>Business Document (Optional)</Label>
                 <Input
                   id="document"
                   type="file"
@@ -192,7 +192,7 @@ export function Step2({
 
           {/* Profile photo for all users */}
           <div className="space-y-2">
-            <Label htmlFor="photo">Profile Photo (Optional)</Label>
+            <Label htmlFor="photo" className='mb-2'>Profile Photo (Optional)</Label>
             <Input
               id="photo"
               type="file"
