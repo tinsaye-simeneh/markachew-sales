@@ -2,7 +2,7 @@
 // This file provides alternative configurations for development
 
 export const DEV_CONFIG = {
-  // Use localhost proxy in development
+  // Use proxy in development to avoid CORS issues
   USE_PROXY: process.env.NODE_ENV === 'development',
   
   // Alternative API endpoints for development

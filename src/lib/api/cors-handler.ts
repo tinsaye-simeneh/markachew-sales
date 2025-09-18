@@ -27,7 +27,7 @@ export class CorsAwareApiClient {
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.luckbingogames.com';
-    this.useProxy = process.env.NODE_ENV === 'development';
+    this.useProxy = process.env.NODE_ENV === 'development'; // Use proxy in development to avoid CORS
   }
 
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

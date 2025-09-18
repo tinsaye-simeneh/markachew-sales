@@ -62,6 +62,30 @@ export default function JobDetailPage() {
     })
   }
 
+  // Parse requirements to get job details
+  const getJobDetails = () => {
+    if (!job) return { experience: 'N/A', type: 'N/A', location: 'N/A', salary: 'N/A' };
+    
+    try {
+      const requirements = JSON.parse(job.requirements || '{}');
+      return {
+        experience: requirements.experience || 'N/A',
+        type: requirements.type || 'N/A',
+        location: requirements.location || 'N/A',
+        salary: requirements.salary || 'N/A'
+      };
+    } catch {
+      return {
+        experience: 'N/A',
+        type: 'N/A',
+        location: 'N/A',
+        salary: 'N/A'
+      };
+    }
+  }
+
+  const jobDetails = getJobDetails();
+
   if (isLoading || jobLoading) {
     return <LoadingPage />
   }
@@ -107,6 +131,7 @@ export default function JobDetailPage() {
     )
   }
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -133,15 +158,15 @@ export default function JobDetailPage() {
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
                     <div className="flex items-center text-gray-600 mb-2">
                       <Briefcase className="h-4 w-4 mr-1" />
-                      {job.company}
+                      {job.employer?.full_name || 'Unknown Company'}
                     </div>
                     <div className="flex items-center text-gray-600 mb-4">
                       <MapPin className="h-4 w-4 mr-1" />
-                      {job.location}
+                      {jobDetails.location}
                     </div>
                     <div className="flex space-x-2">
-                      <Badge variant="secondary">{job.type}</Badge>
-                      <Badge variant="outline">{job.category}</Badge>
+                      <Badge variant="secondary">{jobDetails.type}</Badge>
+                      <Badge variant="outline">{jobDetails.experience}</Badge>
                     </div>
                   </div>
                   <div className="flex space-x-2">
@@ -163,17 +188,17 @@ export default function JobDetailPage() {
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <DollarSign className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{job.salary}</div>
+                    <div className="font-semibold">{jobDetails.salary}</div>
                     <div className="text-sm text-gray-600">Salary</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Clock className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{job.experience}</div>
+                    <div className="font-semibold">{jobDetails.experience}</div>
                     <div className="text-sm text-gray-600">Experience</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Calendar className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
-                    <div className="font-semibold">{formatDate(job.postedDate)}</div>
+                    <div className="font-semibold">{formatDate(job.createdAt)}</div>
                     <div className="text-sm text-gray-600">Posted</div>
                   </div>
                 </div>
@@ -224,7 +249,7 @@ export default function JobDetailPage() {
                       </div>
                       <h3 className="text-lg font-semibold mb-2">Application Submitted</h3>
                       <p className="text-gray-700 mb-4">
-                        Your application for <strong>{job?.title}</strong> at <strong>{job?.company}</strong> has been successfully submitted!
+                        Your application for <strong>{job?.title}</strong> at <strong>{job?.employer?.full_name}</strong> has been successfully submitted!
                       </p>
                       <Button 
                         onClick={() => setOpenModal(false)}
@@ -241,29 +266,22 @@ export default function JobDetailPage() {
             {/* Company Info */}
             <Card className="mb-6">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-4">About {job.company}</h3>
+                <h3 className="text-xl font-semibold mb-4">About {job.employer?.full_name}</h3>
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center">
                     <Users className="h-4 w-4 mr-2 text-[#007a7f]" />
-                    <span className="text-gray-700">{job.companyInfo.size}</span>
+                    <span className="text-gray-700">Company Size: Not specified</span>
                   </div>
                   <div className="flex items-center">
                     <Briefcase className="h-4 w-4 mr-2 text-[#007a7f]" />
-                    <span className="text-gray-700">{job.companyInfo.industry}</span>
+                    <span className="text-gray-700">Industry: Not specified</span>
                   </div>
                   <div className="flex items-center">
                     <ExternalLink className="h-4 w-4 mr-2 text-[#007a7f]" />
-                    <a 
-                      href={job.companyInfo.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-[#007a7f] hover:underline cursor-pointer"
-                    >
-                      Company Website
-                    </a>
+                    <span className="text-gray-700">Website: Not available</span>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm">{job.companyInfo.description}</p>
+                <p className="text-gray-700 text-sm">Company information not available.</p>
               </CardContent>
             </Card>
 
@@ -274,23 +292,23 @@ export default function JobDetailPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Job Type</span>
-                    <span className="font-medium">{job.type}</span>
+                    <span className="font-medium">{jobDetails.type}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Experience</span>
-                    <span className="font-medium">{job.experience}</span>
+                    <span className="font-medium">{jobDetails.experience}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Category</span>
-                    <span className="font-medium">{job.category}</span>
+                    <span className="text-gray-600">Salary</span>
+                    <span className="font-medium">{jobDetails.salary}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Location</span>
-                    <span className="font-medium">{job.location}</span>
+                    <span className="font-medium">{jobDetails.location}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Posted</span>
-                    <span className="font-medium">{formatDate(job.postedDate)}</span>
+                    <span className="font-medium">{formatDate(job.createdAt)}</span>
                   </div>
                 </div>
               </CardContent>

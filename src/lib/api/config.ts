@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NODE_ENV === 'development' 
-    ? '' // Use Next.js API routes in development
+    ? '' // Use Next.js API routes in development to avoid CORS
     : process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.luckbingogames.com',
   ENDPOINTS: {
     // Admin endpoints
@@ -29,6 +29,7 @@ export const API_CONFIG = {
       GET: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
       UPDATE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
       DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
+      APPLY: '/api/jobs/apply',
     },
     // Application endpoints
     APPLICATIONS: {

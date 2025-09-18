@@ -134,10 +134,10 @@ export function HouseCard({ house }: HouseCardProps) {
         </Button>
         
         <Badge 
-          variant={house.type === 'SALES' ? 'default' : house.type === 'RENT' ? 'secondary' : 'destructive'}
-          className={`absolute top-2 left-2 ${house.type === 'SALES' ? 'bg-[#007a7f]' : house.type === 'RENT' ? 'bg-[#007a7f]' : 'bg-red-500'} text-white`}
+          variant={house.status === 'active' ? 'default' : house.status === 'sold' ? 'secondary' : 'destructive'}
+          className={`absolute top-2 left-2 ${house.status === 'active' ? 'bg-[#007a7f]' : house.status === 'sold' ? 'bg-[#007a7f]' : 'bg-red-500'} text-white`}
         >
-          {house.type === 'SALES' ? 'For Sale' : house.type === 'RENT' ? 'For Rent' : 'Sold'}
+          {house.status === 'active' ? 'Active' : house.status === 'sold' ? 'Sold' : 'Inactive'}
         </Badge>
       </div>
       
@@ -147,7 +147,7 @@ export function HouseCard({ house }: HouseCardProps) {
             {house.title}
           </h3>
           <Badge variant="outline" className="text-xs">
-            {house.type}
+           {house.category.name} {house.type} 
           </Badge>
         </div>
         <div className="flex items-center text-gray-600 text-sm">
