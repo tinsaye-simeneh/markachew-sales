@@ -262,23 +262,17 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <User className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Complete Your Profile</h2>
-          <p className="text-gray-600 mb-4">You need to create a profile to continue</p>
+          <User className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Failed to load profile</h2>
+          <p className="text-gray-600 mb-4">Please try again later</p>
           <div className="space-x-4">
-            <Button onClick={() => setShowCreateProfile(true)} className='cursor-pointer'>
-              Create Profile
-            </Button>
+
             <Button onClick={() => router.push('/')} variant="outline" className='cursor-pointer'>
               Go to Home
             </Button>
           </div>
         </div>
-        <CreateProfileModal
-          isOpen={showCreateProfile}
-          onClose={() => setShowCreateProfile(false)}
-          onSuccess={() => window.location.reload()}
-        />
+        
       </div>
     )
   }

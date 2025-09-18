@@ -254,13 +254,7 @@ export class CategoriesService {
 // Profiles Service
 export class ProfilesService {
   async getCurrentUserProfile(): Promise<Profile> {
-    // Get current user ID from localStorage
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || '{}') : null;
-    if (!user || !user.id) {
-      throw new Error('User not found. Please log in first.');
-    }
-    
-    const response = await apiClient.get<Profile>(API_CONFIG.ENDPOINTS.PROFILES.GET(user.id));
+    const response = await apiClient.get<Profile>(API_CONFIG.ENDPOINTS.USERS.ME);
     return response.data;
   }
 

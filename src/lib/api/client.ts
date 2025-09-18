@@ -3,6 +3,7 @@ import { API_CONFIG, ApiResponse } from './config';
 class ApiClient {
   private baseURL: string;
   private timeout: number;
+  private isRefreshing: boolean = false;
 
   constructor() {
     this.baseURL = API_CONFIG.BASE_URL;
@@ -48,6 +49,32 @@ class ApiClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        // Handle 401 Unauthorized - try to refresh token
+        if (response.status === 401 && !this.isRefreshing) {
+          const refreshed = await this.handleTokenRefresh();
+          if (refreshed) {
+            // Retry the original request with new token
+            const retryConfig = {
+              ...config,
+              headers: {
+                ...config.headers,
+                Authorization: `Bearer ${this.getToken()}`,
+              },
+            };
+            const retryResponse = await fetch(url, {
+              ...retryConfig,
+              signal: controller.signal,
+              mode: 'cors',
+              credentials: 'omit',
+            });
+            
+            if (retryResponse.ok) {
+              const retryData = await retryResponse.json();
+              return retryData;
+            }
+          }
+        }
+        
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
@@ -83,10 +110,82 @@ class ApiClient {
     }
   }
 
+  public setAuthToken(token: string): void {
+    this.setToken(token);
+  }
+
   private removeToken(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+    }
+  }
+
+  private async handleTokenRefresh(): Promise<boolean> {
+    if (this.isRefreshing) {
+      return false;
+    }
+
+    this.isRefreshing = true;
+    
+    try {
+      const refreshToken = this.getRefreshToken();
+      if (!refreshToken) {
+        this.isRefreshing = false;
+        return false;
+      }
+
+      const response = await fetch(`${this.baseURL}/api/users/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+        mode: 'cors',
+        credentials: 'omit',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.accessToken) {
+          this.setToken(data.data.accessToken);
+          if (data.data.refreshToken) {
+            this.setRefreshToken(data.data.refreshToken);
+          }
+          this.isRefreshing = false;
+          return true;
+        }
+      }
+      
+      // If refresh fails, clear tokens and redirect to login
+      this.removeToken();
+      this.isRefreshing = false;
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+      return false;
+    } catch (error) {
+      // If refresh fails, clear tokens and redirect to login
+      this.removeToken();
+      this.isRefreshing = false;
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+      return false;
+    }
+  }
+
+  private getRefreshToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('refreshToken');
+    }
+    return null;
+  }
+
+  private setRefreshToken(token: string): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('refreshToken', token);
     }
   }
 
