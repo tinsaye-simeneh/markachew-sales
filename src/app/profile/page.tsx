@@ -46,11 +46,11 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setProfileData({
-        name: user.name || '',
+        name: user.full_name || '',
         email: user.email || '',
         phone: '',
         location: 'Addis Ababa, Ethiopia',
-        userType: user.type || '',
+        userType: user.user_type || '',
         joinDate: 'January 2024'
       })
     }
@@ -71,11 +71,11 @@ export default function ProfilePage() {
     // Reset to original user data
     if (user) {
       setProfileData({
-        name: user.name || '',
+        name: user.full_name || '',
         email: user.email || '',
         phone: '',
         location: 'Addis Ababa, Ethiopia',
-        userType: user.type || '',
+        userType: user.user_type || '',
         joinDate: 'January 2024'
       })
     }
@@ -173,14 +173,14 @@ export default function ProfilePage() {
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="" alt={user.name || 'User'} />
+                    <AvatarImage src="" alt={user.full_name || 'User'} />
                     <AvatarFallback className="text-2xl">
-                      {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                      {user.full_name ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <CardTitle className="text-xl">{user.name}</CardTitle>
-                <p className="text-gray-600 capitalize">{user.type}</p>
+                <CardTitle className="text-xl">{user.full_name}</CardTitle>
+                <p className="text-gray-600 capitalize">{user.user_type}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
