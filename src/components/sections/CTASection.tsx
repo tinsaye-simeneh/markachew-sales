@@ -7,12 +7,13 @@ import { Home, Briefcase, ArrowRight } from 'lucide-react'
 import { RegisterModal } from '@/components/auth/RegisterModal'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export function CTASection() {
   const { user } = useAuth()
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
-
+  const router = useRouter()
   const handleLoginClick = () => {
     setIsLoginOpen(true)
   }
@@ -25,6 +26,22 @@ export function CTASection() {
   const handleSwitchToLogin = () => {
     setIsRegisterOpen(false)
     setIsLoginOpen(true)
+  }
+
+  const handleHousesClick = () => {
+    if (user) {
+      router.push('/houses')
+    } else {
+      setIsLoginOpen(true)
+    }
+  }
+
+  const handleJobsClick = () => {
+    if (user) {
+      router.push('/jobs')
+    } else {
+      setIsLoginOpen(true)
+    }
   }
 
   return (
@@ -54,6 +71,7 @@ export function CTASection() {
               <Button 
                 size="lg" 
                 className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
+                onClick={handleHousesClick}
               >
                 Browse Properties
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -75,6 +93,7 @@ export function CTASection() {
               <Button 
                 size="lg" 
                 className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
+                onClick={handleJobsClick}
               >
                 Find Jobs
                 <ArrowRight className="ml-2 h-4 w-4" />
