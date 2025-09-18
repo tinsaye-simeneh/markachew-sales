@@ -146,9 +146,14 @@ export function HouseCard({ house }: HouseCardProps) {
           <h3 className="font-semibold cursor-pointer text-lg group-hover:text-[#007a7f] transition-colors" onClick={() => handleHouseClick(house.id)}>
             {house.title}
           </h3>
+          <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
-           {house.category.name} {house.type} 
+           {house.category.name} 
           </Badge>
+          <Badge variant="outline" className="text-xs">
+            {house.type}
+          </Badge>
+          </div>
         </div>
         <div className="flex items-center text-gray-600 text-sm">
           <MapPin className="h-4 w-4 mr-1" />

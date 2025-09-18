@@ -145,7 +145,7 @@ export function HouseListings() {
       {/* Results */}
       <div className="flex justify-between items-center">
         <p className="text-gray-600">
-          {loading ? 'Loading...' : `Showing ${filteredHouses.length} of ${total} properties`}
+          {loading ? '' : `Showing ${filteredHouses.length} of ${total} properties`}
         </p>
       </div>
       

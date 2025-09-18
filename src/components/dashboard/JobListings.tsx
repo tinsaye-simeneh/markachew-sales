@@ -99,7 +99,7 @@ export function JobListings() {
       {/* Results */}
       <div className="flex justify-between items-center">
         <p className="text-gray-600">
-          {loading ? 'Loading...' : `Showing ${filteredJobs.length} of ${total} jobs`}
+          {loading ? '' : `Showing ${filteredJobs.length} of ${total} jobs`}
         </p>
       </div>
       
