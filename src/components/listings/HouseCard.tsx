@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { House } from '@/data/sampleData'
+import { House } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface HouseCardProps {
@@ -27,14 +27,46 @@ export function HouseCard({ house }: HouseCardProps) {
     setIsClient(true)
   }, [])
   
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: string | number) => {
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'ETB',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price)
+    }).format(numPrice)
   }
+
+  // Parse images JSON string
+  const getHouseImages = () => {
+    try {
+      const images = JSON.parse(house.images || '[]');
+      return Array.isArray(images) && images.length > 0 ? images[0] : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // Parse features JSON string
+  const getHouseFeatures = () => {
+    try {
+      const features = JSON.parse(house.features || '{}');
+      return {
+        bedrooms: features.bedrooms || 'N/A',
+        bathrooms: features.bathrooms || 'N/A',
+        area: features.area || house.area || 'N/A'
+      };
+    } catch {
+      return {
+        bedrooms: 'N/A',
+        bathrooms: 'N/A',
+        area: house.area || 'N/A'
+      };
+    }
+  }
+
+  const houseImage = getHouseImages();
+  const houseFeatures = getHouseFeatures();
 
   const handleHouseClick = (houseId: string) => {
     router.push(`/houses/${houseId}`)
@@ -74,9 +106,9 @@ export function HouseCard({ house }: HouseCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden p-0 pb-6">
       <div className="relative overflow-hidden rounded-t-lg cursor-pointer" onClick={() => handleHouseClick(house.id)}>
-        {!imageError ? (
+        {houseImage && !imageError ? (
           <Image 
-            src={house.image} 
+            src={houseImage} 
             alt={house.title} 
             width={400} 
             height={250}
@@ -102,10 +134,10 @@ export function HouseCard({ house }: HouseCardProps) {
         </Button>
         
         <Badge 
-          variant={house.status === 'for-sale' ? 'default' : house.status === 'for-rent' ? 'secondary' : 'destructive'}
-          className="absolute top-2 left-2 text-white"
+          variant={house.type === 'SALES' ? 'default' : house.type === 'RENT' ? 'secondary' : 'destructive'}
+          className={`absolute top-2 left-2 ${house.type === 'SALES' ? 'bg-[#007a7f]' : house.type === 'RENT' ? 'bg-[#007a7f]' : 'bg-red-500'} text-white`}
         >
-          {house.status === 'for-sale' ? 'For Sale' : house.status === 'for-rent' ? 'For Rent' : 'Sold'}
+          {house.type === 'SALES' ? 'For Sale' : house.type === 'RENT' ? 'For Rent' : 'Sold'}
         </Badge>
       </div>
       
@@ -134,15 +166,15 @@ export function HouseCard({ house }: HouseCardProps) {
         <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
           <div className="flex items-center">
             <Bed className="h-4 w-4 mr-1" />
-            {house.bedrooms} bed
+            {houseFeatures.bedrooms} bed
           </div>
           <div className="flex items-center">
             <Bath className="h-4 w-4 mr-1" />
-            {house.bathrooms} bath
+            {houseFeatures.bathrooms} bath
           </div>
           <div className="flex items-center">
             <Square className="h-4 w-4 mr-1" />
-            {house.area} sqft
+            {houseFeatures.area} sqft
           </div>
         </div>
         

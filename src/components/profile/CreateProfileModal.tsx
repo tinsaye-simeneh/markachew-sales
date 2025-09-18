@@ -80,7 +80,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="location">Location *</Label>
+                <Label htmlFor="location" className='mb-2'>Location *</Label>
                 <Input
                   id="location"
                   value={formData.location}
@@ -91,7 +91,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
               </div>
 
               <div>
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address" className='mb-2'>Address</Label>
                 <Input
                   id="address"
                   value={formData.address}
@@ -106,7 +106,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="degree">Degree/Education</Label>
+                    <Label htmlFor="degree" className='mb-2'>Degree/Education</Label>
                     <Input
                       id="degree"
                       value={formData.degree}
@@ -116,7 +116,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
                   </div>
 
                   <div>
-                    <Label htmlFor="department">Department</Label>
+                    <Label htmlFor="department" className='mb-2'>Department</Label>
                     <Input
                       id="department"
                       value={formData.department}
@@ -128,7 +128,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="experience">Years of Experience</Label>
+                    <Label htmlFor="experience" className='mb-2'>Years of Experience</Label>
                     <Input
                       id="experience"
                       type="number"
@@ -139,7 +139,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
                   </div>
 
                   <div>
-                    <Label htmlFor="availability">Availability</Label>
+                    <Label htmlFor="availability" className='mb-2'>Availability</Label>
                     <Select value={formData.availability} onValueChange={(value: 'FULL_TIME' | 'PART_TIME' | 'CONTRACT') => handleInputChange('availability', value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select availability" />
@@ -154,7 +154,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
                 </div>
 
                 <div>
-                  <Label htmlFor="salary_expectation">Salary Expectation (ETB)</Label>
+                  <Label htmlFor="salary_expectation" className='mb-2'>Salary Expectation (ETB)</Label>
                   <Input
                     id="salary_expectation"
                     type="number"
@@ -167,10 +167,10 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
             )}
 
             <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={onClose} className='cursor-pointer'>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className='cursor-pointer'>
                 {loading ? 'Creating...' : 'Create Profile'}
               </Button>
             </div>

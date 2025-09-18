@@ -50,15 +50,16 @@ export default function HousesPage() {
     // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
+        const price = parseFloat(house.price) || 0;
         switch (priceRange) {
           case 'under-5m':
-            return house.price < 5000000
+            return price < 5000000
           case '5m-10m':
-            return house.price >= 5000000 && house.price < 10000000
+            return price >= 5000000 && price < 10000000
           case '10m-20m':
-            return house.price >= 10000000 && house.price < 20000000
+            return price >= 10000000 && price < 20000000
           case 'over-20m':
-            return house.price >= 20000000
+            return price >= 20000000
           default:
             return true
         }
@@ -219,7 +220,7 @@ export default function HousesPage() {
         {/* Houses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {currentHouses.map((house) => {
-  const clickable = house.status === "for-sale" || house.status === "for-rent";
+        const clickable = house.status === "active";
 
   return (
     <div

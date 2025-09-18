@@ -16,7 +16,7 @@ export function useJobs(page = 1, limit = 10) {
         setLoading(true);
         setError(null);
         const response = await jobsService.getAllJobs(page, limit);
-        setJobs(response.jobs);
+          setJobs(response.jobs);
         setTotal(response.total);
         setTotalPages(response.totalPages);
       } catch (err) {

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { LoadingPage } from '@/components/ui/loading'
-import { getJobById } from '@/data/sampleData'
+import { useJob } from '@/hooks/useApi'
 import { 
   ArrowLeft, 
   Heart, 
@@ -24,38 +24,18 @@ import {
   ExternalLink
 } from 'lucide-react'
 
-interface Job {
-  id: string
-  title: string
-  company: string
-  location: string
-  salary: string
-  type: string
-  experience: string
-  description: string
-  requirements: string[]
-  benefits: string[]
-  postedDate: string
-  category: string
-  companyInfo: {
-    size: string
-    industry: string
-    website: string
-    description: string
-  }
-  responsibilities: string[]
-}
-
 export default function JobDetailPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   const params = useParams()
-  const jobId = parseInt(params.id as string)
+  const jobId = params.id as string
   
-  const [job, setJob] = useState<Job | null>(null)
   const [isFavorite, setIsFavorite] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
   const [openModal, setOpenModal] = useState(false) // modal state
+
+  // Use API hook to fetch job data
+  const { job, loading: jobLoading, error: jobError } = useJob(jobId)
 
   // Redirect if not logged in
   useEffect(() => {
@@ -63,14 +43,6 @@ export default function JobDetailPage() {
       router.push('/')
     }
   }, [user, isLoading, router])
-
-  // Find job data
-  useEffect(() => {
-    const foundJob = getJobById(jobId.toString())
-    if (foundJob) {
-      setJob(foundJob)
-    }
-  }, [jobId])
 
   const handleBack = () => {
     router.push('/jobs')
@@ -90,12 +62,31 @@ export default function JobDetailPage() {
     })
   }
 
-  if (isLoading) {
+  if (isLoading || jobLoading) {
     return <LoadingPage />
   }
 
   if (!user) {
     return null
+  }
+
+  if (jobError) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Job</h1>
+            <p className="text-gray-600 mb-4">{jobError}</p>
+            <Button onClick={handleBack} className="cursor-pointer">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Jobs
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
   }
 
   if (!job) {

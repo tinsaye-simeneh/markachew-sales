@@ -103,13 +103,20 @@ export interface ApiResponse<T = any> {
 
 export interface PaginatedResponse<T> {
   success: boolean;
+  message: string;
   data: {
-    items: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
+    jobs?: T[];
+    houses?: T[];
+    meta: {
+      currentPage: number;
+      perPage: number;
+      totalItems: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
   };
+  timestamp: string;
 }
 
 // Auth types
@@ -146,15 +153,22 @@ export interface User {
 // Job types
 export interface Job {
   id: string;
+  user_id: string;
   title: string;
   description: string;
-  requirements: Record<string, any>;
-  responsibility: Record<string, any>;
+  requirements: string; // JSON string from API
+  responsibility: string; // JSON string from API
   link?: string;
   image?: string;
-  employer_id: string;
-  created_at: string;
-  updated_at: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  employer: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
 }
 
 export interface CreateJobRequest {
@@ -170,15 +184,30 @@ export interface CreateJobRequest {
 export interface House {
   id: string;
   title: string;
+  description?: string;
   type: 'SALES' | 'RENT';
-  price: number;
+  price: string; // API returns as string
   location: string;
-  category_id: string;
-  seller_id: string;
-  images?: string[];
+  area?: string;
+  features?: string; // JSON string from API
+  images: string; // JSON string from API
   video?: string;
-  created_at: string;
-  updated_at: string;
+  availability_date?: string;
+  status: string;
+  category_id: string;
+  user_id: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  owner: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
 }
 
 export interface CreateHouseRequest {

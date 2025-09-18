@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HouseCard } from '@/components/listings/HouseCard'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { sampleHouses } from '@/data/sampleData'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useHouses } from '@/hooks/useApi'
+import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 
 export function HouseListings() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -14,28 +14,62 @@ export function HouseListings() {
   const [propertyType, setPropertyType] = useState('all')
   const [bedrooms, setBedrooms] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [filteredHouses, setFilteredHouses] = useState<any[]>([])
   
   const itemsPerPage = 6
-  const totalPages = Math.ceil(sampleHouses.length / itemsPerPage)
+  const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)
   
-  const filteredHouses = sampleHouses.filter(house => {
-    const matchesSearch = house.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         house.location.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesPrice = priceRange === 'all' || 
-      (priceRange === 'under-5m' && house.price < 5000000) ||
-      (priceRange === '5m-10m' && house.price >= 5000000 && house.price <= 10000000) ||
-      (priceRange === '10m-20m' && house.price > 10000000 && house.price <= 20000000) ||
-      (priceRange === 'over-20m' && house.price > 20000000)
-    const matchesType = propertyType === 'all' || house.type === propertyType
-    const matchesBedrooms = bedrooms === 'all' || house.bedrooms.toString() === bedrooms
-    
-    return matchesSearch && matchesPrice && matchesType && matchesBedrooms
-  })
-  
-  const paginatedHouses = filteredHouses.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  // Filter houses based on search and filters
+  useEffect(() => {
+    let filtered = houses
+
+    // Search filter
+    if (searchQuery) {
+      filtered = filtered.filter(house =>
+        house.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        house.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        house.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // Price filter
+    if (priceRange !== 'all') {
+      filtered = filtered.filter(house => {
+        const price = parseFloat(house.price) || 0
+        switch (priceRange) {
+          case 'under-5m':
+            return price < 5000000
+          case '5m-10m':
+            return price >= 5000000 && price <= 10000000
+          case '10m-20m':
+            return price > 10000000 && price <= 20000000
+          case 'over-20m':
+            return price > 20000000
+          default:
+            return true
+        }
+      })
+    }
+
+    // Property type filter
+    if (propertyType !== 'all') {
+      filtered = filtered.filter(house => house.type === propertyType)
+    }
+
+    // Bedrooms filter - Parse features JSON string
+    if (bedrooms !== 'all') {
+      filtered = filtered.filter(house => {
+        try {
+          const features = JSON.parse(house.features || '{}');
+          return features.bedrooms?.toString() === bedrooms;
+        } catch {
+          return false;
+        }
+      })
+    }
+
+    setFilteredHouses(filtered)
+  }, [houses, searchQuery, priceRange, propertyType, bedrooms])
 
   return (
     <div className="space-y-6">
@@ -111,19 +145,49 @@ export function HouseListings() {
       {/* Results */}
       <div className="flex justify-between items-center">
         <p className="text-gray-600">
-          Showing {paginatedHouses.length} of {filteredHouses.length} properties
+          {loading ? 'Loading...' : `Showing ${filteredHouses.length} of ${total} properties`}
         </p>
       </div>
       
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-[#007a7f]" />
+          <span className="ml-2 text-gray-600">Loading houses...</span>
+        </div>
+      )}
+      
+      {/* Error State */}
+      {error && (
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-4">Error loading houses: {error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline"
+            className="cursor-pointer"
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+      
       {/* House Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedHouses.map((house) => (
-          <HouseCard key={house.id} house={house} />
-        ))}
-      </div>
+      {!loading && !error && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredHouses.length > 0 ? (
+            filteredHouses.map((house) => (
+              <HouseCard key={house.id} house={house} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-600">No houses found matching your criteria.</p>
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Pagination */}
-      {totalPages > 1 && (
+      {!loading && !error && totalPages > 1 && (
         <div className="flex justify-center items-center space-x-2 mt-8">
           <Button
             variant="outline"
@@ -136,7 +200,7 @@ export function HouseListings() {
             Previous
           </Button>
           
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((page) => (
             <Button
               key={page}
               variant={currentPage === page ? "default" : "outline"}

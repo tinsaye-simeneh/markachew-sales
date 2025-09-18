@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { API_CONFIG } from './config';
+import { API_CONFIG, PaginatedResponse } from './config';
 import type {
   Job,
   CreateJobRequest,
@@ -42,12 +42,27 @@ export class JobsService {
   }> {
     const response = await apiClient.get<{
       jobs: Job[];
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-    }>(API_CONFIG.ENDPOINTS.JOBS.LIST, { page, limit });
-    return response.data;
+      meta: {
+        currentPage: number;
+        perPage: number;
+        totalItems: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+    }>(
+      API_CONFIG.ENDPOINTS.JOBS.LIST, 
+      { page, limit }
+    );
+    
+    // Transform the response to match expected structure
+    return {
+      jobs: response.data.jobs || [],
+      total: response.data.meta.totalItems,
+      page: response.data.meta.currentPage,
+      limit: response.data.meta.perPage,
+      totalPages: response.data.meta.totalPages,
+    };
   }
 
   async getJob(jobId: string): Promise<Job> {
@@ -101,12 +116,24 @@ export class HousesService {
   }> {
     const response = await apiClient.get<{
       houses: House[];
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
+      meta: {
+        currentPage: number;
+        perPage: number;
+        totalItems: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
     }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, { page, limit });
-    return response.data;
+    
+    // Transform the response to match expected structure
+    return {
+      houses: response.data.houses || [],
+      total: response.data.meta.totalItems,
+      page: response.data.meta.currentPage,
+      limit: response.data.meta.perPage,
+      totalPages: response.data.meta.totalPages,
+    };
   }
 
   async getHouse(houseId: string): Promise<House> {
