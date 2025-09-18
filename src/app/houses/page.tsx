@@ -43,7 +43,8 @@ export default function HousesPage() {
       filtered = filtered.filter(house =>
         house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        house.description.toLowerCase().includes(searchTerm.toLowerCase())
+        house.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        house.category.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -81,16 +82,16 @@ export default function HousesPage() {
     // Sort
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price)
+        filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
         break
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price)
+        filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price))
         break
       case 'newest':
-        filtered.sort((a, b) => b.yearBuilt - a.yearBuilt)
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         break
       case 'oldest':
-        filtered.sort((a, b) => a.yearBuilt - b.yearBuilt)
+        filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         break
     }
 
