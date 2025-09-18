@@ -14,7 +14,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isLoading && (!user || (user.user_type !== UserType.ADMIN && user.user_type !== UserType.SUPER_ADMIN))) {
-      router.push('/admin')
+      router.push('/')
     }
   }, [user, isLoading, router])
 
