@@ -45,12 +45,10 @@ export function useCurrentUserProfile() {
       } catch (err) {
         // Check if it's a 404 (profile doesn't exist) vs other errors
         if (err instanceof Error && (err.message.includes('404') || err.message.includes('Profile not found'))) {
-          console.log('Profile does not exist yet');
           setProfile(null); // This will trigger the create profile flow
           setError(null); // Clear error for 404
         } else {
           setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-          console.error('Current profile fetch error:', err);
         }
       } finally {
         setLoading(false);

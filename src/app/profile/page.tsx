@@ -205,7 +205,6 @@ export default function ProfilePage() {
     setIsChangingPassword(false)
     
     // You could show a success message here
-    console.log('Password changed successfully')
   }
 
   const handleClosePasswordModal = () => {

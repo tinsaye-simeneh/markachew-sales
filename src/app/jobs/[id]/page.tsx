@@ -69,17 +69,17 @@ export default function JobDetailPage() {
     try {
       const requirements = JSON.parse(job.requirements || '{}');
       return {
-        experience: requirements.experience || 'N/A',
-        type: requirements.type || 'N/A',
-        location: requirements.location || 'N/A',
-        salary: requirements.salary || 'N/A'
+        experience: requirements.experience || 'Experience Not specified',
+        type: requirements.type || 'Type Not specified',
+        location: requirements.location || 'Location Not specified',
+        salary: requirements.salary || 'Salary Not specified'
       };
     } catch {
       return {
-        experience: 'N/A',
-        type: 'N/A',
-        location: 'N/A',
-        salary: 'N/A'
+        experience: 'Experience Not specified',
+        type: 'Type Not specified',
+        location: 'Location Not specified',
+        salary: 'Salary Not specified'
       };
     }
   }
@@ -165,8 +165,7 @@ export default function JobDetailPage() {
                       {jobDetails.location}
                     </div>
                     <div className="flex space-x-2">
-                      <Badge variant="secondary">{jobDetails.type}</Badge>
-                      <Badge variant="outline">{jobDetails.experience}</Badge>
+                      <Badge variant="outline">{jobDetails.type}</Badge>
                     </div>
                   </div>
                   <div className="flex space-x-2">
@@ -216,7 +215,7 @@ export default function JobDetailPage() {
               <CardContent className="p-6">
                 <Button 
                   onClick={handleApply}
-                  disabled={hasApplied}
+                  disabled={hasApplied || job.status !== 'active' || !job.link}
                   className="w-full mb-4 cursor-pointer"
                 >
                   {hasApplied ? (
@@ -225,10 +224,12 @@ export default function JobDetailPage() {
                       Applied
                     </>
                   ) : (
-                    <>
+                     
+                      <>
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Apply Now
                     </>
+                    
                   )}
                 </Button>
 
