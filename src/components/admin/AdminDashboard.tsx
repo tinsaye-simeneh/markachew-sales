@@ -14,98 +14,43 @@ import {
   Eye,
   MessageSquare,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  RefreshCw
 } from 'lucide-react'
-
-interface DashboardStats {
-  totalUsers: number
-  totalJobs: number
-  totalHouses: number
-  totalApplications: number
-  recentUsers: number
-  recentJobs: number
-  recentHouses: number
-  recentApplications: number
-}
-
-const mockStats: DashboardStats = {
-  totalUsers: 1248,
-  totalJobs: 89,
-  totalHouses: 156,
-  totalApplications: 342,
-  recentUsers: 23,
-  recentJobs: 5,
-  recentHouses: 8,
-  recentApplications: 17
-}
-
-const recentActivity = [
-  {
-    id: 1,
-    type: 'user_registration',
-    message: 'New user registered: John Doe',
-    time: '2 minutes ago',
-    status: 'success'
-  },
-  {
-    id: 2,
-    type: 'job_posted',
-    message: 'New job posted: Software Engineer',
-    time: '15 minutes ago',
-    status: 'info'
-  },
-  {
-    id: 3,
-    type: 'house_listed',
-    message: 'New house listed in Downtown',
-    time: '1 hour ago',
-    status: 'info'
-  },
-  {
-    id: 4,
-    type: 'application_submitted',
-    message: 'Application submitted for Marketing Manager',
-    time: '2 hours ago',
-    status: 'warning'
-  },
-  {
-    id: 5,
-    type: 'user_verification',
-    message: 'User verification pending: Jane Smith',
-    time: '3 hours ago',
-    status: 'warning'
-  }
-]
+import { useAdminStats, useAdminActivityLog } from '@/hooks/useAdminApi'
+import { useRouter } from 'next/navigation'
 
 export function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats>(mockStats)
+  const router = useRouter()
+  const { stats, loading: statsLoading, error: statsError, refetch: refetchStats } = useAdminStats()
+  const { activities, loading: activitiesLoading, refetch: refetchActivities } = useAdminActivityLog()
 
   const statCards = [
     {
       title: 'Total Users',
-      value: stats.totalUsers,
-      change: stats.recentUsers,
+      value: stats?.totalUsers || 0,
+      change: stats?.recentUsers || 0,
       icon: Users,
       color: 'blue'
     },
     {
       title: 'Total Jobs',
-      value: stats.totalJobs,
-      change: stats.recentJobs,
+      value: stats?.totalJobs || 0,
+      change: stats?.recentJobs || 0,
       icon: Briefcase,
       color: 'green'
     },
     {
       title: 'Total Houses',
-      value: stats.totalHouses,
-      change: stats.recentHouses,
+      value: stats?.totalHouses || 0,
+      change: stats?.recentHouses || 0,
       icon: Building,
       color: 'purple'
     },
     {
       title: 'Total Applications',
-      value: stats.totalApplications,
-      change: stats.recentApplications,
+      value: stats?.totalApplications || 0,
+      change: stats?.recentApplications || 0,
       icon: FileText,
       color: 'orange'
     }
@@ -124,13 +69,55 @@ export function AdminDashboard() {
     }
   }
 
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date()
+    const time = new Date(timestamp)
+    const diffInMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60))
+    
+    if (diffInMinutes < 1) return 'Just now'
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`
+    return `${Math.floor(diffInMinutes / 1440)} days ago`
+  }
+
+  const handleRefresh = () => {
+    refetchStats()
+    refetchActivities()
+  }
+
+  if (statsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (statsError) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500 mb-4">Error loading dashboard: {statsError}</p>
+        <Button onClick={handleRefresh} variant="outline" className='cursor-pointer'>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold leading-tight text-gray-900">Dashboard Overview</h3>
-        <p className="mt-2 text-sm text-gray-600">
-          Welcome to the admin dashboard. Here's what's happening in your application.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-bold leading-tight text-gray-900">Dashboard Overview</h3>
+          <p className="mt-2 text-sm text-gray-600">
+            Welcome to the admin dashboard. Here's what's happening in your application.
+          </p>
+        </div>
+        <Button onClick={handleRefresh} variant="outline" size="sm" className='cursor-pointer'>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
       </div>
 
       {/* Stats Grid */}
@@ -168,15 +155,21 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center space-x-3">
-                  {getStatusIcon(activity.status)}
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
-                  </div>
+              {activitiesLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <RefreshCw className="h-4 w-4 animate-spin" />
                 </div>
-              ))}
+              ) : (
+                activities.slice(0, 5).map((activity) => (
+                  <div key={activity.id} className="flex items-center space-x-3">
+                    {getStatusIcon(activity.status)}
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium leading-none">{activity.message}</p>
+                      <p className="text-xs text-muted-foreground">{formatTimeAgo(activity.timestamp)}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
             <div className="mt-4">
               <Button variant="outline" size="sm" className="w-full">
@@ -193,21 +186,37 @@ export function AdminDashboard() {
             <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full justify-start" variant="outline">
+            <Button 
+              className="w-full justify-start" 
+              variant="outline"
+              onClick={() => router.push('/admin/users')}
+            >
               <Users className="mr-2 h-4 w-4" />
               Manage Users
             </Button>
-            <Button className="w-full justify-start" variant="outline">
+            <Button 
+              className="w-full justify-start" 
+              variant="outline"
+              onClick={() => router.push('/admin/jobs')}
+            >
               <Briefcase className="mr-2 h-4 w-4" />
               Review Job Postings
             </Button>
-            <Button className="w-full justify-start" variant="outline">
+            <Button 
+              className="w-full justify-start" 
+              variant="outline"
+              onClick={() => router.push('/admin/houses')}
+            >
               <Building className="mr-2 h-4 w-4" />
               Approve House Listings
             </Button>
-            <Button className="w-full justify-start" variant="outline">
+            <Button 
+              className="w-full justify-start" 
+              variant="outline"
+              onClick={() => router.push('/admin/applications')}
+            >
               <FileText className="mr-2 h-4 w-4" />
-              Generate Reports
+              Review Applications
             </Button>
           </CardContent>
         </Card>

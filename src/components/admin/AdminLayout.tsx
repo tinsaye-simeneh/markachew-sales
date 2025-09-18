@@ -82,10 +82,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Button
                       key={item.name}
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start ${
+                      className={`w-full cursor-pointer justify-start ${
                         isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-primary text-white'
+                          : 'text-gray-900 hover:bg-gray-800 hover:text-white'
                       }`}
                       onClick={() => {
                         router.push(item.href)
@@ -119,10 +119,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <Button
                       key={item.name}
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start ${
+                      className={`w-full cursor-pointer justify-start ${
                         isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-primary text-white'
+                          : 'text-gray-900 hover:bg-gray-800 hover:text-white'
                       }`}
                       onClick={() => router.push(item.href)}
                     >
@@ -160,12 +160,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleGoToMain}
-                className="hidden md:inline-flex"
+                className="hidden md:inline-flex cursor-pointer"
               >
                 Go to Main Site
               </Button>
               
-              <Button variant="ghost" size="sm" className="relative">
+              <Button variant="ghost" size="sm" className="relative cursor-pointer">
                 <Bell className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                   3
@@ -195,16 +195,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/admin/profile')}>
+                  <DropdownMenuItem onClick={() => router.push('/admin/profile')} className='cursor-pointer'>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/admin/settings')}>
+                  <DropdownMenuItem onClick={() => router.push('/admin/settings')} className='cursor-pointer'>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>

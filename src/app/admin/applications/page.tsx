@@ -8,25 +8,21 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
-  Briefcase, 
-  Plus, 
-  Search, 
-  Filter, 
+  FileText, 
   MoreHorizontal,
   Edit,
   Trash2,
   CheckCircle,
   XCircle,
   RefreshCw,
-  Eye
+  Eye,
+  User,
+  Briefcase
 } from 'lucide-react'
-import { useAdminJobs } from '@/hooks/useAdminApi'
+import { useAdminApplications } from '@/hooks/useAdminApi'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { useRouter } from 'next/navigation'
-import { Label } from '@/components/ui/label'
 
-export default function AdminJobsPage() {
-  const router = useRouter()
+export default function AdminApplicationsPage() {
   const [filters, setFilters] = useState({
     status: '',
     search: ''
@@ -34,18 +30,16 @@ export default function AdminJobsPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   const {
-    jobs,
+    applications,
     total,
     page,
     totalPages,
     loading,
     error,
-    fetchJobs,
-    updateJob,
-    deleteJob,
-    approveJob,
-    rejectJob
-  } = useAdminJobs({ ...filters, page: currentPage })
+    fetchApplications,
+    updateApplication,
+    deleteApplication
+  } = useAdminApplications({ ...filters, page: currentPage })
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value === 'all' ? '' : value }))
@@ -57,32 +51,32 @@ export default function AdminJobsPage() {
     setCurrentPage(1)
   }
 
-  const handleJobAction = async (action: string, jobId: string, reason?: string) => {
+  const handleApplicationAction = async (action: string, applicationId: string) => {
     try {
       switch (action) {
-        case 'approve':
-          await approveJob(jobId)
+        case 'accept':
+          await updateApplication(applicationId, { status: 'accepted' })
           break
         case 'reject':
-          await rejectJob(jobId, reason || 'Administrative rejection')
+          await updateApplication(applicationId, { status: 'rejected' })
           break
         case 'delete':
-          if (confirm('Are you sure you want to delete this job?')) {
-            await deleteJob(jobId)
+          if (confirm('Are you sure you want to delete this application?')) {
+            await deleteApplication(applicationId)
           }
           break
       }
     } catch (error) {
-      console.error('Error performing job action:', error)
+      console.error('Error performing application action:', error)
     }
   }
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      active: 'default',
-      inactive: 'secondary',
       pending: 'outline',
-      expired: 'destructive'
+      reviewed: 'secondary',
+      accepted: 'default',
+      rejected: 'destructive'
     } as const
 
     return (
@@ -92,7 +86,7 @@ export default function AdminJobsPage() {
     )
   }
 
-  if (loading && jobs.length === 0) {
+  if (loading && applications.length === 0) {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center h-64">
@@ -101,25 +95,16 @@ export default function AdminJobsPage() {
       </AdminLayout>
     )
   }
-  return (  
+
+  return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-2xl font-bold leading-tight text-gray-900">Job Management</h3>
+            <h3 className="text-2xl font-bold leading-tight text-gray-900">Application Management</h3>
             <p className="mt-2 text-sm text-gray-600">
-              Manage and monitor all job postings on the platform.
+              Manage and monitor all job applications on the platform.
             </p>
-          </div>
-            <div className='flex gap-5'>
-            <Button variant="outline" onClick={() => fetchJobs()} className='cursor-pointer'>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-          <Button className='cursor-pointer' onClick={() => router.push('/admin/jobs/add')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Job
-          </Button>
           </div>
         </div>
 
@@ -127,50 +112,48 @@ export default function AdminJobsPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
-              <Briefcase className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
+              <FileText className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{total.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">All job postings</p>
+              <p className="text-xs text-muted-foreground">All applications</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-              <Briefcase className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+              <FileText className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.filter(j => j.status === 'active').length}
+                {applications.filter(a => a.status === 'pending').length}
               </div>
-              <p className="text-xs text-muted-foreground">
-                {total > 0 ? Math.round((jobs.filter(j => j.status === 'active').length / total) * 100) : 0}% of total
-              </p>
+              <p className="text-xs text-muted-foreground">Awaiting review</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-              <Briefcase className="h-4 w-4 text-purple-600" />
+              <CardTitle className="text-sm font-medium">Accepted</CardTitle>
+              <FileText className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.reduce((sum, job) => sum + (job.applications_count || 0), 0)}
+                {applications.filter(a => a.status === 'accepted').length}
               </div>
-              <p className="text-xs text-muted-foreground">Across all jobs</p>
+              <p className="text-xs text-muted-foreground">Successfully accepted</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
-              <Briefcase className="h-4 w-4 text-orange-600" />
+              <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+              <FileText className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.filter(j => j.status === 'pending').length}
+                {applications.filter(a => a.status === 'rejected').length}
               </div>
-              <p className="text-xs text-muted-foreground">Requires review</p>
+              <p className="text-xs text-muted-foreground">Not selected</p>
             </CardContent>
           </Card>
         </div>
@@ -178,44 +161,38 @@ export default function AdminJobsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <div className='mt-1' >
-              <Label htmlFor="search" className='mb-2'>Search</Label>
-              <Input
-                id="search" 
-                placeholder="Search jobs by title or description..."
-                value={filters.search}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full"
-              />
-            </div>
+            <Input
+              placeholder="Search applications by applicant name or job title..."
+              value={filters.search}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full"
+            />
           </div>
           <div className="flex gap-2">
-            <div>
-                  <Label htmlFor="status" className='mb-2'>Status</Label>
             <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
+                <SelectItem value="reviewed">Reviewed</SelectItem>
+                <SelectItem value="accepted">Accepted</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
-            </div>
-            <div>
-                
-            </div>
-            </div>
+            <Button variant="outline" size="sm" onClick={() => fetchApplications()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
         </div>
 
-        {/* Jobs Table */}
+        {/* Applications Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Job Listings</CardTitle>
-            <CardDescription>Manage all job postings and applications</CardDescription>
+            <CardTitle>Job Applications</CardTitle>
+            <CardDescription>Manage all job applications and their status</CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
@@ -228,27 +205,41 @@ export default function AdminJobsPage() {
                 <div className="flex items-center justify-center py-8">
                   <RefreshCw className="h-6 w-6 animate-spin" />
                 </div>
-              ) : jobs.length === 0 ? (
+              ) : applications.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">No jobs found</p>
+                  <p className="text-gray-500">No applications found</p>
                 </div>
               ) : (
-                jobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg">
+                applications.map((application) => (
+                  <div key={application.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="text-lg font-medium">{job.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{job.description}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                            <span>Posted by: {job.employer?.full_name || job.employer_name || 'Unknown'}</span>
-                            <span>Applications: {job.applications_count || 0}</span>
-                            <span>Views: {job.views_count || 0}</span>
-                            <span>Posted: {new Date(job.createdAt).toLocaleDateString()}</span>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Briefcase className="h-4 w-4 text-gray-400" />
+                            <h3 className="text-lg font-medium">{application.job_title}</h3>
                           </div>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <User className="h-4 w-4 text-gray-400" />
+                            <span className="text-sm text-gray-600">
+                              Applied by: {application.applicant_name}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-4 text-xs text-gray-500">
+                            <span>Employer: {application.employer_name}</span>
+                            <span>Applied: {new Date(application.createdAt).toLocaleDateString()}</span>
+                            {application.updatedAt !== application.createdAt && (
+                              <span>Updated: {new Date(application.updatedAt).toLocaleDateString()}</span>
+                            )}
+                          </div>
+                          {application.cover_letter && (
+                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                              {application.cover_letter}
+                            </p>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2 ml-4">
-                          {getStatusBadge(job.status)}
+                          {getStatusBadge(application.status)}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm">
@@ -256,32 +247,32 @@ export default function AdminJobsPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => console.log('View job', job.id)}>
+                              <DropdownMenuItem onClick={() => console.log('View application', application.id)}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => console.log('Edit job', job.id)}>
+                              <DropdownMenuItem onClick={() => console.log('Edit application', application.id)}>
                                 <Edit className="mr-2 h-4 w-4" />
-                                Edit Job
+                                Edit Application
                               </DropdownMenuItem>
-                              {job.status === 'pending' && (
+                              {application.status === 'pending' && (
                                 <>
-                                  <DropdownMenuItem onClick={() => handleJobAction('approve', job.id)}>
+                                  <DropdownMenuItem onClick={() => handleApplicationAction('accept', application.id)}>
                                     <CheckCircle className="mr-2 h-4 w-4" />
-                                    Approve Job
+                                    Accept Application
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleJobAction('reject', job.id)}>
+                                  <DropdownMenuItem onClick={() => handleApplicationAction('reject', application.id)}>
                                     <XCircle className="mr-2 h-4 w-4" />
-                                    Reject Job
+                                    Reject Application
                                   </DropdownMenuItem>
                                 </>
                               )}
                               <DropdownMenuItem 
-                                onClick={() => handleJobAction('delete', job.id)}
+                                onClick={() => handleApplicationAction('delete', application.id)}
                                 className="text-red-600"
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Job
+                                Delete Application
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -297,7 +288,7 @@ export default function AdminJobsPage() {
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-6">
                 <p className="text-sm text-gray-500">
-                  Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, total)} of {total} jobs
+                  Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, total)} of {total} applications
                 </p>
                 <div className="flex space-x-2">
                   <Button

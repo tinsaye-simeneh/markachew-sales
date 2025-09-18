@@ -3,6 +3,7 @@ export * from './config';
 export * from './client';
 export * from './auth';
 export * from './services';
+export * from './admin-services';
 
 // Re-export commonly used services for convenience
 export { apiClient } from './client';
@@ -16,3 +17,4 @@ export {
   paymentsService,
   ratingsService,
 } from './services';
+export { adminService } from './admin-services';
