@@ -2,13 +2,17 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { X, Mail, Clock, ArrowLeft } from 'lucide-react'
+import { UserType } from '@/lib/api'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
+import { StepIndicator } from './StepIndicator'
+import { Step1 } from './Step1'
+import { Step2 } from './Step2'
+import { Step3 } from './Step3'
+import { RegistrationNavigation } from './RegistrationNavigation'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -16,20 +20,44 @@ interface RegisterModalProps {
   onSwitchToLogin: () => void
 }
 
+
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
+  // Lock body scroll when modal is open
+  useBodyScrollLock(isOpen)
+
+  // Step management
+  const [currentStep, setCurrentStep] = useState(1)
+  const totalSteps = 3
+
+  // Step 1: Basic user information
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [userType, setUserType] = useState<'employee' | 'employer' | 'buyer' | 'seller'>('buyer')
-  const [error, setError] = useState('')
-  const [showOTP, setShowOTP] = useState(false)
+  const [userType, setUserType] = useState<UserType>(UserType.BUYER)
+
+  // Step 2: Profile information
+  const [location, setLocation] = useState('')
+  const [address, setAddress] = useState('')
+  const [degree, setDegree] = useState('')
+  const [department, setDepartment] = useState('')
+  const [experience, setExperience] = useState('')
+  const [availability, setAvailability] = useState<'FULL_TIME' | 'PART_TIME' | 'CONTRACT'>('FULL_TIME')
+  const [salaryExpectation, setSalaryExpectation] = useState('')
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [document, setDocument] = useState<File | null>(null)
+  const [license, setLicense] = useState<File | null>(null)
+
+  // Step 3: Email verification
   const [otp, setOtp] = useState('')
   const [timeLeft] = useState(300) // 5 minutes
+
+  // Error and loading states
+  const [error, setError] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const {  completeRegistration, isLoading } = useAuth()
+  const { register, isLoading, error: authError } = useAuth()
   const router = useRouter()
 
   // Static OTP for demo
@@ -42,50 +70,132 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     return ethiopianPhoneRegex.test(phone)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    
-    // Validate required fields
+  // Step validation functions
+  const validateStep1 = (): boolean => {
     if (!name.trim()) {
       setError('Full name is required')
-      return
+      return false
     }
-    
     if (!email.trim()) {
       setError('Email is required')
-      return
+      return false
     }
-    
     if (!password) {
       setError('Password is required')
-      return
+      return false
     }
-    
     if (!confirmPassword) {
       setError('Please confirm your password')
-      return
+      return false
     }
-
-    // Validate phone number format if provided
-    if (phone && !validatePhoneNumber(phone)) {
-      setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
-      return
-    }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match')
-      return
+      return false
     }
-
     if (password.length < 6) {
       setError('Password must be at least 6 characters')
-      return
+      return false
     }
+    if (phone && !validatePhoneNumber(phone)) {
+      setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
+      return false
+    }
+    return true
+  }
 
-    // Simulate registration and show OTP
-    setShowOTP(true)
+  const validateStep2 = (): boolean => {
+    if (!location.trim()) {
+      setError('Location is required')
+      return false
+    }
+    if (!address.trim()) {
+      setError('Address is required')
+      return false
+    }
+    
+    // Employee-specific validation
+    if (userType === UserType.EMPLOYEE) {
+      if (!degree.trim()) {
+        setError('Degree/Education is required for employees')
+        return false
+      }
+      if (!department.trim()) {
+        setError('Department is required for employees')
+        return false
+      }
+      if (experience && isNaN(Number(experience))) {
+        setError('Experience must be a valid number')
+        return false
+      }
+      if (salaryExpectation && isNaN(Number(salaryExpectation))) {
+        setError('Salary expectation must be a valid number')
+        return false
+      }
+    }
+    
+    return true
+  }
+
+  // Step navigation
+  const nextStep = () => {
     setError('')
+    if (currentStep === 1 && validateStep1()) {
+      setCurrentStep(2)
+    } else if (currentStep === 2 && validateStep2()) {
+      setCurrentStep(3)
+    }
+  }
+
+  const prevStep = () => {
+    setError('')
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  // Reset form
+  const resetForm = () => {
+    setCurrentStep(1)
+    setName('')
+    setEmail('')
+    setPhone('')
+    setPassword('')
+    setConfirmPassword('')
+    setUserType(UserType.BUYER)
+    setLocation('')
+    setAddress('')
+    setDegree('')
+    setDepartment('')
+    setExperience('')
+    setAvailability('FULL_TIME')
+    setSalaryExpectation('')
+    setPhoto(null)
+    setDocument(null)
+    setLicense(null)
+    setOtp('')
+    setError('')
+    setOtpError('')
+  }
+
+  const handleFinalSubmit = async () => {
+    setError('')
+    
+    // Register user with API
+    const success = await register(name, email, phone, password, userType)
+    if (success) {
+      // User registration successful, now create profile
+      try {
+        // Profile creation will be handled by the profile page
+        onClose()
+        resetForm()
+        router.push('/profile')
+      } catch (error) {
+        console.error('Profile creation error:', error)
+        setError('Registration successful, but profile creation failed. Please complete your profile manually.')
+      }
+    } else {
+      setError(authError || 'Registration failed')
+    }
   }
 
   const handleOTPSubmit = async (e: React.FormEvent) => {
@@ -97,22 +207,8 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     if (otp === STATIC_OTP) {
-      // Complete registration
-      completeRegistration(name, email, userType)
-      
-      // Reset form and close modal
-      setName('')
-      setEmail('')
-      setPhone('')
-      setPassword('')
-      setConfirmPassword('')
-      setUserType('buyer')
-      setShowOTP(false)
-      setOtp('')
-      onClose()
-      
-      // Redirect to home page
-      router.push('/')
+      // Complete registration and create profile
+      await handleFinalSubmit()
     } else {
       setOtpError('Invalid OTP. Please try again.')
     }
@@ -120,17 +216,12 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     setIsVerifying(false)
   }
 
-  const handleOTPBack = () => {
-    setShowOTP(false)
-    setOtp('')
-    setOtpError('')
+  // File upload handlers
+  const handleFileUpload = (setter: (file: File | null) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null
+    setter(file)
   }
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '') // Only allow digits
@@ -140,11 +231,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     }
   }
 
+
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md relative">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
+      <Card className="w-full max-w-lg relative max-h-[90vh] flex flex-col">
         <Button
           variant="ghost"
           size="sm"
@@ -154,181 +251,70 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           <X className="h-4 w-4" />
         </Button>
         
-        {!showOTP ? (
-          <>
-            <CardHeader>
-              <CardTitle>Create Account</CardTitle>
-              <CardDescription>
-                Join our platform to find your dream home or job
-              </CardDescription>
-            </CardHeader>
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <div className="p-6 pb-8">
+            <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
             
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number (Optional)</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="09xxxxxxxx or +2519xxxxxxxx"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="userType">Account Type</Label>
-                  <Select value={userType} onValueChange={(value: 'employee' | 'employer' | 'buyer' | 'seller') => setUserType(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select account type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="buyer">House Buyer</SelectItem>
-                      <SelectItem value="seller">House Seller</SelectItem>
-                      <SelectItem value="employee">Job Seeker</SelectItem>
-                      <SelectItem value="employer">Employer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Create a password (min 6 characters)"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                {error && (
-                  <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                    {error}
-                  </div>
-                )}
-                
-                <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Create Account'}
-                </Button>
-              </form>
-              
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{' '}
-                <button
-                  type="button"
-                  className="text-[#007a7f] hover:underline cursor-pointer"
-                  onClick={onSwitchToLogin}
-                >
-                  Sign in
-                </button>
-              </div>
-            </CardContent>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute left-2 top-2 z-10 cursor-pointer"
-              onClick={handleOTPBack}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            
-            <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <Mail className="h-6 w-6 text-green-600" />
-              </div>
-              <CardTitle>Verify Your Email</CardTitle>
-              <CardDescription>
-                We&apos;ve sent a 6-digit verification code to
-              </CardDescription>
-              <div className="font-medium text-[#007a7f]">{email}</div>
-            </CardHeader>
-            
-            <CardContent>
-              <form onSubmit={handleOTPSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="otp">Enter Verification Code</Label>
-                  <Input
-                    id="otp"
-                    type="text"
-                    placeholder="123456"
-                    value={otp}
-                    onChange={handleOtpChange}
-                    className="text-center text-2xl tracking-widest"
-                    maxLength={6}
-                    required
-                  />
-                  <div className="text-center text-sm text-gray-500">
-                    <Clock className="h-4 w-4 inline mr-1" />
-                    Code expires in {formatTime(timeLeft)}
-                  </div>
-                </div>
-
-                {/* Demo OTP Display */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <div className="text-sm text-blue-800 font-medium mb-1">Demo Mode</div>
-                  <div className="text-sm text-blue-600">
-                    Use this code: <span className="font-mono font-bold">{STATIC_OTP}</span>
-                  </div>
-                </div>
-                
-                {otpError && (
-                  <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                    {otpError}
-                  </div>
-                )}
-                
-                <Button 
-                  type="submit" 
-                  className="w-full cursor-pointer" 
-                  disabled={isVerifying || otp.length !== 6}
-                >
-                  {isVerifying ? 'Verifying...' : 'Verify Email'}
-                </Button>
-              </form>
-            </CardContent>
-          </>
+            {currentStep === 1 && (
+              <Step1 
+                name={name} setName={setName}
+                email={email} setEmail={setEmail}
+                phone={phone} setPhone={setPhone}
+                userType={userType} setUserType={setUserType}
+                password={password} setPassword={setPassword}
+                confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step2 
+                location={location} setLocation={setLocation}
+                address={address} setAddress={setAddress}
+                degree={degree} setDegree={setDegree}
+                department={department} setDepartment={setDepartment}
+                experience={experience} setExperience={setExperience}
+                availability={availability} setAvailability={setAvailability}
+                salaryExpectation={salaryExpectation} setSalaryExpectation={setSalaryExpectation}
+                photo={photo} setPhoto={setPhoto}
+                document={document} setDocument={setDocument}
+                license={license} setLicense={setLicense}
+                userType={userType}
+                handleFileUpload={handleFileUpload}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step3 
+                email={email}
+                otp={otp}
+                timeLeft={timeLeft}
+                STATIC_OTP={STATIC_OTP}
+                otpError={otpError}
+                isVerifying={isVerifying}
+                handleOtpChange={handleOtpChange}
+                handleOTPSubmit={handleOTPSubmit}
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Error display */}
+        {error && (
+          <div className="border-t bg-white px-6 py-4">
+            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+              {error}
+            </div>
+          </div>
         )}
+        
+        {/* Navigation */}
+        <RegistrationNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          isLoading={isLoading}
+          onPrevStep={prevStep}
+          onNextStep={nextStep}
+          onSwitchToLogin={onSwitchToLogin}
+        />
       </Card>
     </div>
   )

@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
-import {  User, LogOut, Menu, X, Heart } from 'lucide-react'
+import {  User, LogOut, Menu, X, Heart, FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function Navbar() {
@@ -132,9 +132,9 @@ export function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="" alt={user.name || 'User'} />
+                        <AvatarImage src="" alt={user.full_name || 'User'} />
                         <AvatarFallback>
-                          {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                          {user.full_name ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -142,12 +142,12 @@ export function Navbar() {
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                        <p className="text-sm font-medium leading-none">{user.full_name}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground capitalize">
-                          {user.type}
+                          {user.user_type}
                         </p>
                       </div>
                     </DropdownMenuLabel>
@@ -156,6 +156,12 @@ export function Navbar() {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
+                    {user.user_type === 'EMPLOYEE' && (
+                      <DropdownMenuItem onClick={() => router.push('/applications')} className='cursor-pointer'>
+                        <FileText className="mr-2 h-4 w-4" />
+                        <span>My Applications</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => router.push('/saved')} className='cursor-pointer'>
                       <Heart className="mr-2 h-4 w-4" />
                       <span>Saved Items</span>
@@ -242,13 +248,13 @@ export function Navbar() {
                       <div className="px-3 py-2">
                         <div className="flex items-center space-x-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src="" alt={user.name || 'User'} />
+                            <AvatarImage src="" alt={user.full_name || 'User'} />
                             <AvatarFallback>
-                              {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                              {user.full_name ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                            <p className="text-sm font-medium text-gray-900">{user.full_name}</p>
                             <p className="text-xs text-gray-500">{user.email}</p>
                           </div>
                         </div>
@@ -260,6 +266,15 @@ export function Navbar() {
                         <User className="inline h-4 w-4 mr-2" />
                         Profile
                       </button>
+                      {user.user_type === 'EMPLOYEE' && (
+                        <button 
+                          onClick={() => { closeMobileMenu(); router.push('/applications'); }}
+                          className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                        >
+                          <FileText className="inline h-4 w-4 mr-2" />
+                          My Applications
+                        </button>
+                      )}
                       <button 
                         onClick={() => { closeMobileMenu(); router.push('/saved'); }}
                         className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"

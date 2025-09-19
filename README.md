@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+Before running the application, you need to set up the environment variables:
+
+1. Create a `.env.local` file in the root directory
+2. Add the following environment variable:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://employee.luckbingogames.com
+```
+
 ## Getting Started
 
 First, run the development server:

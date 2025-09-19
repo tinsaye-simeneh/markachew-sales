@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { LoadingPage } from '@/components/ui/loading'
-import { getHouseById } from '@/data/sampleData'
+import { useHouse } from '@/hooks/useApi'
 import { 
   ArrowLeft, 
   Heart, 
@@ -22,45 +22,23 @@ import {
   Phone,
   Mail,
   Star,
-  Shield
+  Shield,
+  Home
 } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-
-interface House {
-  id: string
-  title: string
-  price: number
-  location: string
-  bedrooms: number
-  bathrooms: number
-  area: number
-  image: string
-  description: string
-  features: string[]
-  type: string
-  yearBuilt: number
-  status: string
-  images: string[]
-  amenities: string[]
-  agent: {
-    name: string
-    phone: string
-    email: string
-    image: string
-    rating: number
-  }
-}
 
 export default function HouseDetailPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   const params = useParams()
-  const houseId = parseInt(params.id as string)
+  const houseId = params.id as string
   
-  const [house, setHouse] = useState<House | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
+
+  // Use API hook to fetch house data
+  const { house, loading: houseLoading, error: houseError } = useHouse(houseId)
 
   // Redirect if not logged in
   useEffect(() => {
@@ -68,14 +46,6 @@ export default function HouseDetailPage() {
       router.push('/')
     }
   }, [user, isLoading, router])
-
-  // Find house data
-  useEffect(() => {
-    const foundHouse = getHouseById(houseId.toString())
-    if (foundHouse) {
-      setHouse(foundHouse)
-    }
-  }, [houseId])
 
   const handleBack = () => {
     router.push('/houses')
@@ -85,20 +55,75 @@ export default function HouseDetailPage() {
     toast.success('Thank you for your message! We will get back to you soon.')
   }
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: string | number) => {
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('en-ET', {
       style: 'currency',
       currency: 'ETB',
       minimumFractionDigits: 0
-    }).format(price)
+    }).format(numPrice)
   }
 
-  if (isLoading) {
+  // Parse images JSON string
+  const getHouseImages = () => {
+    try {
+      const images = JSON.parse(house?.images || '[]');
+      return Array.isArray(images) && images.length > 0 ? images : [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Parse features JSON string
+  const getHouseFeatures = () => {
+    try {
+      const features = JSON.parse(house?.features || '{}');
+      return {
+        bedrooms: features.bedrooms || 'N/A',
+        bathrooms: features.bathrooms || 'N/A',
+        area: features.area || house?.area || 'N/A',
+        yearBuilt: features.yearBuilt || 'N/A',
+        amenities: features.amenities || []
+      };
+    } catch {
+      return {
+        bedrooms: 'N/A',
+        bathrooms: 'N/A',
+        area: house?.area || 'N/A',
+        yearBuilt: 'N/A',
+        amenities: []
+      };
+    }
+  }
+
+  const houseImages = getHouseImages();
+  const houseFeatures = getHouseFeatures();
+
+  if (isLoading || houseLoading) {
     return <LoadingPage />
   }
 
   if (!user) {
     return null
+  }
+
+  if (houseError) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading House</h1>
+            <p className="text-gray-600 mb-4">{houseError}</p>
+            <Button onClick={handleBack} className="cursor-pointer">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Houses
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
   }
 
   if (!house) {
@@ -140,11 +165,19 @@ export default function HouseDetailPage() {
             {/* Image Gallery */}
             <div className="mb-6">
               <div className="relative">
-                <Image
-                  src={house.images[currentImageIndex]}
-                  alt={house.title}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
+                {houseImages.length > 0 ? (
+                  <Image
+                    src={houseImages[currentImageIndex]}
+                    alt={house.title}
+                    className="w-full h-96 object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-full h-96 bg-gray-100 flex flex-col items-center justify-center text-gray-500 rounded-lg">
+                    <Home className="h-16 w-16 mb-4 text-gray-400" />
+                    <p className="text-lg font-medium">No images available</p>
+                    <p className="text-sm text-gray-400">{house.title}</p>
+                  </div>
+                )}
                 <div className="absolute top-4 right-4 flex space-x-2">
                   <Button
                     size="sm"
@@ -161,20 +194,22 @@ export default function HouseDetailPage() {
               </div>
               
               {/* Image Thumbnails */}
-              <div className="flex space-x-2 mt-4">
-                {house.images.map((image: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    aria-label={`View image ${index + 1} of ${house.title}`}
-                    className={`w-20 h-16 rounded-lg overflow-hidden border-2 ${
-                      currentImageIndex === index ? 'border-[#007a7f]' : 'border-gray-200'
-                    } cursor-pointer`}
-                  >
-                    <Image src={image} alt={`${house.title} ${index + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
+              {houseImages.length > 1 && (
+                <div className="flex space-x-2 mt-4">
+                  {houseImages.map((image: string, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      aria-label={`View image ${index + 1} of ${house.title}`}
+                      className={`w-20 h-16 rounded-lg overflow-hidden border-2 ${
+                        currentImageIndex === index ? 'border-[#007a7f]' : 'border-gray-200'
+                      } cursor-pointer`}
+                    >
+                      <Image src={image} alt={`${house.title} ${index + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Property Details */}
@@ -199,36 +234,38 @@ export default function HouseDetailPage() {
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Bed className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
                     <div className="text-sm text-gray-600">
-                    <span className="font-semibold mr-1">{house.bedrooms}</span>Bedrooms</div>
+                    <span className="font-semibold mr-1">{houseFeatures.bedrooms}</span>Bedrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Bath className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
                     <div className="text-sm text-gray-600">
-                    <span className="font-semibold mr-1">{house.bathrooms}</span>Bathrooms</div>
+                    <span className="font-semibold mr-1">{houseFeatures.bathrooms}</span>Bathrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Square className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
                     <div className="text-sm text-gray-600">
-                    <span className="font-semibold mr-1">{house.area}m²</span>Area</div>
+                    <span className="font-semibold mr-1">{houseFeatures.area}m²</span>Area</div>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold mb-3">Description</h3>
-                  <p className="text-gray-700 leading-relaxed">{house.description}</p>
+                  <p className="text-gray-700 leading-relaxed">{house.description || 'No description available'}</p>
                 </div>
 
                 {/* Amenities */}
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold mb-3">Amenities</h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {house.amenities.map((amenity: string, index: number) => (
+                    {houseFeatures.amenities.length > 0 ? houseFeatures.amenities.map((amenity: string, index: number) => (
                       <div key={index} className="flex items-center">
                         <div className="w-2 h-2 bg-[#007a7f] rounded-full mr-2"></div>
                         <span className="text-gray-700">{amenity}</span>
                       </div>
-                    ))}
+                    )) : (
+                      <p className="text-gray-500 col-span-2">No amenities listed</p>
+                    )}
                   </div>
                 </div>
 
@@ -238,7 +275,7 @@ export default function HouseDetailPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2 text-[#007a7f]" />
-                      <span className="text-gray-700">Year Built: {house.yearBuilt}</span>
+                      <span className="text-gray-700">Year Built: {houseFeatures.yearBuilt}</span>
                     </div>
                     <div className="flex items-center">
                       <Shield className="h-4 w-4 mr-2 text-[#007a7f]" />
@@ -257,16 +294,16 @@ export default function HouseDetailPage() {
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">Contact Agent</h3>
                 <div className="flex items-center mb-4">
-                  <Image
-                    src={house.agent.image}
-                    alt={house.agent.name}
-                    className="w-12 h-12 rounded-full mr-3"
-                  />
+                  <div className="w-12 h-12 rounded-full mr-3 bg-gray-200 flex items-center justify-center">
+                    <span className="text-lg font-semibold text-gray-600">
+                      {house.owner?.full_name?.charAt(0) || 'O'}
+                    </span>
+                  </div>
                   <div>
-                    <div className="font-semibold">{house.agent.name}</div>
+                    <div className="font-semibold">{house.owner?.full_name || 'Property Owner'}</div>
                     <div className="flex items-center text-sm text-gray-600">
                       <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                      {house.agent.rating}
+                      4.5
                     </div>
                   </div>
                 </div>
@@ -274,14 +311,14 @@ export default function HouseDetailPage() {
                 <div className="space-y-3">
                   <Button 
                     onClick={handleContactAgent}
-                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
+                    className={`w-full cursor-pointer ${house.status !== "active" ? "cursor-not-allowed opacity-60" : ""}`}
                   >
                     <Phone className="h-4 w-4 mr-2" />
-                    Call Agent
+                    Call Owner
                   </Button>
                   <Button 
                     variant="outline" 
-                    className={`w-full cursor-pointer ${house.status === "sold" ? "cursor-not-allowed opacity-60" : ""}`}
+                    className={`w-full cursor-pointer ${house.status !== "active" ? "cursor-not-allowed opacity-60" : ""}`}
                     >
                     <Mail className="h-4 w-4 mr-2" />
                     Send Message
@@ -301,19 +338,19 @@ export default function HouseDetailPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Bedrooms</span>
-                    <span className="font-medium">{house.bedrooms}</span>
+                    <span className="font-medium">{houseFeatures.bedrooms}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Bathrooms</span>
-                    <span className="font-medium">{house.bathrooms}</span>
+                    <span className="font-medium">{houseFeatures.bathrooms}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Area</span>
-                    <span className="font-medium">{house.area} m²</span>
+                    <span className="font-medium">{houseFeatures.area} m²</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Year Built</span>
-                    <span className="font-medium">{house.yearBuilt}</span>
+                    <span className="font-medium">{houseFeatures.yearBuilt}</span>
                   </div>
                 </div>
               </CardContent>

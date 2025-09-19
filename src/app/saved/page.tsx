@@ -9,6 +9,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Heart, Home, Briefcase } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { Job } from '@/lib/api'
 
 export default function SavedPage() {
   const { user, isLoading } = useAuth()
@@ -94,7 +95,7 @@ export default function SavedPage() {
           
           {favoriteJobs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteJobs.map((job) => (
+              {favoriteJobs.map((job: Job) => (
                 <JobCard key={job.id} job={job} />
               ))}
             </div>

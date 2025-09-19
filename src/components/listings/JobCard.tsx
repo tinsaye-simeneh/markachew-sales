@@ -7,7 +7,7 @@ import { MapPin, Clock, Building, Heart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { Job } from '@/data/sampleData'
+import { Job } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface JobCardProps {
@@ -36,7 +36,7 @@ export function JobCard({ job }: JobCardProps) {
     if (isFavorite(job.id, 'job')) {
       removeFromFavorites(job.id, 'job')
       toast.success("Removed from favorites", {
-        description: `${job.title} at ${job.company} has been removed from your saved list`,
+        description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been removed from your saved list`,
         action: {
           label: "View Saved",
           onClick: () => router.push('/saved')
@@ -45,7 +45,7 @@ export function JobCard({ job }: JobCardProps) {
     } else {
       addToFavorites(job, 'job')
       toast.success("Added to favorites!", {
-        description: `${job.title} at ${job.company} has been saved to your favorites`,
+        description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been saved to your favorites`,
         action: {
           label: "View Saved",
           onClick: () => router.push('/saved')
@@ -74,6 +74,28 @@ export function JobCard({ job }: JobCardProps) {
     }
   }
 
+  // Parse requirements to get experience and type
+  const getJobDetails = () => {
+    try {
+      const requirements = JSON.parse(job.requirements || '{}');
+      return {
+        experience: requirements.experience || 'Experience Not specified',
+        type: requirements.type || 'Type Not specified',
+        location: requirements.location || 'Location Not specified',
+        salary: requirements.salary || 'Salary Not specified'
+      };
+    } catch {
+      return {
+        experience: 'Experience Not specified',
+        type: 'Type Not specified',
+        location: 'Location Not specified',
+        salary: 'Salary Not specified'
+      };
+    }
+  };
+
+  const jobDetails = getJobDetails();
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => handleJobClick(job.id)}>
       <CardHeader className="pb-3">
@@ -84,11 +106,11 @@ export function JobCard({ job }: JobCardProps) {
             </h3>
             <div className="flex items-center text-gray-600 text-sm mb-2">
               <Building className="h-4 w-4 mr-1" />
-              {job.company}
+              {job.employer?.full_name || 'Unknown Company'}
             </div>
             <div className="flex items-center text-gray-600 text-sm">
               <MapPin className="h-4 w-4 mr-1" />
-              {job.location}
+              {jobDetails.location}
             </div>
           </div>
           
@@ -105,11 +127,11 @@ export function JobCard({ job }: JobCardProps) {
       
       <CardContent className="pt-0">
         <div className="flex flex-wrap gap-2 mb-3">
-          <Badge className={getTypeColor(job.type)}>
-            {job.type}
+          <Badge className={getTypeColor(jobDetails.type)}>
+            {jobDetails.type}
           </Badge>
-          <Badge className={getExperienceColor(job.experience)}>
-            {job.experience}
+          <Badge className={getExperienceColor(jobDetails.experience)}>
+            {jobDetails.experience}
           </Badge>
         </div>
         
@@ -119,11 +141,11 @@ export function JobCard({ job }: JobCardProps) {
         
         <div className="flex items-center justify-between">
           <div className="text-lg font-semibold text-[#007a7f]">
-            {job.salary}
+            {jobDetails.salary || 'Salary not specified'}
           </div>
           <div className="flex items-center text-gray-500 text-sm">
             <Clock className="h-4 w-4 mr-1" />
-            {job.postedDate}
+            {new Date(job.createdAt).toLocaleDateString()}
           </div>
         </div>
         

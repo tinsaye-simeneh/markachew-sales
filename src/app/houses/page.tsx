@@ -10,29 +10,31 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
-import { sampleHouses } from '@/data/sampleData'
+import { useHouses } from '@/hooks/useApi'
 import { Search, MapPin } from 'lucide-react'
+import { House } from '@/lib/api/config'
+
 
 export default function HousesPage() {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [houses] = useState(sampleHouses)
-  const [filteredHouses, setFilteredHouses] = useState(sampleHouses)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState('all')
   const [propertyType, setPropertyType] = useState('all')
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
+  const [filteredHouses, setFilteredHouses] = useState<House[] | []>([])
 
   const itemsPerPage = 6
+  const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push('/')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
 
   // Filter and search logic
   useEffect(() => {
@@ -43,22 +45,24 @@ export default function HousesPage() {
       filtered = filtered.filter(house =>
         house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         house.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        house.description.toLowerCase().includes(searchTerm.toLowerCase())
+        house.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        house.category.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
+        const price = parseFloat(house.price) || 0;
         switch (priceRange) {
           case 'under-5m':
-            return house.price < 5000000
+            return price < 5000000
           case '5m-10m':
-            return house.price >= 5000000 && house.price < 10000000
+            return price >= 5000000 && price < 10000000
           case '10m-20m':
-            return house.price >= 10000000 && house.price < 20000000
+            return price >= 10000000 && price < 20000000
           case 'over-20m':
-            return house.price >= 20000000
+            return price >= 20000000
           default:
             return true
         }
@@ -80,16 +84,16 @@ export default function HousesPage() {
     // Sort
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price)
+        filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price))
         break
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price)
+        filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price))
         break
       case 'newest':
-        filtered.sort((a, b) => b.yearBuilt - a.yearBuilt)
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         break
       case 'oldest':
-        filtered.sort((a, b) => a.yearBuilt - b.yearBuilt)
+        filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         break
     }
 
@@ -107,8 +111,19 @@ export default function HousesPage() {
     router.push(`/houses/${houseId}`)
   }
 
-  if (isLoading) {
+  if (authLoading || housesLoading) {
     return <LoadingPage />
+  }
+
+  if (housesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Houses</h2>
+          <p className="text-gray-600">{housesError}</p>
+        </div>
+      </div>
+    )
   }
 
   if (!user) {
@@ -208,7 +223,7 @@ export default function HousesPage() {
         {/* Houses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {currentHouses.map((house) => {
-  const clickable = house.status === "for-sale" || house.status === "for-rent";
+        const clickable = house.status === "active";
 
   return (
     <div

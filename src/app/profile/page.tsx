@@ -12,10 +12,12 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LoadingPage } from '@/components/ui/loading'
-import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Lock } from 'lucide-react'
+import { useCurrentUserProfile, useUpdateProfile } from '@/hooks/useProfile'
+import { CreateProfileModal } from '@/components/profile/CreateProfileModal'
+import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Lock, AlertCircle } from 'lucide-react'
 
 export default function ProfilePage() {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [showChangePassword, setShowChangePassword] = useState(false)
@@ -31,55 +33,124 @@ export default function ProfilePage() {
     email: '',
     phone: '',
     location: '',
+    address: '',
     userType: '',
-    joinDate: ''
+    joinDate: '',
+    photo: '',
+    degree: '',
+    department: '',
+    experience: '',
+    availability: '',
+    salary_expectation: ''
   })
+  const [updateMessage, setUpdateMessage] = useState('')
+  const [showCreateProfile, setShowCreateProfile] = useState(false)
+
+  // Fetch profile data
+  const { profile, loading: profileLoading, error: profileError } = useCurrentUserProfile()
+  const { updateProfile, loading: updateLoading } = useUpdateProfile()
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push('/')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
 
-  // Initialize profile data when user is loaded
+  // Initialize profile data when user or profile is loaded
   useEffect(() => {
     if (user) {
-      setProfileData({
-        name: user.name || '',
+      setProfileData(prev => ({
+        ...prev,
+        name: user.full_name || '',
         email: user.email || '',
-        phone: '',
-        location: 'Addis Ababa, Ethiopia',
-        userType: user.type || '',
-        joinDate: 'January 2024'
-      })
+        phone: user.phone || '',
+        userType: user.user_type || '',
+        joinDate: new Date(user.created_at).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long' 
+        })
+      }))
     }
   }, [user])
+
+  // Update profile data when profile is fetched
+  useEffect(() => {
+    if (profile) {
+      setProfileData(prev => ({
+        ...prev,
+        location: profile.location || '',
+        address: profile.address || '',
+        photo: profile.photo || '',
+        degree: profile.degree || '',
+        department: profile.department || '',
+        experience: profile.experience?.toString() || '',
+        availability: profile.availability || '',
+        salary_expectation: profile.salary_expectation?.toString() || ''
+      }))
+    }
+  }, [profile])
 
   const handleEdit = () => {
     setIsEditing(true)
   }
 
-  const handleSave = () => {
-    // Here you would typically save the data to your backend
-    console.log('Saving profile data:', profileData)
-    setIsEditing(false)
-    // You could show a success message here
+  const handleSave = async () => {
+    if (!user) return;
+    
+    try {
+      setUpdateMessage('');
+      await updateProfile(user.id, {
+        location: profileData.location,
+        address: profileData.address,
+        degree: profileData.degree,
+        department: profileData.department,
+        experience: profileData.experience ? parseInt(profileData.experience) : undefined,
+        availability: profileData.availability as 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | undefined,
+        salary_expectation: profileData.salary_expectation ? parseInt(profileData.salary_expectation) : undefined,
+      });
+      
+      setUpdateMessage('Profile updated successfully!');
+      setIsEditing(false);
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setUpdateMessage(''), 3000);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      setUpdateMessage('Failed to update profile. Please try again.');
+    }
   }
 
   const handleCancel = () => {
-    // Reset to original user data
+    // Reset to original profile data
     if (user) {
-      setProfileData({
-        name: user.name || '',
+      setProfileData(prev => ({
+        ...prev,
+        name: user.full_name || '',
         email: user.email || '',
-        phone: '',
-        location: 'Addis Ababa, Ethiopia',
-        userType: user.type || '',
-        joinDate: 'January 2024'
-      })
+        phone: user.phone || '',
+        userType: user.user_type || '',
+        joinDate: new Date(user.created_at).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long' 
+        })
+      }))
+    }
+    if (profile) {
+      setProfileData(prev => ({
+        ...prev,
+        location: profile.location || '',
+        address: profile.address || '',
+        photo: profile.photo || '',
+        degree: profile.degree || '',
+        department: profile.department || '',
+        experience: profile.experience?.toString() || '',
+        availability: profile.availability || '',
+        salary_expectation: profile.salary_expectation?.toString() || ''
+      }))
     }
     setIsEditing(false)
+    setUpdateMessage('')
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -134,7 +205,6 @@ export default function ProfilePage() {
     setIsChangingPassword(false)
     
     // You could show a success message here
-    console.log('Password changed successfully')
   }
 
   const handleClosePasswordModal = () => {
@@ -147,8 +217,64 @@ export default function ProfilePage() {
     setShowChangePassword(false)
   }
 
-  if (isLoading) {
+  if (authLoading || profileLoading) {
     return <LoadingPage />
+  }
+
+  // Check if user is authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <User className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Please Log In</h2>
+          <p className="text-gray-600 mb-4">You need to be logged in to view your profile</p>
+          <Button onClick={() => router.push('/')}>
+            Go to Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Error Loading Profile</h2>
+          <p className="text-gray-600 mb-4">{profileError}</p>
+          <div className="space-x-4">
+            <Button onClick={() => window.location.reload()} className='cursor-pointer'>
+              Try Again
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/')} className='cursor-pointer'>
+              Back to Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show create profile modal if no profile exists
+  if (!profileLoading && !profile && user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <User className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Failed to load profile</h2>
+          <p className="text-gray-600 mb-4">Please try again later</p>
+          <div className="space-x-4">
+
+            <Button onClick={() => router.push('/')} variant="outline" className='cursor-pointer'>
+              Go to Home
+            </Button>
+          </div>
+        </div>
+        
+      </div>
+    )
   }
 
   if (!user) {
@@ -164,6 +290,17 @@ export default function ProfilePage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
           <p className="text-gray-600">Manage your account information and preferences</p>
+          
+          {/* Update Message */}
+          {updateMessage && (
+            <div className={`mt-4 p-4 rounded-lg ${
+              updateMessage.includes('successfully') 
+                ? 'bg-green-100 text-green-800 border border-green-200' 
+                : 'bg-red-100 text-red-800 border border-red-200'
+            }`}>
+              {updateMessage}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -173,14 +310,14 @@ export default function ProfilePage() {
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="" alt={user.name || 'User'} />
+                    <AvatarImage src={profileData.photo} alt={profileData.name || 'User'} />
                     <AvatarFallback className="text-2xl">
-                      {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                      {profileData.name ? profileData.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <CardTitle className="text-xl">{user.name}</CardTitle>
-                <p className="text-gray-600 capitalize">{user.type}</p>
+                <CardTitle className="text-xl">{profileData.name}</CardTitle>
+                <p className="text-gray-600 capitalize">{profileData.userType}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -190,8 +327,20 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <MapPin className="h-4 w-4 mr-2" />
-                    {profileData.location}
+                    {profileData.location || 'Not specified'}
                   </div>
+                  {profileData.degree && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <User className="h-4 w-4 mr-2" />
+                      {profileData.degree}
+                    </div>
+                  )}
+                  {profileData.experience && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {profileData.experience} years experience
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -227,10 +376,11 @@ export default function ProfilePage() {
                       <Button 
                         size="sm" 
                         onClick={handleSave}
+                        disabled={updateLoading}
                         className="cursor-pointer"
                       >
                         <Save className="h-4 w-4 mr-2" />
-                        Save Changes
+                        {updateLoading ? 'Saving...' : 'Save Changes'}
                       </Button>
                     </div>
                   )}
@@ -240,7 +390,7 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Full Name</Label>
+                      <Label htmlFor="name" className='mb-2'>Full Name</Label>
                       {isEditing ? (
                         <Input
                           id="name"
@@ -256,7 +406,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email" className='mb-2'>Email Address</Label>
                       {isEditing ? (
                         <Input
                           id="email"
@@ -275,7 +425,7 @@ export default function ProfilePage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label htmlFor="phone" className='mb-2'>Phone Number</Label>
                       {isEditing ? (
                         <Input
                           id="phone"
@@ -293,7 +443,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="userType">Account Type</Label>
+                      <Label htmlFor="userType" className='mb-2'>Account Type</Label>
                       {isEditing ? (
                         <Select value={profileData.userType} onValueChange={(value) => handleInputChange('userType', value)}>
                           <SelectTrigger>
@@ -316,7 +466,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location" className='mb-2'>Location</Label>
                     {isEditing ? (
                       <Input
                         id="location"
@@ -326,10 +476,126 @@ export default function ProfilePage() {
                     ) : (
                       <div className="flex items-center mt-1">
                         <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                        <span className="text-gray-900">{profileData.location}</span>
+                        <span className="text-gray-900">{profileData.location || 'Not specified'}</span>
                       </div>
                     )}
                   </div>
+
+                  <div>
+                    <Label htmlFor="address" className='mb-2'>Address</Label>
+                    {isEditing ? (
+                      <Input
+                        id="address"
+                        value={profileData.address}
+                        onChange={(e) => handleInputChange('address', e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center mt-1">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                        <span className="text-gray-900">{profileData.address || 'Not specified'}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Employee-specific fields */}
+                  {profileData.userType === 'EMPLOYEE' && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="degree" className='mb-2'>Degree/Education</Label>
+                          {isEditing ? (
+                            <Input
+                              id="degree"
+                              value={profileData.degree}
+                              onChange={(e) => handleInputChange('degree', e.target.value)}
+                              placeholder="e.g., BSc Computer Science"
+                            />
+                          ) : (
+                            <div className="flex items-center mt-1">
+                              <User className="h-4 w-4 mr-2 text-gray-400" />
+                              <span className="text-gray-900">{profileData.degree || 'Not specified'}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="department" className='mb-2'>Department</Label>
+                          {isEditing ? (
+                            <Input
+                              id="department"
+                              value={profileData.department}
+                              onChange={(e) => handleInputChange('department', e.target.value)}
+                              placeholder="e.g., IT, Marketing"
+                            />
+                          ) : (
+                            <div className="flex items-center mt-1">
+                              <User className="h-4 w-4 mr-2 text-gray-400" />
+                              <span className="text-gray-900">{profileData.department || 'Not specified'}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="experience" className='mb-2'>Years of Experience</Label>
+                          {isEditing ? (
+                            <Input
+                              id="experience"
+                              type="number"
+                              value={profileData.experience}
+                              onChange={(e) => handleInputChange('experience', e.target.value)}
+                              placeholder="e.g., 5"
+                            />
+                          ) : (
+                            <div className="flex items-center mt-1">
+                              <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                              <span className="text-gray-900">{profileData.experience ? `${profileData.experience} years` : 'Not specified'}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <Label htmlFor="availability" className='mb-2'>Availability</Label>
+                          {isEditing ? (
+                            <Select value={profileData.availability} onValueChange={(value) => handleInputChange('availability', value)}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select availability" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="FULL_TIME">Full Time</SelectItem>
+                                <SelectItem value="PART_TIME">Part Time</SelectItem>
+                                <SelectItem value="CONTRACT">Contract</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="flex items-center mt-1">
+                              <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                              <span className="text-gray-900">{profileData.availability || 'Not specified'}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="salary_expectation" className='mb-2'  >Salary Expectation (ETB)</Label>
+                        {isEditing ? (
+                          <Input
+                            id="salary_expectation"
+                            type="number"
+                            value={profileData.salary_expectation}
+                            onChange={(e) => handleInputChange('salary_expectation', e.target.value)}
+                            placeholder="e.g., 15000"
+                          />
+                        ) : (
+                          <div className="flex items-center mt-1">
+                            <User className="h-4 w-4 mr-2 text-gray-400" />
+                            <span className="text-gray-900">{profileData.salary_expectation ? `ETB ${parseInt(profileData.salary_expectation).toLocaleString()}` : 'Not specified'}</span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -393,7 +659,7 @@ export default function ProfilePage() {
             <CardContent>
               <form onSubmit={handleChangePassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Label htmlFor="currentPassword" className='mb-2'>Current Password</Label>
                   <Input
                     id="currentPassword"
                     type="password"
@@ -405,7 +671,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
+                  <Label htmlFor="newPassword" className='mb-2'>New Password</Label>
                   <Input
                     id="newPassword"
                     type="password"
@@ -417,7 +683,7 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Label htmlFor="confirmPassword" className='mb-2' >Confirm New Password</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -459,6 +725,13 @@ export default function ProfilePage() {
       )}
 
       <Footer />
+      
+      {/* Create Profile Modal */}
+      <CreateProfileModal
+        isOpen={showCreateProfile}
+        onClose={() => setShowCreateProfile(false)}
+        onSuccess={() => window.location.reload()}
+      />
     </div>
   )
 }

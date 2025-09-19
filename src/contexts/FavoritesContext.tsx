@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { House, Job } from '@/data/sampleData'
+import { House, Job } from '@/lib/api'
 
 interface FavoritesContextType {
   favoriteHouses: House[]

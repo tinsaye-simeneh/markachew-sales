@@ -10,29 +10,50 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
-import { sampleJobs } from '@/data/sampleData'
+import { useJobs } from '@/hooks/useApi'
 import { Search, Briefcase } from 'lucide-react'
+import { Job } from '@/lib/api'
 
 export default function JobsPage() {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [jobs] = useState(sampleJobs)
-  const [filteredJobs, setFilteredJobs] = useState(sampleJobs)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('all')
   const [category, setCategory] = useState('all')
   const [experience] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
 
   const itemsPerPage = 6
+  const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push('/')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
+
+  // Helper function to parse job requirements
+  const getJobDetails = (job: Job) => {
+    try {
+      const requirements = JSON.parse(job.requirements || '{}');
+      return {
+        experience: requirements.experience || 'Experience Not specified',
+        type: requirements.type || 'Type Not specified',
+        location: requirements.location || 'Location Not specified',
+        salary: requirements.salary || 'Salary Not specified'
+      };
+    } catch {
+      return {
+        experience: 'Experience Not specified',
+        type: 'Type Not specified',
+        location: 'Location Not specified',
+        salary: 'Salary Not specified'
+      };
+    }
+  };
 
   // Filter and search logic
   useEffect(() => {
@@ -40,34 +61,44 @@ export default function JobsPage() {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(job =>
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.requirements.some(req => req.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
+      filtered = filtered.filter(job => {
+        const jobDetails = getJobDetails(job);
+        return job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               jobDetails.experience.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               jobDetails.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               jobDetails.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               job.employer?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      })
     }
 
     // Job type filter
     if (jobType !== 'all') {
-      filtered = filtered.filter(job => job.type.toLowerCase() === jobType.toLowerCase())
+      filtered = filtered.filter(job => {
+        const jobDetails = getJobDetails(job);
+        return jobDetails.type.toLowerCase() === jobType.toLowerCase()
+      })
     }
 
-    // Category filter
+    // Category filter - using job title/description for now since category is not in schema
     if (category !== 'all') {
-      filtered = filtered.filter(job => job.category.toLowerCase() === category.toLowerCase())
+      filtered = filtered.filter(job => {
+        const jobText = (job.title + ' ' + job.description).toLowerCase();
+        return jobText.includes(category.toLowerCase())
+      })
     }
 
     // Experience filter
     if (experience !== 'all') {
       filtered = filtered.filter(job => {
+        const jobDetails = getJobDetails(job);
         switch (experience) {
           case 'entry':
-            return job.experience.includes('1') || job.experience.includes('0-1')
+            return jobDetails.experience.includes('1') || jobDetails.experience.includes('0-1')
           case 'mid':
-            return job.experience.includes('2-3') || job.experience.includes('3-4')
+            return jobDetails.experience.includes('2-3') || jobDetails.experience.includes('3-4')
           case 'senior':
-            return job.experience.includes('3-5') || job.experience.includes('5+')
+            return jobDetails.experience.includes('3-5') || jobDetails.experience.includes('5+')
           default:
             return true
         }
@@ -77,28 +108,32 @@ export default function JobsPage() {
     // Sort
     switch (sortBy) {
       case 'newest':
-        filtered.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         break
       case 'oldest':
-        filtered.sort((a, b) => new Date(a.postedDate).getTime() - new Date(b.postedDate).getTime())
+        filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         break
       case 'salary-high':
         filtered.sort((a, b) => {
-          const aSalary = parseInt(a.salary.replace(/[^\d]/g, ''))
-          const bSalary = parseInt(b.salary.replace(/[^\d]/g, ''))
+          const aDetails = getJobDetails(a);
+          const bDetails = getJobDetails(b);
+          const aSalary = parseInt(aDetails.salary.replace(/[^\d]/g, '')) || 0
+          const bSalary = parseInt(bDetails.salary.replace(/[^\d]/g, '')) || 0
           return bSalary - aSalary
         })
         break
       case 'salary-low':
         filtered.sort((a, b) => {
-          const aSalary = parseInt(a.salary.replace(/[^\d]/g, ''))
-          const bSalary = parseInt(b.salary.replace(/[^\d]/g, ''))
+          const aDetails = getJobDetails(a);
+          const bDetails = getJobDetails(b);
+          const aSalary = parseInt(aDetails.salary.replace(/[^\d]/g, '')) || 0
+          const bSalary = parseInt(bDetails.salary.replace(/[^\d]/g, '')) || 0
           return aSalary - bSalary
         })
         break
     }
 
-    setFilteredJobs(filtered)
+    setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
     setCurrentPage(1)
   }, [jobs, searchTerm, jobType, category, experience, sortBy])
 
@@ -108,12 +143,23 @@ export default function JobsPage() {
   const endIndex = startIndex + itemsPerPage
   const currentJobs = filteredJobs.slice(startIndex, endIndex)
 
-  const handleJobClick = (jobId: number) => {
+  const handleJobClick = (jobId: string) => {
     router.push(`/jobs/${jobId}`)
   }
 
-  if (isLoading) {
+  if (authLoading || jobsLoading) {
     return <LoadingPage />
+  }
+
+  if (jobsError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
+          <p className="text-gray-600">{jobsError}</p>
+        </div>
+      </div>
+    )
   }
 
   if (!user) {
@@ -202,8 +248,8 @@ export default function JobsPage() {
 
         {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {currentJobs.map((job) => (
-            <div key={job.id} onClick={() => handleJobClick(job.id as unknown as number)} className="cursor-pointer">
+          {currentJobs.map((job: Job) => (
+            <div key={job.id} onClick={() => handleJobClick(job.id)} className="cursor-pointer">
               <JobCard job={job} />
             </div>
           ))}
