@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const completeRegistration = (name: string, email: string, type: UserType) => {
+  const completeRegistration = () => {
     // This method is kept for backward compatibility
     // In the new API, registration is completed immediately
   }

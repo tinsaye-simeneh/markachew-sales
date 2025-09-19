@@ -299,7 +299,7 @@ export default function JobDetailPage() {
                           required
                         />
                         <p className="text-xs text-gray-500 mt-1">
-                          Explain why you're interested in this position and how you're qualified.
+                          Explain why you&apos;re interested in this position and how you&apos;re qualified.
                         </p>
                       </div>
                     </div>

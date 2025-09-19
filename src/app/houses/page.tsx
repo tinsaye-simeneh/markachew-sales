@@ -22,7 +22,7 @@ export default function HousesPage() {
   const [propertyType, setPropertyType] = useState('all')
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [filteredHouses, setFilteredHouses] = useState<any[]>([])
+  const [filteredHouses, setFilteredHouses] = useState<House[]>([])
 
   const itemsPerPage = 6
   const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)

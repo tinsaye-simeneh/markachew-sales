@@ -149,7 +149,7 @@ export function useCreateJob() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createJob = async (jobData: any) => {
+  const createJob = async (jobData: Record<string, unknown>) => {
     try {
       setLoading(true);
       setError(null);
@@ -171,7 +171,7 @@ export function useCreateHouse() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createHouse = async (houseData: any) => {
+  const createHouse = async (houseData: Record<string, unknown>) => {
     try {
       setLoading(true);
       setError(null);

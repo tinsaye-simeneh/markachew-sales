@@ -6,14 +6,14 @@ export interface CorsError extends Error {
   message: string;
 }
 
-export function isCorsError(error: any): error is CorsError {
+export function isCorsError(error: unknown): error is CorsError {
   return error?.name === 'CorsError' || 
          error?.message?.includes('CORS') ||
          error?.message?.includes('cross-origin') ||
          error?.message?.includes('Access-Control-Allow-Origin');
 }
 
-export function handleCorsError(error: any): string {
+export function handleCorsError(error: unknown): string {
   if (isCorsError(error)) {
     return 'CORS Error: The API server needs to allow requests from this domain. Please contact the administrator.';
   }

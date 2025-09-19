@@ -10,8 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Briefcase, 
   Plus, 
-  Search, 
-  Filter, 
   MoreHorizontal,
   Edit,
   Trash2,
@@ -41,7 +39,6 @@ export default function AdminJobsPage() {
     loading,
     error,
     fetchJobs,
-    updateJob,
     deleteJob,
     approveJob,
     rejectJob

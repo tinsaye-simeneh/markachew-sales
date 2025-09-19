@@ -95,7 +95,7 @@ export enum UserType {
 }
 
 // API Response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data: T;
@@ -175,8 +175,8 @@ export interface Job {
 export interface CreateJobRequest {
   title: string;
   description: string;
-  requirements: Record<string, any>;
-  responsibility: Record<string, any>;
+  requirements: Record<string, unknown>;
+  responsibility: Record<string, unknown>;
   link?: string;
   image?: File;
 }

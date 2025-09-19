@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { applicationsService } from '@/lib/api/services'
@@ -32,9 +32,9 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
     }
 
     fetchApplication()
-  }, [user, router, params.id])
+  }, [user, router, fetchApplication])
 
-  const fetchApplication = async () => {
+  const fetchApplication = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -47,7 +47,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id])
 
   const handleDeleteApplication = async () => {
     if (!confirm('Are you sure you want to delete this application?')) {

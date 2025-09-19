@@ -14,7 +14,7 @@ export function HouseListings() {
   const [propertyType, setPropertyType] = useState('all')
   const [bedrooms, setBedrooms] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredHouses, setFilteredHouses] = useState<any[]>([])
+  const [filteredHouses, setFilteredHouses] = useState<House[]>([])
   
   const itemsPerPage = 6
   const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)

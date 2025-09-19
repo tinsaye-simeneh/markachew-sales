@@ -99,7 +99,7 @@ export interface AdminActivity {
   user_name?: string;
   timestamp: string;
   status: 'success' | 'warning' | 'info' | 'error';
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 // Admin Service Class
@@ -421,11 +421,7 @@ export class AdminService {
   }
 
   // Activity Log
-  async getActivityLog(params: {
-    type?: string;
-    page?: number;
-    limit?: number;
-  } = {}): Promise<{
+  async getActivityLog(): Promise<{
     activities: AdminActivity[];
     total: number;
     page: number;

@@ -1,6 +1,6 @@
 import { apiClient } from './client';
 import { simpleApiClient } from './simple-client';
-import { API_CONFIG, LoginRequest, RegisterRequest, AuthResponse, User, UserType } from './config';
+import { API_CONFIG, LoginRequest, RegisterRequest, AuthResponse, User } from './config';
 import { handleCorsError, isCorsError } from './cors-handler';
 
 export class AuthService {

@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
   // Fetch profile data
   const { profile, loading: profileLoading, error: profileError } = useCurrentUserProfile()
-  const { updateProfile, loading: updateLoading, error: updateError } = useUpdateProfile()
+  const { updateProfile, loading: updateLoading } = useUpdateProfile()
 
   // Redirect if not logged in
   useEffect(() => {

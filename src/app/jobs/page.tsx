@@ -23,7 +23,7 @@ export default function JobsPage() {
   const [category, setCategory] = useState('all')
   const [experience] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [filteredJobs, setFilteredJobs] = useState<any[]>([])
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
 
   const itemsPerPage = 6
   const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)

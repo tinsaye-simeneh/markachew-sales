@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCreateProfile } from '@/hooks/useProfile'
 import { useAuth } from '@/contexts/AuthContext'
 import { UserType } from '@/lib/api'
-import { User, MapPin, AlertCircle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 interface CreateProfileModalProps {
   isOpen: boolean

@@ -40,7 +40,6 @@ export default function AdminHousesPage() {
     loading,
     error,
     fetchHouses,
-    updateHouse,
     deleteHouse,
     approveHouse,
     rejectHouse

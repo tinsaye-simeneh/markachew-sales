@@ -10,13 +10,13 @@ export class SimpleApiClient {
     this.baseURL = 'https://employee.luckbingogames.com';
   }
 
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data: Record<string, unknown>): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     
     try {
       // Strategy 1: Try direct request first
       return await this.directPost<T>(url, data);
-    } catch (error) {
+    } catch {
       console.warn('Direct request failed, trying alternative methods...');
       
       // Strategy 2: Try with CORS proxy
@@ -39,7 +39,7 @@ export class SimpleApiClient {
     }
   }
 
-  private async directPost<T>(url: string, data: any): Promise<T> {
+  private async directPost<T>(url: string, data: Record<string, unknown>): Promise<T> {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -58,8 +58,8 @@ export class SimpleApiClient {
     return await response.json();
   }
 
-  private async postWithDifferentHeaders<T>(url: string, data: any): Promise<T> {
-    const response = await fetch(url, {
+  private async postWithDifferentHeaders<T>(url: string, data: Record<string, unknown>): Promise<T> {
+    await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export class SimpleApiClient {
     
     try {
       return await this.directGet<T>(url);
-    } catch (error) {
+    } catch {
       console.warn('Direct GET request failed, trying proxy...');
       return await corsProxyService.requestWithProxy<T>(url, {
         method: 'GET',

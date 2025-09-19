@@ -14,7 +14,7 @@ export function JobListings() {
   const [jobType, setJobType] = useState('all')
   const [experience, setExperience] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredJobs, setFilteredJobs] = useState<any[]>([])
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
   
   const itemsPerPage = 6
   const { jobs, loading, error, total, totalPages } = useJobs(currentPage, itemsPerPage)

@@ -55,5 +55,5 @@ export async function debugApiConnection() {
 
 // Call this function in your browser console to debug
 if (typeof window !== 'undefined') {
-  (window as any).debugApiConnection = debugApiConnection;
+  (window as Record<string, unknown>).debugApiConnection = debugApiConnection;
 }

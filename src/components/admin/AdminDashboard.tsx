@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { 
   Users, 
@@ -18,7 +17,6 @@ import {
   RefreshCw
 } from 'lucide-react'
 import { useAdminStats, useAdminActivityLog } from '@/hooks/useAdminApi'
-import { useRouter } from 'next/navigation'
 
 export function AdminDashboard() {
   const router = useRouter()
@@ -111,7 +109,7 @@ export function AdminDashboard() {
         <div>
           <h3 className="text-2xl font-bold leading-tight text-gray-900">Dashboard Overview</h3>
           <p className="mt-2 text-sm text-gray-600">
-            Welcome to the admin dashboard. Here's what's happening in your application.
+            Welcome to the admin dashboard. Here&apos;s what&apos;s happening in your application.
           </p>
         </div>
         <Button onClick={handleRefresh} variant="outline" size="sm" className='cursor-pointer'>

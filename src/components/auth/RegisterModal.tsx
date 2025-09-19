@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { UserType, CreateProfileRequest } from '@/lib/api'
+import { UserType } from '@/lib/api'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -57,7 +57,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [error, setError] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const { register, completeRegistration, isLoading, error: authError } = useAuth()
+  const { register, isLoading, error: authError } = useAuth()
   const router = useRouter()
 
   // Static OTP for demo
@@ -185,24 +185,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     if (success) {
       // User registration successful, now create profile
       try {
-        // Get the user ID from the registered user
-        const user = JSON.parse(localStorage.getItem('user') || '{}')
-        
-        // Create profile data
-        const profileData: CreateProfileRequest = {
-          user_id: user.id,
-          location,
-          address,
-          degree: userType === UserType.EMPLOYEE ? degree : undefined,
-          department: userType === UserType.EMPLOYEE ? department : undefined,
-          experience: userType === UserType.EMPLOYEE && experience ? Number(experience) : undefined,
-          availability: userType === UserType.EMPLOYEE ? availability : undefined,
-          salary_expectation: userType === UserType.EMPLOYEE && salaryExpectation ? Number(salaryExpectation) : undefined,
-          photo: photo ? photo : undefined,
-          document: document ? document : undefined,
-          license: license ? license : undefined,
-        }
-        
         // Profile creation will be handled by the profile page
         onClose()
         resetForm()
@@ -240,11 +222,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     setter(file)
   }
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '') // Only allow digits

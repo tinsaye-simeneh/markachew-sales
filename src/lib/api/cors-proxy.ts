@@ -97,7 +97,7 @@ export class CorsProxyService {
     try {
       // First try direct request
       return await this.directRequest<T>(url, options);
-    } catch (error) {
+    } catch {
       console.warn('Direct request failed, trying proxy...');
       // If direct fails, try proxy
       return await this.requestWithProxy<T>(url, options);

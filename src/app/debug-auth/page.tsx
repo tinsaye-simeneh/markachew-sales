@@ -7,7 +7,15 @@ import { useState, useEffect } from 'react'
 
 export default function DebugAuthPage() {
   const { user, isLoading } = useAuth()
-  const [localStorageData, setLocalStorageData] = useState<any>({})
+  const [localStorageData, setLocalStorageData] = useState<{
+    accessToken: string | null;
+    refreshToken: string | null;
+    user: string | null;
+  }>({
+    accessToken: null,
+    refreshToken: null,
+    user: null,
+  })
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

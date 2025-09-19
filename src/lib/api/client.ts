@@ -165,7 +165,7 @@ class ApiClient {
         window.location.href = '/';
       }
       return false;
-    } catch (error) {
+    } catch {
       // If refresh fails, clear tokens and redirect to login
       this.removeToken();
       this.isRefreshing = false;
@@ -190,7 +190,7 @@ class ApiClient {
   }
 
   // GET request
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
     let url = endpoint;
     if (params) {
       const searchParams = new URLSearchParams();
@@ -208,7 +208,7 @@ class ApiClient {
   }
 
   // POST request
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: Record<string, unknown> | FormData): Promise<ApiResponse<T>> {
     const isFormData = data instanceof FormData;
     
     return this.request<T>(endpoint, {
@@ -219,7 +219,7 @@ class ApiClient {
   }
 
   // PUT request
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: Record<string, unknown> | FormData): Promise<ApiResponse<T>> {
     const isFormData = data instanceof FormData;
     
     return this.request<T>(endpoint, {

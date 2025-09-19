@@ -1,7 +1,35 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { adminService, AdminStats, AdminUser, AdminJob, AdminHouse, AdminApplication, AdminActivity } from '@/lib/api/admin-services'
+
+// Filter interfaces
+interface AdminUserFilters {
+  user_type?: string
+  status?: string
+  verification_status?: string
+  search?: string
+  page?: number
+}
+
+interface AdminJobFilters {
+  status?: string
+  search?: string
+  page?: number
+}
+
+interface AdminHouseFilters {
+  status?: string
+  type?: string
+  search?: string
+  page?: number
+}
+
+interface AdminApplicationFilters {
+  status?: string
+  search?: string
+  page?: number
+}
 
 // Dashboard Stats Hook
 export function useAdminStats() {
@@ -30,7 +58,7 @@ export function useAdminStats() {
 }
 
 // Users Management Hook
-export function useAdminUsers(filters: any = {}) {
+export function useAdminUsers(filters: AdminUserFilters = {}) {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -38,7 +66,7 @@ export function useAdminUsers(filters: any = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchUsers = async (pageNum = 1, newFilters = filters) => {
+  const fetchUsers = useCallback(async (pageNum = 1, newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -52,11 +80,11 @@ export function useAdminUsers(filters: any = {}) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchUsers()
-  }, [JSON.stringify(filters)])
+  }, [fetchUsers])
 
   const updateUser = async (userId: string, userData: Partial<AdminUser>) => {
     try {
@@ -118,7 +146,7 @@ export function useAdminUsers(filters: any = {}) {
 }
 
 // Jobs Management Hook
-export function useAdminJobs(filters: any = {}) {
+export function useAdminJobs(filters: AdminJobFilters = {}) {
   const [jobs, setJobs] = useState<AdminJob[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -126,7 +154,7 @@ export function useAdminJobs(filters: any = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchJobs = async (pageNum = 1, newFilters = filters) => {
+  const fetchJobs = useCallback(async (pageNum = 1, newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -140,11 +168,11 @@ export function useAdminJobs(filters: any = {}) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchJobs()
-  }, [JSON.stringify(filters)])
+  }, [fetchJobs])
 
   const updateJob = async (jobId: string, jobData: Partial<AdminJob>) => {
     try {
@@ -206,7 +234,7 @@ export function useAdminJobs(filters: any = {}) {
 }
 
 // Houses Management Hook
-export function useAdminHouses(filters: any = {}) {
+export function useAdminHouses(filters: AdminHouseFilters = {}) {
   const [houses, setHouses] = useState<AdminHouse[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -214,7 +242,7 @@ export function useAdminHouses(filters: any = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchHouses = async (pageNum = 1, newFilters = filters) => {
+  const fetchHouses = useCallback(async (pageNum = 1, newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -228,11 +256,11 @@ export function useAdminHouses(filters: any = {}) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchHouses()
-  }, [JSON.stringify(filters)])
+  }, [fetchHouses])
 
   const updateHouse = async (houseId: string, houseData: Partial<AdminHouse>) => {
     try {
@@ -294,7 +322,7 @@ export function useAdminHouses(filters: any = {}) {
 }
 
 // Applications Management Hook
-export function useAdminApplications(filters: any = {}) {
+export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   const [applications, setApplications] = useState<AdminApplication[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -302,7 +330,7 @@ export function useAdminApplications(filters: any = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchApplications = async (pageNum = 1, newFilters = filters) => {
+  const fetchApplications = useCallback(async (pageNum = 1, newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -316,11 +344,11 @@ export function useAdminApplications(filters: any = {}) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchApplications()
-  }, [JSON.stringify(filters)])
+  }, [fetchApplications])
 
   const updateApplication = async (applicationId: string, applicationData: Partial<AdminApplication>) => {
     try {
@@ -358,7 +386,7 @@ export function useAdminApplications(filters: any = {}) {
 }
 
 // Activity Log Hook
-export function useAdminActivityLog(filters: any = {}) {
+export function useAdminActivityLog(filters: { page?: number } = {}) {
   const [activities, setActivities] = useState<AdminActivity[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -366,7 +394,7 @@ export function useAdminActivityLog(filters: any = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchActivities = async (pageNum = 1, newFilters = filters) => {
+  const fetchActivities = useCallback(async (pageNum = 1, newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -380,11 +408,11 @@ export function useAdminActivityLog(filters: any = {}) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
   useEffect(() => {
     fetchActivities()
-  }, [JSON.stringify(filters)])
+  }, [fetchActivities])
 
   return {
     activities,
@@ -399,7 +427,7 @@ export function useAdminActivityLog(filters: any = {}) {
 
 // System Status Hook
 export function useSystemStatus() {
-  const [status, setStatus] = useState<any>(null)
+  const [status, setStatus] = useState<{ status: string; uptime: number; version: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

@@ -4,10 +4,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.l
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
+    const { id } = await params;
     
     if (!authHeader) {
       return NextResponse.json(
@@ -16,7 +17,7 @@ export async function GET(
       );
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/profile/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/profile/${id}`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
@@ -60,11 +61,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
     const body = await request.json();
+    const { id } = await params;
     
     if (!authHeader) {
       return NextResponse.json(
@@ -73,7 +75,7 @@ export async function PUT(
       );
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/profile/${params.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/profile/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': authHeader,

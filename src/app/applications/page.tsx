@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { applicationsService } from '@/lib/api/services'
@@ -32,9 +32,9 @@ export default function ApplicationsPage() {
     }
 
     fetchApplications()
-  }, [user, router])
+  }, [user, router, fetchApplications])
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -56,7 +56,7 @@ export default function ApplicationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const handleDeleteApplication = async (applicationId: string) => {
     if (!confirm('Are you sure you want to delete this application?')) {
@@ -139,7 +139,7 @@ export default function ApplicationsPage() {
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Applications Yet</h3>
               <p className="text-gray-600 mb-6">
-                You haven't applied to any jobs yet. Start exploring opportunities!
+                You haven&apos;t applied to any jobs yet. Start exploring opportunities!
               </p>
               <Button 
                 onClick={() => router.push('/jobs')} 

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { API_CONFIG, PaginatedResponse } from './config';
+import { API_CONFIG } from './config';
 import type {
   Job,
   CreateJobRequest,
@@ -368,8 +368,8 @@ export class PaymentsService {
     recipient_id: string;
     start_date: string;
     end_date: string;
-  }): Promise<any> {
-    const response = await apiClient.post<any>(
+  }): Promise<unknown> {
+    const response = await apiClient.post<unknown>(
       API_CONFIG.ENDPOINTS.PAYMENTS.CREATE,
       paymentData
     );
@@ -381,14 +381,14 @@ export class PaymentsService {
     page?: number;
     limit?: number;
   }): Promise<{
-    payments: any[];
+    payments: unknown[];
     total: number;
     page: number;
     limit: number;
     totalPages: number;
   }> {
     const response = await apiClient.get<{
-      payments: any[];
+      payments: unknown[];
       total: number;
       page: number;
       limit: number;
@@ -397,15 +397,15 @@ export class PaymentsService {
     return response.data;
   }
 
-  async getPayment(paymentId: string): Promise<any> {
-    const response = await apiClient.get<any>(
+  async getPayment(paymentId: string): Promise<unknown> {
+    const response = await apiClient.get<unknown>(
       API_CONFIG.ENDPOINTS.PAYMENTS.GET(paymentId)
     );
     return response.data;
   }
 
-  async updatePayment(paymentId: string, paymentData: { status: string }): Promise<any> {
-    const response = await apiClient.put<any>(
+  async updatePayment(paymentId: string, paymentData: { status: string }): Promise<unknown> {
+    const response = await apiClient.put<unknown>(
       API_CONFIG.ENDPOINTS.PAYMENTS.UPDATE(paymentId),
       paymentData
     );
@@ -423,8 +423,8 @@ export class RatingsService {
     target_id: string;
     role: string;
     score: number;
-  }): Promise<any> {
-    const response = await apiClient.post<any>(
+  }): Promise<unknown> {
+    const response = await apiClient.post<unknown>(
       API_CONFIG.ENDPOINTS.RATINGS.CREATE,
       ratingData
     );
@@ -436,14 +436,14 @@ export class RatingsService {
     page?: number;
     limit?: number;
   }): Promise<{
-    ratings: any[];
+    ratings: unknown[];
     total: number;
     page: number;
     limit: number;
     totalPages: number;
   }> {
     const response = await apiClient.get<{
-      ratings: any[];
+      ratings: unknown[];
       total: number;
       page: number;
       limit: number;
@@ -452,15 +452,15 @@ export class RatingsService {
     return response.data;
   }
 
-  async getRating(ratingId: string): Promise<any> {
-    const response = await apiClient.get<any>(
+  async getRating(ratingId: string): Promise<unknown> {
+    const response = await apiClient.get<unknown>(
       API_CONFIG.ENDPOINTS.RATINGS.GET(ratingId)
     );
     return response.data;
   }
 
-  async updateRating(ratingId: string, ratingData: { score: number }): Promise<any> {
-    const response = await apiClient.put<any>(
+  async updateRating(ratingId: string, ratingData: { score: number }): Promise<unknown> {
+    const response = await apiClient.put<unknown>(
       API_CONFIG.ENDPOINTS.RATINGS.UPDATE(ratingId),
       ratingData
     );
