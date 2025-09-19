@@ -33,7 +33,11 @@ export default function DebugAuthPage() {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
-      setLocalStorageData({})
+      setLocalStorageData({
+        accessToken: null,
+        refreshToken: null,
+        user: null,
+      })
     }
   }
 

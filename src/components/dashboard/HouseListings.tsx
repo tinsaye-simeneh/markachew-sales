@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { useHouses } from '@/hooks/useApi'
 import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { House } from '@/lib/api/config'
 
 export function HouseListings() {
   const [currentPage, setCurrentPage] = useState(1)

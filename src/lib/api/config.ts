@@ -211,6 +211,32 @@ export interface House {
   };
 }
 
+export enum HouseStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SOLD = 'SOLD',
+  RENTED = 'RENTED',
+}
+
+
+export enum HouseType {
+  SALES = 'SALES',
+  RENT = 'RENT',
+}
+
+export enum JobStatus {
+  PUBLISHED = 'PUBLISHED',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+export enum ApplicationStatus {
+  APPLIED = 'APPLIED',
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}
+
 export interface CreateHouseRequest {
   title: string;
   type: 'SALES' | 'RENT';

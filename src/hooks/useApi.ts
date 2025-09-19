@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { jobsService, housesService, categoriesService } from '@/lib/api';
-import type { Job, House, Category } from '@/lib/api';
+import type { Job, House, Category, CreateJobRequest, CreateHouseRequest } from '@/lib/api/config';
 
 // Hook for fetching jobs
 export function useJobs(page = 1, limit = 10) {
@@ -153,7 +153,7 @@ export function useCreateJob() {
     try {
       setLoading(true);
       setError(null);
-      const response = await jobsService.createJob(jobData);
+      const response = await jobsService.createJob(jobData as unknown as CreateJobRequest);
       return response;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create job');
@@ -175,7 +175,7 @@ export function useCreateHouse() {
     try {
       setLoading(true);
       setError(null);
-      const response = await housesService.createHouse(houseData);
+      const response = await housesService.createHouse(houseData as unknown as CreateHouseRequest );
       return response;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create house');

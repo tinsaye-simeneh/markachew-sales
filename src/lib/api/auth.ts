@@ -9,7 +9,7 @@ export class AuthService {
     try {
       const response = await apiClient.post<AuthResponse>(
         API_CONFIG.ENDPOINTS.USERS.LOGIN,
-        credentials
+        credentials as unknown as Record<string, unknown>
       );
 
       if (response.success) {
@@ -36,7 +36,7 @@ export class AuthService {
       // First try with the main API client
       const response = await apiClient.post<AuthResponse>(
         API_CONFIG.ENDPOINTS.USERS.REGISTER,
-        userData
+        userData as unknown as Record<string, unknown>
       );
 
       if (response.success) {
@@ -56,7 +56,7 @@ export class AuthService {
         // Fallback to simple client with CORS proxy
         const response = await simpleApiClient.post<AuthResponse>(
           API_CONFIG.ENDPOINTS.USERS.REGISTER,
-          userData
+          userData as unknown as Record<string, unknown>
         );
 
         if (response.success) {
@@ -87,7 +87,7 @@ export class AuthService {
         : null;
       
       if (refreshToken) {
-        await apiClient.post(API_CONFIG.ENDPOINTS.USERS.LOGOUT, { refreshToken });
+        await apiClient.post(API_CONFIG.ENDPOINTS.USERS.LOGOUT, { refreshToken } as unknown as Record<string, unknown>);
       }
     } catch (error) {
       console.error('Logout error:', error);
@@ -169,7 +169,7 @@ export class AdminAuthService {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>(
       API_CONFIG.ENDPOINTS.ADMIN.LOGIN,
-      credentials
+      credentials as unknown as Record<string, unknown>
     );
 
     if (response.success) {
@@ -193,7 +193,7 @@ export class AdminAuthService {
   }): Promise<User> {
     const response = await apiClient.post<User>(
       API_CONFIG.ENDPOINTS.ADMIN.CREATE,
-      adminData
+      adminData as unknown as Record<string, unknown>
     );
     return response.data;
   }
@@ -206,7 +206,7 @@ export class AdminAuthService {
         : null;
       
       if (refreshToken) {
-        await apiClient.post(API_CONFIG.ENDPOINTS.ADMIN.LOGOUT, { refreshToken });
+        await apiClient.post(API_CONFIG.ENDPOINTS.ADMIN.LOGOUT, { refreshToken } as unknown as Record<string, unknown>);
       }
     } catch (error) {
       console.error('Admin logout error:', error);
@@ -233,7 +233,7 @@ export class AdminAuthService {
 
       const response = await apiClient.post<{ accessToken: string; refreshToken: string }>(
         API_CONFIG.ENDPOINTS.ADMIN.REFRESH,
-        { refreshToken }
+        { refreshToken } as unknown as Record<string, unknown>
       );
 
       if (response.success) {

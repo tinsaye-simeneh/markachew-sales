@@ -7,17 +7,17 @@ export interface CorsError extends Error {
 }
 
 export function isCorsError(error: unknown): error is CorsError {
-  return error?.name === 'CorsError' || 
-         error?.message?.includes('CORS') ||
-         error?.message?.includes('cross-origin') ||
-         error?.message?.includes('Access-Control-Allow-Origin');
+  return (error as Record<string, unknown>)?.name === 'CorsError' || 
+         String((error as Record<string, unknown>)?.message || '').includes('CORS') ||
+         String((error as Record<string, unknown>)?.message || '').includes('cross-origin') ||
+         String((error as Record<string, unknown>)?.message || '').includes('Access-Control-Allow-Origin');
 }
 
 export function handleCorsError(error: unknown): string {
   if (isCorsError(error)) {
     return 'CORS Error: The API server needs to allow requests from this domain. Please contact the administrator.';
   }
-  return error?.message || 'An unexpected error occurred';
+  return String((error as Record<string, unknown>)?.message || 'An unexpected error occurred');
 }
 
 // Alternative API client for CORS issues

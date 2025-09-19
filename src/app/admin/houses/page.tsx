@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AdminLayout } from '@/components/admin/AdminLayout'
+import { HouseStatus } from '@/lib/api/config'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -144,10 +145,10 @@ export default function AdminHousesPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {houses.filter(h => h.status === 'active').length}
+                {houses.filter(h => h.status === HouseStatus.ACTIVE).length}
               </div>
               <p className="text-xs text-muted-foreground">
-                {total > 0 ? Math.round((houses.filter(h => h.status === 'active').length / total) * 100) : 0}% of total
+                {total > 0 ? Math.round((houses.filter(h => h.status === HouseStatus.ACTIVE).length / total) * 100) : 0}% of total
               </p>
             </CardContent>
           </Card>
@@ -158,7 +159,7 @@ export default function AdminHousesPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {houses.filter(h => h.status === 'sold').length}
+                {houses.filter(h => h.status === HouseStatus.SOLD).length}
               </div>
               <p className="text-xs text-muted-foreground">Successfully sold</p>
             </CardContent>
@@ -170,7 +171,7 @@ export default function AdminHousesPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {houses.filter(h => h.status === 'pending').length}
+                {houses.filter(h => h.status === HouseStatus.INACTIVE).length}
               </div>
               <p className="text-xs text-muted-foreground">Requires review</p>
             </CardContent>
@@ -279,7 +280,7 @@ export default function AdminHousesPage() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Listing
                               </DropdownMenuItem>
-                              {house.status === 'pending' && (
+                              {house.status === HouseStatus.INACTIVE && (
                                 <>
                                   <DropdownMenuItem onClick={() => handleHouseAction('approve', house.id)}>
                                     <CheckCircle className="mr-2 h-4 w-4" />

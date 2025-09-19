@@ -110,9 +110,6 @@ class ApiClient {
     }
   }
 
-  public setAuthToken(token: string): void {
-    this.setToken(token);
-  }
 
   private removeToken(): void {
     if (typeof window !== 'undefined') {

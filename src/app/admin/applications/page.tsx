@@ -56,10 +56,10 @@ export default function AdminApplicationsPage() {
     try {
       switch (action) {
         case 'accept':
-          await updateApplication(applicationId, { status: 'accepted' })
+          await updateApplication(applicationId, { status: 'ACCEPTED' })
           break
         case 'reject':
-          await updateApplication(applicationId, { status: 'rejected' })
+          await updateApplication(applicationId, { status: 'REJECTED' })
           break
         case 'delete':
           if (confirm('Are you sure you want to delete this application?')) {
@@ -134,7 +134,7 @@ export default function AdminApplicationsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {applications.filter(a => a.status === 'pending').length}
+                {applications.filter(a => a.status === 'PENDING').length}
               </div>
               <p className="text-xs text-muted-foreground">Awaiting review</p>
             </CardContent>
@@ -146,7 +146,7 @@ export default function AdminApplicationsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {applications.filter(a => a.status === 'accepted').length}
+                {applications.filter(a => a.status === 'ACCEPTED').length}
               </div>
               <p className="text-xs text-muted-foreground">Successfully accepted</p>
             </CardContent>
@@ -158,7 +158,7 @@ export default function AdminApplicationsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {applications.filter(a => a.status === 'rejected').length}
+                {applications.filter(a => a.status === 'REJECTED').length}
               </div>
               <p className="text-xs text-muted-foreground">Not selected</p>
             </CardContent>
@@ -266,7 +266,7 @@ export default function AdminApplicationsPage() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Application
                               </DropdownMenuItem>
-                              {application.status === 'pending' && (
+                              {application.status === 'PENDING' && (
                                 <>
                                   <DropdownMenuItem onClick={() => handleApplicationAction('accept', application.id)}>
                                     <CheckCircle className="mr-2 h-4 w-4" />

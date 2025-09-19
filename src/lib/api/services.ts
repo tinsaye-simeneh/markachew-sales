@@ -159,7 +159,7 @@ export class ApplicationsService {
   async createApplication(applicationData: CreateApplicationRequest): Promise<Application> {
     const response = await apiClient.post<Application>(
       API_CONFIG.ENDPOINTS.APPLICATIONS.CREATE,
-      applicationData
+      applicationData as unknown as Record<string, unknown>
     );
     return response.data;
   }
@@ -221,7 +221,7 @@ export class CategoriesService {
   async createCategory(categoryData: { name: string }): Promise<Category> {
     const response = await apiClient.post<Category>(
       API_CONFIG.ENDPOINTS.CATEGORIES.CREATE,
-      categoryData
+      categoryData as unknown as Record<string, unknown>
     );
     return response.data;
   }

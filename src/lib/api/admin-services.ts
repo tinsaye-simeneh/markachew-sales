@@ -1,6 +1,6 @@
 import { apiClient } from './client';
 import { API_CONFIG } from './config';
-import type { User, Job, House, Application, UserType } from './config';
+import type { User, Job, House, Application, UserType, JobStatus, HouseStatus, ApplicationStatus } from './config';
 
 // Admin Dashboard Stats
 export interface AdminStats {
@@ -35,15 +35,10 @@ export interface AdminUserFilters {
 
 // Admin Job Management
 export interface AdminJob extends Job {
-  status: 'active' | 'inactive' | 'pending' | 'expired';
+  status: JobStatus;
   applications_count?: number;
   views_count?: number;
   employer_name?: string;
-  employer?: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
 }
 
 export interface AdminJobFilters {
@@ -56,18 +51,13 @@ export interface AdminJobFilters {
 
 // Admin House Management
 export interface AdminHouse extends House {
-  status: 'active' | 'inactive' | 'pending' | 'sold';
+  status: HouseStatus;
   views_count?: number;
   seller_name?: string;
-  owner?: {
-    id: string;
-    full_name: string;
-    email: string;
-  };
 }
 
 export interface AdminHouseFilters {
-  status?: 'active' | 'inactive' | 'pending' | 'sold';
+  status?: HouseStatus;
   type?: string;
   search?: string;
   page?: number;
@@ -79,11 +69,10 @@ export interface AdminApplication extends Application {
   job_title: string;
   applicant_name: string;
   employer_name: string;
-  status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
 }
 
 export interface AdminApplicationFilters {
-  status?: 'pending' | 'reviewed' | 'accepted' | 'rejected';
+  status?: ApplicationStatus;
   job_id?: string;
   user_id?: string;
   page?: number;
@@ -170,7 +159,7 @@ export class AdminService {
           };
         };
         timestamp: string;
-      }>(API_CONFIG.ENDPOINTS.USERS.LIST, filters);
+      }>(API_CONFIG.ENDPOINTS.USERS.LIST, filters as unknown as Record<string, unknown>);
 
       return {
         users: response.data.data.users || [],
@@ -242,7 +231,7 @@ export class AdminService {
           };
         };
         timestamp: string;
-      }>(API_CONFIG.ENDPOINTS.JOBS.LIST, filters);
+      }>(API_CONFIG.ENDPOINTS.JOBS.LIST, filters as unknown as Record<string, unknown>);
 
       return {
         jobs: response.data.data.jobs || [],
@@ -314,7 +303,7 @@ export class AdminService {
           };
         };
         timestamp: string;
-      }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, filters);
+      }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, filters as unknown as Record<string, unknown>);
 
       return {
         houses: response.data.data.houses || [],
@@ -386,7 +375,7 @@ export class AdminService {
           };
         };
         timestamp: string;
-      }>(API_CONFIG.ENDPOINTS.APPLICATIONS.LIST, filters);
+      }>(API_CONFIG.ENDPOINTS.APPLICATIONS.LIST, filters as unknown as Record<string, unknown>);
 
       return {
         applications: response.data.data.applications || [],

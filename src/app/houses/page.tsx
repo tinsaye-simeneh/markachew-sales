@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LoadingPage } from '@/components/ui/loading'
 import { useHouses } from '@/hooks/useApi'
 import { Search, MapPin } from 'lucide-react'
+import { House } from '@/lib/api/config'
+
 
 export default function HousesPage() {
   const { user, isLoading: authLoading } = useAuth()
@@ -22,7 +24,7 @@ export default function HousesPage() {
   const [propertyType, setPropertyType] = useState('all')
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [filteredHouses, setFilteredHouses] = useState<House[]>([])
+  const [filteredHouses, setFilteredHouses] = useState<House[] | []>([])
 
   const itemsPerPage = 6
   const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)

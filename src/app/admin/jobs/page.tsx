@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AdminLayout } from '@/components/admin/AdminLayout'
+import { JobStatus } from '@/lib/api/config'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -139,10 +140,10 @@ export default function AdminJobsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.filter(j => j.status === 'active').length}
+                {jobs.filter(j => j.status === JobStatus.ACTIVE).length}
               </div>
               <p className="text-xs text-muted-foreground">
-                {total > 0 ? Math.round((jobs.filter(j => j.status === 'active').length / total) * 100) : 0}% of total
+                {total > 0 ? Math.round((jobs.filter(j => j.status === JobStatus.ACTIVE).length / total) * 100) : 0}% of total
               </p>
             </CardContent>
           </Card>
@@ -165,7 +166,7 @@ export default function AdminJobsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.filter(j => j.status === 'pending').length}
+                {jobs.filter(j => j.status === JobStatus.INACTIVE).length}
               </div>
               <p className="text-xs text-muted-foreground">Requires review</p>
             </CardContent>
@@ -261,7 +262,7 @@ export default function AdminJobsPage() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Job
                               </DropdownMenuItem>
-                              {job.status === 'pending' && (
+                              {job.status === JobStatus.INACTIVE && (
                                 <>
                                   <DropdownMenuItem onClick={() => handleJobAction('approve', job.id)}>
                                     <CheckCircle className="mr-2 h-4 w-4" />
