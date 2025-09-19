@@ -20,20 +20,6 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/')
-      return
-    }
-
-    if (user?.user_type !== 'EMPLOYEE') {
-      router.push('/')
-      return
-    }
-
-    fetchApplication()
-  }, [user, router, fetchApplication])
-
   const fetchApplication = useCallback(async () => {
     try {
       setLoading(true)
@@ -48,6 +34,22 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       setLoading(false)
     }
   }, [params.id])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+      return
+    }
+
+    if (user?.user_type !== 'EMPLOYEE') {
+      router.push('/')
+      return
+    }
+
+    fetchApplication()
+  }, [user, router, fetchApplication])
+
+
 
   const handleDeleteApplication = async () => {
     if (!confirm('Are you sure you want to delete this application?')) {
