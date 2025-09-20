@@ -121,6 +121,8 @@ export default function HousesPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Houses</h2>
           <p className="text-gray-600">{housesError}</p>
+          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-[#007a7f] cursor-pointer'>Go to Home</Button>
+       
         </div>
       </div>
     )
@@ -196,9 +198,10 @@ export default function HousesPage() {
             </div>
             {/* Sort */}
             <div className="flex flex-col gap-1">
-  <label htmlFor="sortBy" className="text-sm font-medium">Sort By</label>
   <Select value={sortBy} onValueChange={setSortBy}>
-    <SelectTrigger id="sortBy" className="w-48">
+    
+  <label htmlFor="sortBy" className='block'>Sort By</label>
+    <SelectTrigger>
       <SelectValue placeholder="Sort By" />
     </SelectTrigger>
     <SelectContent>
