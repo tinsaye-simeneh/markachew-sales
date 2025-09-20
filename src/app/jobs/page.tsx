@@ -195,7 +195,10 @@ export default function JobsPage() {
             </div>
 
             {/* Job Type */}
+            <div className="flex flex-col gap-1">
+            
             <Select value={jobType} onValueChange={setJobType}>
+              <label htmlFor="jobType" className='block'>Job Type</label>
               <SelectTrigger>
                 <SelectValue placeholder="Job Type" />
               </SelectTrigger>
@@ -207,9 +210,12 @@ export default function JobsPage() {
                 <SelectItem value="internship">Internship</SelectItem>
               </SelectContent>
             </Select>
+            </div>
 
             {/* Category */}
+        <div className="flex flex-col gap-1">
             <Select value={category} onValueChange={setCategory}>
+              <label htmlFor="category" className='block'>Category</label>
               <SelectTrigger>
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -224,9 +230,12 @@ export default function JobsPage() {
                 <SelectItem value="content">Content</SelectItem>
               </SelectContent>
             </Select>
+            </div>
 
             {/* Sort */}
+            <div className="flex flex-col gap-1">
             <Select value={sortBy} onValueChange={setSortBy}>
+              <label htmlFor="sortBy" className='block'>Sort By</label>
               <SelectTrigger>
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>
@@ -237,6 +246,7 @@ export default function JobsPage() {
                 <SelectItem value="salary-low">Salary: Low to High</SelectItem>
               </SelectContent>
             </Select>
+            </div>
           </div>
         </div>
 

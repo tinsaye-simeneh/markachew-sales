@@ -59,17 +59,22 @@ export function JobListings() {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search by job title, company, or location..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+              <label htmlFor="search" className='block'>Search</label>  
+              <div className="relative mt-2">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by job title, company, or location..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
           </div>
           
+          <div className="flex flex-col gap-1">
           <Select value={jobType} onValueChange={setJobType}>
+            <label htmlFor="jobType" className='block'>Job Type</label>
             <SelectTrigger className="w-full lg:w-48">
               <SelectValue placeholder="Job Type" />
             </SelectTrigger>
@@ -81,8 +86,10 @@ export function JobListings() {
               <SelectItem value="Remote">Remote</SelectItem>
             </SelectContent>
           </Select>
-          
+      </div> 
+          <div className="flex flex-col gap-1">
           <Select value={experience} onValueChange={setExperience}>
+            <label htmlFor="experience" className='block'>Experience Level</label>
             <SelectTrigger className="w-full lg:w-48">
               <SelectValue placeholder="Experience Level" />
             </SelectTrigger>
@@ -94,6 +101,7 @@ export function JobListings() {
               <SelectItem value="5+ years">5+ years</SelectItem>
             </SelectContent>
           </Select>
+          </div>
         </div>
       </div>
       
