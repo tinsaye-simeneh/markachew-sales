@@ -147,7 +147,7 @@ export interface User {
   email: string;
   phone: string;
   user_type: UserType;
-  created_at: string;
+  createdAt: string;
   updated_at: string;
 }
 

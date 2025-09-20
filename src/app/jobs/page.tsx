@@ -157,6 +157,7 @@ export default function JobsPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
           <p className="text-gray-600">{jobsError}</p>
+          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-[#007a7f] cursor-pointer'>Go to Home</Button>
         </div>
       </div>
     )
@@ -194,7 +195,10 @@ export default function JobsPage() {
             </div>
 
             {/* Job Type */}
+            <div className="flex flex-col gap-1">
+            
             <Select value={jobType} onValueChange={setJobType}>
+              <label htmlFor="jobType" className='block'>Job Type</label>
               <SelectTrigger>
                 <SelectValue placeholder="Job Type" />
               </SelectTrigger>
@@ -206,9 +210,12 @@ export default function JobsPage() {
                 <SelectItem value="internship">Internship</SelectItem>
               </SelectContent>
             </Select>
+            </div>
 
             {/* Category */}
+        <div className="flex flex-col gap-1">
             <Select value={category} onValueChange={setCategory}>
+              <label htmlFor="category" className='block'>Category</label>
               <SelectTrigger>
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -223,9 +230,12 @@ export default function JobsPage() {
                 <SelectItem value="content">Content</SelectItem>
               </SelectContent>
             </Select>
+            </div>
 
             {/* Sort */}
+            <div className="flex flex-col gap-1">
             <Select value={sortBy} onValueChange={setSortBy}>
+              <label htmlFor="sortBy" className='block'>Sort By</label>
               <SelectTrigger>
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>
@@ -236,6 +246,7 @@ export default function JobsPage() {
                 <SelectItem value="salary-low">Salary: Low to High</SelectItem>
               </SelectContent>
             </Select>
+            </div>
           </div>
         </div>
 

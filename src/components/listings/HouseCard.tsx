@@ -148,38 +148,38 @@ export function HouseCard({ house }: HouseCardProps) {
           </h3>
           <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
-           {house.category.name} 
+           {house.category?.name || 'N/A'} 
           </Badge>
           <Badge variant="outline" className="text-xs">
-            {house.type}
+            {house.type || 'N/A'}
           </Badge>
           </div>
         </div>
         <div className="flex items-center text-gray-600 text-sm">
           <MapPin className="h-4 w-4 mr-1" />
-          {house.location}
+          {house.location || 'N/A'}
         </div>
       </CardHeader>
       
       <CardContent className="pt-0">
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-[#007a7f]">
-            {formatPrice(house.price)}
+            {formatPrice(house.price || 0)}
           </span>
         </div>
         
         <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
           <div className="flex items-center">
             <Bed className="h-4 w-4 mr-1" />
-            {houseFeatures.bedrooms} bed
+            {houseFeatures.bedrooms || 'N/A'} bed
           </div>
           <div className="flex items-center">
             <Bath className="h-4 w-4 mr-1" />
-            {houseFeatures.bathrooms} bath
+            {houseFeatures.bathrooms || 'N/A'} bath
           </div>
           <div className="flex items-center">
             <Square className="h-4 w-4 mr-1" />
-            {houseFeatures.area} sqft
+            {houseFeatures.area || 'N/A'} sqft
           </div>
         </div>
         

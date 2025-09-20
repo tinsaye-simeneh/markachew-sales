@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
                       <div>
                         <p className="text-sm font-medium">{user.full_name}</p>
                         <p className="text-sm text-gray-500">{user.email}</p>
-                        <p className="text-xs text-gray-400">Joined: {new Date(user.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-400">Joined: {new Date(user.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
