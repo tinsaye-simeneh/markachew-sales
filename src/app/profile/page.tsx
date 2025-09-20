@@ -35,7 +35,7 @@ export default function ProfilePage() {
     location: '',
     address: '',
     userType: '',
-    joinDate: '',
+    createdAt: '',
     photo: '',
     degree: '',
     department: '',
@@ -66,7 +66,7 @@ export default function ProfilePage() {
         email: user.email || '',
         phone: user.phone || '',
         userType: user.user_type || '',
-        joinDate: new Date(user.created_at).toLocaleDateString('en-US', { 
+        createdAt: new Date(user.createdAt).toLocaleDateString('en-US', { 
           year: 'numeric', 
           month: 'long' 
         })
@@ -130,7 +130,7 @@ export default function ProfilePage() {
         email: user.email || '',
         phone: user.phone || '',
         userType: user.user_type || '',
-        joinDate: new Date(user.created_at).toLocaleDateString('en-US', { 
+        createdAt: new Date(user.createdAt).toLocaleDateString('en-US', { 
           year: 'numeric', 
           month: 'long' 
         })
@@ -323,7 +323,7 @@ export default function ProfilePage() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-gray-600">
                     <Calendar className="h-4 w-4 mr-2" />
-                    Member since {profileData.joinDate}
+                    Member since {profileData.createdAt}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <MapPin className="h-4 w-4 mr-2" />
