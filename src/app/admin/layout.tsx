@@ -15,8 +15,8 @@ export default function AdminRootLayout({
   const router = useRouter()
   const pathname = usePathname()
 
-  // Check if current path is an auth page
-  const isAuthPage = pathname === '/admin/auth/login' || pathname === '/admin/auth/register'
+  // Check if current path is a secure auth page
+  const isAuthPage = pathname === '/admin/secure/login' || pathname === '/admin/secure/register'
 
   useEffect(() => {
     // Allow access to auth pages for everyone

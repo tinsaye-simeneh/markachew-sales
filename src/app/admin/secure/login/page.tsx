@@ -169,7 +169,7 @@ export default function AdminLoginPage() {
             
             <div className="mt-6 text-center text-sm">
               <Link
-                href="/admin/auth/register"
+                href="/admin/secure/register"
                 className="text-[#007a7f] hover:underline cursor-pointer"
               >
                 Create Admin Account

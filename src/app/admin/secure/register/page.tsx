@@ -65,7 +65,7 @@ export default function AdminRegisterPage() {
       
       if (response) {
         // Redirect to admin login page
-        router.push('/admin/auth/login')
+        router.push('/admin/secure/login')
       } else {
         setError('Admin registration failed')
       }
@@ -202,7 +202,7 @@ export default function AdminRegisterPage() {
             <div className="mt-6 text-center text-sm">
               Already have an admin account?{' '}
               <Link
-                href="/admin/auth/login"
+                href="/admin/secure/login"
                 className="text-[#007a7f] hover:underline cursor-pointer"
               >
                 Sign in
