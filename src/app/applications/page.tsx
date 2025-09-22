@@ -207,7 +207,7 @@ export default function ApplicationsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => router.push(`/jobs/${application.job_id}`)}
-                        className="cursor-pointer text-[#007a7f] hover:text-[#005a5f]"
+                        className="cursor-pointer text-primary hover:text-[#005a5f]"
                       >
                         View Job
                       </Button>

@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
         <Card className="w-full">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="p-3 bg-[#007a7f] rounded-full">
+              <div className="p-3 bg-primary rounded-full">
                 <Shield className="h-8 w-8 text-white" />
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function AdminLoginPage() {
                 onClick={() => setLoginMethod('email')}
                 className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   loginMethod === 'email'
-                    ? 'bg-white text-[#007a7f] shadow-sm'
+                    ? 'bg-white text-primary shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
                 onClick={() => setLoginMethod('phone')}
                 className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   loginMethod === 'phone'
-                    ? 'bg-white text-[#007a7f] shadow-sm'
+                    ? 'bg-white text-primary shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -170,7 +170,7 @@ export default function AdminLoginPage() {
             <div className="mt-6 text-center text-sm">
               <Link
                 href="/admin/secure/register"
-                className="text-[#007a7f] hover:underline cursor-pointer"
+                className="text-primary hover:underline cursor-pointer"
               >
                 Create Admin Account
               </Link>

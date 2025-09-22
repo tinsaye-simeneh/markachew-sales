@@ -202,7 +202,7 @@ export default function HouseDetailPage() {
                       onClick={() => setCurrentImageIndex(index)}
                       aria-label={`View image ${index + 1} of ${house.title}`}
                       className={`w-20 h-16 rounded-lg overflow-hidden border-2 ${
-                        currentImageIndex === index ? 'border-[#007a7f]' : 'border-gray-200'
+                        currentImageIndex === index ? 'border-primary' : 'border-gray-200'
                       } cursor-pointer`}
                     >
                       <Image src={image} alt={`${house.title} ${index + 1}`} className="w-full h-full object-cover" />
@@ -225,24 +225,24 @@ export default function HouseDetailPage() {
                     <Badge variant="secondary" className="mb-4">{house.type}</Badge>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-[#007a7f]">{formatPrice(house.price)}</div>
+                    <div className="text-3xl font-bold text-primary">{formatPrice(house.price)}</div>
                   </div>
                 </div>
 
                 {/* Property Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Bed className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <Bed className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="text-sm text-gray-600">
                     <span className="font-semibold mr-1">{houseFeatures.bedrooms}</span>Bedrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Bath className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <Bath className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="text-sm text-gray-600">
                     <span className="font-semibold mr-1">{houseFeatures.bathrooms}</span>Bathrooms</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Square className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <Square className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="text-sm text-gray-600">
                     <span className="font-semibold mr-1">{houseFeatures.area}m²</span>Area</div>
                   </div>
@@ -260,7 +260,7 @@ export default function HouseDetailPage() {
                   <div className="grid grid-cols-2 gap-2">
                     {houseFeatures.amenities.length > 0 ? houseFeatures.amenities.map((amenity: string, index: number) => (
                       <div key={index} className="flex items-center">
-                        <div className="w-2 h-2 bg-[#007a7f] rounded-full mr-2"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
                         <span className="text-gray-700">{amenity}</span>
                       </div>
                     )) : (
@@ -274,11 +274,11 @@ export default function HouseDetailPage() {
                   <h3 className="text-xl font-semibold mb-3">Property Information</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-[#007a7f]" />
+                      <Calendar className="h-4 w-4 mr-2 text-primary" />
                       <span className="text-gray-700">Year Built: {houseFeatures.yearBuilt}</span>
                     </div>
                     <div className="flex items-center">
-                      <Shield className="h-4 w-4 mr-2 text-[#007a7f]" />
+                      <Shield className="h-4 w-4 mr-2 text-primary" />
                       <span className="text-gray-700">Security: 24/7</span>
                     </div>
                   </div>

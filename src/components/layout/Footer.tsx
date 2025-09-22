@@ -42,7 +42,7 @@ export function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <Home className="h-8 w-8 text-[#007a7f]" />
+              <Home className="h-8 w-8 text-primary" />
               <span className="text-2xl font-bold">MPEM</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">

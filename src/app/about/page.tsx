@@ -23,7 +23,7 @@ export default function AboutPage() {
         <Card className="mb-12">
           <CardContent className="p-8">
             <div className="text-center">
-              <Target className="h-12 w-12 text-[#007a7f] mx-auto mb-4" />
+              <Target className="h-12 w-12 text-primary mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
               <p className="text-gray-600 text-lg leading-relaxed">
                 To simplify the process of finding your dream home and perfect job by providing a seamless, 
@@ -37,7 +37,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <Card>
             <CardContent className="p-6 text-center">
-              <Building2 className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Building2 className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Quality Properties</h3>
               <p className="text-gray-600">
                 We curate only the best properties, ensuring every listing meets our high standards for quality and value.
@@ -47,7 +47,7 @@ export default function AboutPage() {
 
           <Card>
             <CardContent className="p-6 text-center">
-              <Users className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Users className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Trusted Community</h3>
               <p className="text-gray-600">
                 Building a community of verified users, reliable agents, and reputable employers you can trust.
@@ -57,7 +57,7 @@ export default function AboutPage() {
 
           <Card>
             <CardContent className="p-6 text-center">
-              <Award className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Award className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Excellence</h3>
               <p className="text-gray-600">
                 Committed to delivering exceptional service and results that exceed your expectations.

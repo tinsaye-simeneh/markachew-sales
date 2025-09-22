@@ -93,33 +93,33 @@ export function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <button className="text-xl font-bold text-[#007a7f] cursor-pointer" onClick={() => router.push('/')}>MPEM</button>
+              <button className="text-xl font-bold text-primary cursor-pointer" onClick={() => router.push('/')}>MPEM</button>
             </div>
 
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
               <button 
                 onClick={handleHousesClick}
-                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+                className="text-gray-700 hover:text-primary cursor-pointer transition-colors"
               >
                 Houses
               </button>
               <button 
                 onClick={handleJobsClick}
-                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+                className="text-gray-700 hover:text-primary cursor-pointer transition-colors"
               >
                 Jobs
               </button>
              
               <button 
                 onClick={() => router.push('/about')}
-                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+                className="text-gray-700 hover:text-primary cursor-pointer transition-colors"
               >
                 About
               </button>
               <button 
                 onClick={() => router.push('/contact')}
-                className="text-gray-700 hover:text-[#007a7f] cursor-pointer transition-colors"
+                className="text-gray-700 hover:text-primary cursor-pointer transition-colors"
               >
                 Contact
               </button>
@@ -209,20 +209,20 @@ export function Navbar() {
                 {/* Mobile Navigation Links */}
                 <button 
                   onClick={handleHousesClick}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   Houses
                 </button>
                 <button 
                   onClick={handleJobsClick}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   Jobs
                 </button>
                 {user && (
                   <button 
                     onClick={handleSavedClick}
-                    className="flex items-center w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                    className="flex items-center w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                   >
                     <Heart className="h-4 w-4 mr-2" />
                     Saved
@@ -230,13 +230,13 @@ export function Navbar() {
                 )}
                 <button 
                   onClick={() => { closeMobileMenu(); router.push('/about'); }}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   About
                 </button>
                 <button 
                   onClick={() => { closeMobileMenu(); router.push('/contact'); }}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                 >
                   Contact
                 </button>
@@ -261,7 +261,7 @@ export function Navbar() {
                       </div>
                       <button 
                         onClick={() => { closeMobileMenu(); router.push('/profile'); }}
-                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                       >
                         <User className="inline h-4 w-4 mr-2" />
                         Profile
@@ -269,7 +269,7 @@ export function Navbar() {
                       {user.user_type === 'EMPLOYEE' && (
                         <button 
                           onClick={() => { closeMobileMenu(); router.push('/applications'); }}
-                          className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                          className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                         >
                           <FileText className="inline h-4 w-4 mr-2" />
                           My Applications
@@ -277,14 +277,14 @@ export function Navbar() {
                       )}
                       <button 
                         onClick={() => { closeMobileMenu(); router.push('/saved'); }}
-                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                       >
                         <Heart className="inline h-4 w-4 mr-2" />
                         Saved Items
                       </button>
                       <button 
                         onClick={() => { closeMobileMenu(); logout(); }}
-                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-[#007a7f] hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                        className="block w-full text-left px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
                       >
                         <LogOut className="inline h-4 w-4 mr-2" />
                         Log out

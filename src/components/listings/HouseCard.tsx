@@ -159,7 +159,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
         
         <Badge 
           variant={house.status === 'active' ? 'default' : house.status === 'sold' ? 'secondary' : 'destructive'}
-          className={`absolute top-2 left-2 ${house.status === 'active' ? 'bg-[#007a7f]' : house.status === 'sold' ? 'bg-[#007a7f]' : 'bg-red-500'} text-white`}
+            className={`absolute top-2 left-2 ${house.status === 'active' ? 'bg-primary' : house.status === 'sold' ? 'bg-primary' : 'bg-red-500'} text-white`}
         >
           {house.status === 'active' ? 'Active' : house.status === 'sold' ? 'Sold' : 'Inactive'}
         </Badge>
@@ -167,7 +167,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
       
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold cursor-pointer text-lg group-hover:text-[#007a7f] transition-colors" onClick={() => handleHouseClick(house.id)}>
+          <h3 className="font-semibold cursor-pointer text-lg group-hover:text-primary transition-colors" onClick={() => handleHouseClick(house.id)}>
             {house.title}
           </h3>
           <div className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
       
       <CardContent className="pt-0">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-[#007a7f]">
+          <span className="text-2xl font-bold text-primary">
             {formatPrice(house.price || 0)}
           </span>
         </div>

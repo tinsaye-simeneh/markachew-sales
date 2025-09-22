@@ -218,17 +218,17 @@ export default function JobDetailPage() {
                 {/* Job Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <DollarSign className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <DollarSign className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="font-semibold">{jobDetails.salary}</div>
                     <div className="text-sm text-gray-600">Salary</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Clock className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <Clock className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="font-semibold">{jobDetails.experience}</div>
                     <div className="text-sm text-gray-600">Experience</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Calendar className="h-6 w-6 mx-auto mb-2 text-[#007a7f]" />
+                    <Calendar className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <div className="font-semibold">{formatDate(job.createdAt)}</div>
                     <div className="text-sm text-gray-600">Posted</div>
                   </div>
@@ -295,7 +295,7 @@ export default function JobDetailPage() {
                           value={coverLetter}
                           onChange={(e) => setCoverLetter(e.target.value)}
                           placeholder="Write your cover letter here..."
-                          className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent resize-none"
+                          className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                           required
                         />
                         <p className="text-xs text-gray-500 mt-1">
@@ -369,15 +369,15 @@ export default function JobDetailPage() {
                 <h3 className="text-xl font-semibold mb-4">About {job.employer?.full_name}</h3>
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-2 text-[#007a7f]" />
+                    <Users className="h-4 w-4 mr-2 text-primary" />
                     <span className="text-gray-700">Company Size: Not specified</span>
                   </div>
                   <div className="flex items-center">
-                    <Briefcase className="h-4 w-4 mr-2 text-[#007a7f]" />
+                    <Briefcase className="h-4 w-4 mr-2 text-primary" />
                     <span className="text-gray-700">Industry: Not specified</span>
                   </div>
                   <div className="flex items-center">
-                    <ExternalLink className="h-4 w-4 mr-2 text-[#007a7f]" />
+                    <ExternalLink className="h-4 w-4 mr-2 text-primary" />
                     <span className="text-gray-700">Website: Not available</span>
                   </div>
                 </div>

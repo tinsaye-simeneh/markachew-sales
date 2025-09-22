@@ -57,7 +57,7 @@ export function CTASection() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-[#007a7f] to-[#005a5f]">
+          <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-primary to-[#005a5f]">
             <CardContent className="p-8 text-center text-white">
               <div className="inline-flex p-4 rounded-full bg-white/20 backdrop-blur-sm mb-6">
                 <Home className="h-8 w-8" />
@@ -70,7 +70,7 @@ export function CTASection() {
               </p>
               <Button 
                 size="lg" 
-                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
+                className="bg-white text-primary hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
                 onClick={handleHousesClick}
               >
                 Browse Properties
@@ -79,7 +79,7 @@ export function CTASection() {
             </CardContent>
           </Card>
           
-          <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-[#007a7f] to-[#005a5f]">
+          <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-primary to-[#005a5f]">
             <CardContent className="p-8 text-center text-white">
               <div className="inline-flex p-4 rounded-full bg-white/20 backdrop-blur-sm mb-6">
                 <Briefcase className="h-8 w-8" />
@@ -92,7 +92,7 @@ export function CTASection() {
               </p>
               <Button 
                 size="lg" 
-                className="bg-white text-[#007a7f] hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
+                className="bg-white text-primary hover:bg-gray-100 group-hover:scale-105 transition-transform cursor-pointer"
                 onClick={handleJobsClick}
               >
                 Find Jobs

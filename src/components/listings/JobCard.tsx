@@ -114,7 +114,7 @@ export function JobCard({ job, onEdit }: JobCardProps) {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors mb-1 cursor-pointer">
+            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors mb-1 cursor-pointer">
               {job.title}
             </h3>
             <div className="flex items-center text-gray-600 text-sm mb-2">
@@ -166,7 +166,7 @@ export function JobCard({ job, onEdit }: JobCardProps) {
         </p>
         
         <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold text-[#007a7f]">
+          <div className="text-lg font-semibold text-primary">
             {jobDetails.salary || 'Salary not specified'}
           </div>
           <div className="flex items-center text-gray-500 text-sm">

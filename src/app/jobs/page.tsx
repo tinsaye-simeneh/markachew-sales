@@ -157,7 +157,7 @@ export default function JobsPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
           <p className="text-gray-600">{jobsError}</p>
-          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-[#007a7f] cursor-pointer'>Go to Home</Button>
+          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-primary cursor-pointer'>Go to Home</Button>
         </div>
       </div>
     )

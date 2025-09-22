@@ -132,19 +132,19 @@ export function HeroSection() {
       
       {/* Floating Animated Elements */}
       <motion.div 
-        className="absolute top-20 left-10 w-20 h-20 bg-[#007a7f]/20 rounded-full"
+        className="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full"
         variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '0s' }}
       />
       <motion.div 
-        className="absolute top-40 right-20 w-16 h-16 bg-[#007a7f]/15 rounded-full"
+        className="absolute top-40 right-20 w-16 h-16 bg-primary/15 rounded-full"
         variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '2s' }}
       />
       <motion.div 
-        className="absolute bottom-20 left-1/4 w-12 h-12 bg-[#007a7f]/25 rounded-full"
+        className="absolute bottom-20 left-1/4 w-12 h-12 bg-primary/25 rounded-full"
         variants={floatingVariants as Variants}
         animate="float"
         style={{ animationDelay: '4s' }}
@@ -156,7 +156,7 @@ export function HeroSection() {
         variants={pulseVariants as Variants}
         animate="pulse"
       >
-        <Sparkles className="h-6 w-6 text-[#007a7f]" />
+        <Sparkles className="h-6 w-6 text-primary" />
       </motion.div>
       <motion.div
         className="absolute bottom-32 left-1/3"
@@ -164,7 +164,7 @@ export function HeroSection() {
         animate="pulse"
         style={{ animationDelay: '1.5s' }}
       >
-        <Star className="h-4 w-4 text-[#007a7f]" />
+        <Star className="h-4 w-4 text-primary" />
       </motion.div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -187,7 +187,7 @@ export function HeroSection() {
                 >
                   Find Your
                   <motion.span 
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#007a7f] to-[#005a5f] block"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#005a5f] block"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5, duration: 0.8 }}
@@ -225,7 +225,7 @@ export function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" className="text-lg px-8 py-6 bg-[#007a7f] hover:bg-[#005a5f] text-white cursor-pointer group" onClick={handleHousesClick}>
+                <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-[#005a5f] text-white cursor-pointer group" onClick={handleHousesClick}>
                   <span>Explore Houses</span>
                   <motion.div
                     className="ml-2"
@@ -241,7 +241,7 @@ export function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-[#007a7f] text-[#007a7f] hover:bg-[#007a7f] hover:text-white cursor-pointer" onClick={handleJobsClick}>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-primary text-primary hover:bg-primary hover:text-white cursor-pointer" onClick={handleJobsClick}>
                   Browse Jobs
                 </Button>
               </motion.div>
@@ -264,7 +264,7 @@ export function HeroSection() {
                   transition={{ duration: 0.2 }}
                 >
                   <motion.div 
-                    className="text-3xl font-bold text-[#007a7f]"
+                    className="text-3xl font-bold text-primary"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.2 + index * 0.2, duration: 0.5, type: "spring" }}
@@ -313,14 +313,14 @@ export function HeroSection() {
                   <CardContent className="p-0">
                     <div className="flex items-start space-x-4">
                       <motion.div 
-                        className="p-3 bg-[#007a7f]/10 rounded-lg"
+                        className="p-3 bg-primary/10 rounded-lg"
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
                       >
-                        <feature.icon className="h-6 w-6 text-[#007a7f]" />
+                        <feature.icon className="h-6 w-6 text-primary" />
                       </motion.div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[#007a7f] transition-colors">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors">
                           {feature.title}
                         </h3>
                         <p className="text-gray-600 mt-1">

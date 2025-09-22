@@ -103,7 +103,7 @@ export function TestimonialsSection() {
                       {testimonial.role}
                       {testimonial.company && ` at ${testimonial.company}`}
                     </div>
-                    <div className="text-xs text-[#007a7f] font-medium mt-1">
+                    <div className="text-xs text-primary font-medium mt-1">
                       {testimonial.type} Success Story
                     </div>
                   </div>

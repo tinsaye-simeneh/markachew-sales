@@ -326,7 +326,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         Already have an account?{' '}
         <button
           type="button"
-          className="text-[#007a7f] hover:underline cursor-pointer"
+              className="text-primary hover:underline cursor-pointer"
           onClick={onSwitchToLogin}
         >
           Sign in

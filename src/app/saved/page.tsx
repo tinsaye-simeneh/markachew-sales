@@ -29,7 +29,7 @@ export default function SavedPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007a7f]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     )
   }
@@ -55,9 +55,9 @@ export default function SavedPage() {
         {/* Saved Houses Section */}
         <section className="mb-12">
           <div className="flex items-center mb-6">
-            <Home className="h-6 w-6 text-[#007a7f] mr-2" />
+            <Home className="h-6 w-6 text-primary mr-2" />
             <h2 className="text-2xl font-semibold text-gray-900">Saved Houses</h2>
-            <span className="ml-3 px-3 py-1 bg-[#007a7f] text-white text-sm rounded-full">
+            <span className="ml-3 px-3 py-1 bg-primary text-white text-sm rounded-full">
               {favoriteHouses.length}
             </span>
           </div>
@@ -75,7 +75,7 @@ export default function SavedPage() {
               <p className="text-gray-600 mb-4">Start browsing houses and save your favorites!</p>
               <button 
                 onClick={() => router.push('/houses')}
-                className="bg-[#007a7f] text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
+                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
               >
                 Browse Houses
               </button>
@@ -86,9 +86,9 @@ export default function SavedPage() {
         {/* Saved Jobs Section */}
         <section>
           <div className="flex items-center mb-6">
-            <Briefcase className="h-6 w-6 text-[#007a7f] mr-2" />
+            <Briefcase className="h-6 w-6 text-primary mr-2" />
             <h2 className="text-2xl font-semibold text-gray-900">Saved Jobs</h2>
-            <span className="ml-3 px-3 py-1 bg-[#007a7f] text-white text-sm rounded-full">
+            <span className="ml-3 px-3 py-1 bg-primary text-white text-sm rounded-full">
               {favoriteJobs.length}
             </span>
           </div>
@@ -106,7 +106,7 @@ export default function SavedPage() {
               <p className="text-gray-600 mb-4">Start browsing jobs and save your favorites!</p>
               <button 
                 onClick={() => router.push('/jobs')}
-                className="bg-[#007a7f] text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
+                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
               >
                 Browse Jobs
               </button>

@@ -92,11 +92,11 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             <button
               type="button"
               onClick={() => setLoginMethod('email')}
-              className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                loginMethod === 'email'
-                  ? 'bg-white text-[#007a7f] shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  loginMethod === 'email'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <Mail className="h-4 w-4 mr-2" />
               Email
@@ -104,11 +104,11 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             <button
               type="button"
               onClick={() => setLoginMethod('phone')}
-              className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                loginMethod === 'phone'
-                  ? 'bg-white text-[#007a7f] shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  loginMethod === 'phone'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <Phone className="h-4 w-4 mr-2" />
               Phone
@@ -167,7 +167,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             Don&apos;t have an account?{' '}
             <button
               type="button"
-              className="text-[#007a7f] hover:underline cursor-pointer"
+              className="text-primary hover:underline cursor-pointer"
               onClick={onSwitchToRegister}
             >
               Sign up
@@ -177,7 +177,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             Forgot Password?{' '}
             <button
               type="button"
-              className="text-[#007a7f] hover:underline cursor-pointer"
+              className="text-primary hover:underline cursor-pointer"
               onClick={() => {}}
             >
               Reset here
