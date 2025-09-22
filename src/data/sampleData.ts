@@ -1,4 +1,3 @@
-// Sample house data
 export const sampleHouses = [
   {
     id: "1",
@@ -258,7 +257,6 @@ export const sampleHouses = [
   }
 ]
 
-// Sample job data
 export const sampleJobs = [
   {
     id: "1",
@@ -534,7 +532,6 @@ export const sampleJobs = [
   }
 ]
 
-// Helper functions to get data by ID
 export const getHouseById = (id: string) => {
   return sampleHouses.find(house => house.id === id)
 }
@@ -543,6 +540,5 @@ export const getJobById = (id: string) => {
   return sampleJobs.find(job => job.id === id)
 }
 
-// Type definitions
 export type House = typeof sampleHouses[0]
 export type Job = typeof sampleJobs[0]

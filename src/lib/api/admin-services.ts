@@ -2,7 +2,6 @@ import { apiClient } from './client';
 import { API_CONFIG } from './config';
 import type { User, Job, House, Application, UserType, JobStatus, HouseStatus, ApplicationStatus } from './config';
 
-// Admin Dashboard Stats
 export interface AdminStats {
   totalUsers: number;
   totalJobs: number;
@@ -16,7 +15,6 @@ export interface AdminStats {
   pendingApprovals: number;
 }
 
-// Admin User Management
 export interface AdminUser extends User {
   status: 'active' | 'inactive' | 'pending' | 'suspended';
   last_login?: string;
@@ -33,7 +31,6 @@ export interface AdminUserFilters {
   limit?: number;
 }
 
-// Admin Job Management
 export interface AdminJob extends Job {
   status: JobStatus;
   applications_count?: number;
@@ -49,7 +46,6 @@ export interface AdminJobFilters {
   limit?: number;
 }
 
-// Admin House Management
 export interface AdminHouse extends House {
   status: HouseStatus;
   views_count?: number;
@@ -64,7 +60,6 @@ export interface AdminHouseFilters {
   limit?: number;
 }
 
-// Admin Application Management
 export interface AdminApplication extends Application {
   job_title: string;
   applicant_name: string;
@@ -91,9 +86,7 @@ export interface AdminActivity {
   metadata?: Record<string, unknown>;
 }
 
-// Admin Service Class
 export class AdminService {
-  // Dashboard Stats
   async getDashboardStats(): Promise<AdminStats> {
     try {
       // For now, we'll aggregate data from existing endpoints
@@ -119,7 +112,6 @@ export class AdminService {
       };
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
-      // Return mock data as fallback
       return {
         totalUsers: 1248,
         totalJobs: 89,
@@ -481,7 +473,6 @@ export class AdminService {
     }
   }
 
-  // System Management
   async getSystemStatus(): Promise<{
     api_status: 'operational' | 'degraded' | 'down';
     database_status: 'healthy' | 'degraded' | 'down';
@@ -490,9 +481,7 @@ export class AdminService {
     last_backup: string;
   }> {
     try {
-      // This would typically be a dedicated system status endpoint
-      // For now, we'll return mock data
-      return {
+    return {
         api_status: 'operational',
         database_status: 'healthy',
         storage_usage: 78,
@@ -506,5 +495,4 @@ export class AdminService {
   }
 }
 
-// Create singleton instance
 export const adminService = new AdminService();

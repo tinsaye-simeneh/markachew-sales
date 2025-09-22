@@ -19,8 +19,6 @@ export default function AdminRegisterPage() {
   const router = useRouter()
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Ethiopian phone number validation
-    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
     return ethiopianPhoneRegex.test(phone)
   }
@@ -30,7 +28,6 @@ export default function AdminRegisterPage() {
     setError('')
     setIsLoading(true)
     
-    // Validation
     if (!name || !email || !password || !confirmPassword) {
       setError('Please fill in all required fields')
       setIsLoading(false)
@@ -56,7 +53,6 @@ export default function AdminRegisterPage() {
     }
 
     try {
-      // Admin registration
       const response = await adminAuthService.createAdmin({
         email,
         password,
@@ -64,7 +60,6 @@ export default function AdminRegisterPage() {
       })
       
       if (response) {
-        // Redirect to admin login page
         router.push('/admin/secure/login')
       } else {
         setError('Admin registration failed')

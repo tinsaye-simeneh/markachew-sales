@@ -23,8 +23,6 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
   const { login, isLoading, error: authError } = useAuth()
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Ethiopian phone number validation
-    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
     return ethiopianPhoneRegex.test(phone)
   }
@@ -40,14 +38,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
       return
     }
 
-    // Validate phone number format if using phone login
     if (loginMethod === 'phone' && !validatePhoneNumber(phone)) {
       setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
       return
     }
 
     try {
-      // Regular user login
       const success = await login(email, password)
       
       if (success) {
@@ -55,7 +51,6 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         setEmail('')
         setPhone('')
         setPassword('')
-        // Reload page to trigger redirect logic
         window.location.reload()
       } else {
         setError(authError || `Invalid ${loginMethod} or password`)

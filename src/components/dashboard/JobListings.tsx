@@ -22,11 +22,9 @@ export function JobListings() {
   const itemsPerPage = 6
   const { jobs, loading, error, total, totalPages } = useJobs(currentPage, itemsPerPage)
   
-  // Filter jobs based on search and filters
   useEffect(() => {
     let filtered = jobs
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(job =>
         job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -56,7 +54,6 @@ export function JobListings() {
   }
 
   const handleEditSuccess = () => {
-    // Force a page refresh to get updated data
     window.location.reload()
   }
 

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { jobsService, housesService, categoriesService } from '@/lib/api';
 import type { Job, House, Category, CreateJobRequest, CreateHouseRequest } from '@/lib/api/config';
 
-// Hook for fetching jobs
 export function useJobs(page = 1, limit = 10) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,6 @@ export function useJobs(page = 1, limit = 10) {
   };
 }
 
-// Hook for fetching a single job
 export function useJob(jobId: string) {
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +65,6 @@ export function useJob(jobId: string) {
   return { job, loading, error };
 }
 
-// Hook for fetching houses
 export function useHouses(page = 1, limit = 10) {
   const [houses, setHouses] = useState<House[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,7 +94,6 @@ export function useHouses(page = 1, limit = 10) {
   return { houses, loading, error, total, totalPages };
 }
 
-// Hook for fetching a single house
 export function useHouse(houseId: string) {
   const [house, setHouse] = useState<House | null>(null);
   const [loading, setLoading] = useState(true);
@@ -125,7 +121,6 @@ export function useHouse(houseId: string) {
   return { house, loading, error };
 }
 
-// Hook for fetching categories
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +146,6 @@ export function useCategories() {
   return { categories, loading, error };
 }
 
-// Hook for creating a job
 export function useCreateJob() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -173,7 +167,6 @@ export function useCreateJob() {
   return { createJob, loading, error };
 }
 
-// Hook for creating a house
 export function useCreateHouse() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

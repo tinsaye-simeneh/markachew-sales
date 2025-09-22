@@ -4,7 +4,6 @@ import { API_CONFIG, LoginRequest, RegisterRequest, AuthResponse, User } from '.
 import { handleCorsError, isCorsError } from './cors-handler';
 
 export class AuthService {
-  // Login user
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await apiClient.post<AuthResponse>(
@@ -13,7 +12,6 @@ export class AuthService {
       );
 
       if (response.success) {
-        // Store tokens
         apiClient.setAuthToken(response.data.accessToken);
         if (typeof window !== 'undefined') {
           localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -30,17 +28,14 @@ export class AuthService {
     }
   }
 
-  // Register user
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     try {
-      // First try with the main API client
       const response = await apiClient.post<AuthResponse>(
         API_CONFIG.ENDPOINTS.USERS.REGISTER,
         userData as unknown as Record<string, unknown>
       );
 
       if (response.success) {
-        // Store tokens
         apiClient.setAuthToken(response.data.accessToken);
         if (typeof window !== 'undefined') {
           localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -53,14 +48,12 @@ export class AuthService {
       console.warn('Main API client failed, trying simple client...', error);
       
       try {
-        // Fallback to simple client with CORS proxy
         const response = await simpleApiClient.post<AuthResponse>(
           API_CONFIG.ENDPOINTS.USERS.REGISTER,
           userData as unknown as Record<string, unknown>
         );
 
         if (response.success) {
-          // Store tokens
           apiClient.setAuthToken(response.accessToken);
           if (typeof window !== 'undefined') {
             localStorage.setItem('refreshToken', response.refreshToken);
@@ -79,7 +72,6 @@ export class AuthService {
     }
   }
 
-  // Logout user
   async logout(): Promise<void> {
     try {
       const refreshToken = typeof window !== 'undefined' 
@@ -92,7 +84,6 @@ export class AuthService {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Clear tokens and user data regardless of API call success
       apiClient.clearAuthToken();
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user');
@@ -100,13 +91,11 @@ export class AuthService {
     }
   }
 
-  // Get current user
   async getCurrentUser(): Promise<User> {
     const response = await apiClient.get<User>(API_CONFIG.ENDPOINTS.USERS.ME);
     return response.data;
   }
 
-  // Get stored user
   getStoredUser(): User | null {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem('user');
@@ -115,7 +104,6 @@ export class AuthService {
           return JSON.parse(userStr);
         } catch (error) {
           console.error('Error parsing stored user:', error);
-          // Clear invalid data
           localStorage.removeItem('user');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('isAdmin');
@@ -126,7 +114,6 @@ export class AuthService {
     return null;
   }
 
-  // Clear all auth data
   clearAuthData(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user');
@@ -135,17 +122,14 @@ export class AuthService {
     }
   }
 
-  // Check if user is authenticated
   isAuthenticated(): boolean {
     return apiClient.isAuthenticated();
   }
 
-  // Refresh token
   async refreshToken(): Promise<boolean> {
     return await apiClient.refreshToken();
   }
 
-  // Update user profile
   async updateUser(userId: string, userData: Partial<User>): Promise<User> {
     const response = await apiClient.put<User>(
       API_CONFIG.ENDPOINTS.USERS.UPDATE(userId),
@@ -154,17 +138,14 @@ export class AuthService {
     return response.data;
   }
 
-  // Delete user account
   async deleteUser(userId: string): Promise<void> {
     await apiClient.delete(API_CONFIG.ENDPOINTS.USERS.DELETE(userId));
-    // Clear auth data after successful deletion
     apiClient.clearAuthToken();
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user');
     }
   }
 
-  // Get all users (admin only)
   async getAllUsers(page = 1, limit = 10): Promise<{
     users: User[];
     total: number;
@@ -183,9 +164,7 @@ export class AuthService {
   }
 }
 
-// Admin authentication methods
 export class AdminAuthService {
-  // Admin login
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await apiClient.post<{
       success: boolean;
@@ -202,13 +181,11 @@ export class AdminAuthService {
     );
 
     if (response.success) {
-      // Store tokens
       apiClient.setAuthToken(response.data.data.accessToken);
       if (typeof window !== 'undefined') {
         localStorage.setItem('refreshToken', response.data.data.refreshToken);
         localStorage.setItem('isAdmin', 'true');
         
-        // Create a minimal user object for admin since the API doesn't return user data
         const adminUser = {
           id: 'admin',
           full_name: 'Admin User',
@@ -222,7 +199,6 @@ export class AdminAuthService {
       }
     }
 
-    // Return in the expected AuthResponse format
     return {
       accessToken: response.data.data.accessToken,
       refreshToken: response.data.data.refreshToken,
@@ -239,7 +215,6 @@ export class AdminAuthService {
     };
   }
 
-  // Create admin user (super admin only)
   async createAdmin(adminData: {
     email: string;
     password: string;
@@ -252,7 +227,6 @@ export class AdminAuthService {
     return response.data;
   }
 
-  // Admin logout
   async logout(): Promise<void> {
     try {
       const refreshToken = typeof window !== 'undefined' 
@@ -265,7 +239,6 @@ export class AdminAuthService {
     } catch (error) {
       console.error('Admin logout error:', error);
     } finally {
-      // Clear tokens and user data
       apiClient.clearAuthToken();
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user');
@@ -274,7 +247,6 @@ export class AdminAuthService {
     }
   }
 
-  // Refresh admin token
   async refreshToken(): Promise<boolean> {
     try {
       const refreshToken = typeof window !== 'undefined' 
@@ -306,7 +278,6 @@ export class AdminAuthService {
     }
   }
 
-  // Check if user is admin
   isAdmin(): boolean {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('isAdmin') === 'true';
@@ -315,6 +286,5 @@ export class AdminAuthService {
   }
 }
 
-// Create singleton instances
 export const authService = new AuthService();
 export const adminAuthService = new AdminAuthService();

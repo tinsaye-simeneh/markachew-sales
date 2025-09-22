@@ -23,7 +23,6 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
   const [isClient, setIsClient] = useState(false)
   const { user } = useAuth()
   
-  // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
 
   useEffect(() => {
@@ -40,7 +39,6 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
     }).format(numPrice)
   }
 
-  // Parse images JSON string
   const getHouseImages = () => {
     try {
       const images = JSON.parse(house.images || '[]');

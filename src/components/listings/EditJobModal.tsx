@@ -31,7 +31,6 @@ export function EditJobModal({ isOpen, onClose, job, onSuccess }: EditJobModalPr
     link: ''
   })
 
-  // Initialize form data when job changes
   useEffect(() => {
     if (job) {
       try {

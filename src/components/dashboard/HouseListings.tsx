@@ -23,11 +23,9 @@ export function HouseListings() {
   const itemsPerPage = 6
   const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)
   
-  // Filter houses based on search and filters
   useEffect(() => {
     let filtered = houses
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(house =>
         house.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -36,7 +34,6 @@ export function HouseListings() {
       )
     }
 
-    // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
         const price = parseFloat(house.price) || 0
@@ -55,12 +52,10 @@ export function HouseListings() {
       })
     }
 
-    // Property type filter
     if (propertyType !== 'all') {
       filtered = filtered.filter(house => house.type === propertyType)
     }
 
-    // Bedrooms filter - Parse features JSON string
     if (bedrooms !== 'all') {
       filtered = filtered.filter(house => {
         try {
@@ -81,7 +76,6 @@ export function HouseListings() {
   }
 
   const handleEditSuccess = () => {
-    // Force a page refresh to get updated data
     window.location.reload()
   }
 

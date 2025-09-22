@@ -18,7 +18,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([])
   const [isClient, setIsClient] = useState(false)
 
-  // Load favorites from localStorage on mount
   useEffect(() => {
     setIsClient(true)
     if (typeof window !== 'undefined') {
@@ -38,7 +37,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Save to localStorage whenever favorites change
   useEffect(() => {
     if (isClient && typeof window !== 'undefined') {
       try {

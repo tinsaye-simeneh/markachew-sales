@@ -21,7 +21,6 @@ export function JobCard({ job, onEdit }: JobCardProps) {
   const [isClient, setIsClient] = useState(false)
   const { user } = useAuth()
   
-  // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export function JobCard({ job, onEdit }: JobCardProps) {
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return // Don't handle clicks during SSR
+    if (!isClient) return
     
     if (isFavorite(job.id, 'job')) {
       removeFromFavorites(job.id, 'job')
@@ -64,7 +63,6 @@ export function JobCard({ job, onEdit }: JobCardProps) {
     }
   }
 
-  // Check if current user is the employer of this job
   const isEmployer = user?.user_type === UserType.EMPLOYER && user?.id === job.user_id
 
   const isJobFavorited = isClient ? isFavorite(job.id, 'job') : false
@@ -87,7 +85,6 @@ export function JobCard({ job, onEdit }: JobCardProps) {
     }
   }
 
-  // Parse requirements to get experience and type
   const getJobDetails = () => {
     try {
       const requirements = JSON.parse(job.requirements || '{}');

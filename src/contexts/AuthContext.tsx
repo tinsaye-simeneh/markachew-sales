@@ -21,7 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check for stored user data on mount
     const storedUser = authService.getStoredUser()
     if (storedUser && authService.isAuthenticated()) {
       setUser(storedUser)
@@ -72,8 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const completeRegistration = () => {
-    // This method is kept for backward compatibility
-    // In the new API, registration is completed immediately
   }
 
   const logout = async () => {

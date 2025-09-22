@@ -32,18 +32,15 @@ export default function HousesPage() {
   const itemsPerPage = 6
   const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Filter and search logic
   useEffect(() => {
     let filtered = houses
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(house =>
         house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,7 +50,6 @@ export default function HousesPage() {
       )
     }
 
-    // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
         const price = parseFloat(house.price) || 0;

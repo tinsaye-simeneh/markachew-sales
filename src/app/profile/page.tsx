@@ -46,18 +46,15 @@ export default function ProfilePage() {
   const [updateMessage, setUpdateMessage] = useState('')
   const [showCreateProfile, setShowCreateProfile] = useState(false)
 
-  // Fetch profile data
   const { profile, loading: profileLoading, error: profileError } = useCurrentUserProfile()
   const { updateProfile, loading: updateLoading } = useUpdateProfile()
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Initialize profile data when user or profile is loaded
   useEffect(() => {
     if (user) {
       setProfileData(prev => ({
@@ -74,7 +71,6 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  // Update profile data when profile is fetched
   useEffect(() => {
     if (profile) {
       setProfileData(prev => ({

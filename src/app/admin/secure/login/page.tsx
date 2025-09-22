@@ -20,8 +20,6 @@ export default function AdminLoginPage() {
   const router = useRouter()
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Ethiopian phone number validation
-    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
     return ethiopianPhoneRegex.test(phone)
   }
@@ -39,7 +37,6 @@ export default function AdminLoginPage() {
       return
     }
 
-    // Validate phone number format if using phone login
     if (loginMethod === 'phone' && !validatePhoneNumber(phone)) {
       setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
       setIsLoading(false)
@@ -47,11 +44,9 @@ export default function AdminLoginPage() {
     }
 
     try {
-      // Admin login
       const response = await adminAuthService.login({ email, password })
       
       if (response) {
-        // Redirect to admin dashboard
         router.push('/admin')
       } else {
         setError('Invalid credentials')

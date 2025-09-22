@@ -1,4 +1,3 @@
-// Debug utility to test API connections
 import { API_CONFIG } from './config';
 
 export async function debugApiConnection() {
@@ -8,7 +7,6 @@ export async function debugApiConnection() {
   console.log('Register endpoint:', API_CONFIG.ENDPOINTS.USERS.REGISTER);
   console.log('Login endpoint:', API_CONFIG.ENDPOINTS.USERS.LOGIN);
   
-  // Test direct API call
   try {
     console.log('🌐 Testing direct API call...');
     const directResponse = await fetch('https://employee.luckbingogames.com/api/users/register', {
@@ -30,7 +28,6 @@ export async function debugApiConnection() {
     console.error('Direct API error:', error);
   }
   
-  // Test proxy route
   try {
     console.log('🔄 Testing proxy route...');
     const proxyResponse = await fetch('/api/auth/register', {
@@ -53,7 +50,6 @@ export async function debugApiConnection() {
   }
 }
 
-// Call this function in your browser console to debug
 if (typeof window !== 'undefined') {
   (window as unknown as Record<string, unknown>).debugApiConnection = debugApiConnection;
 }

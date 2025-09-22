@@ -31,8 +31,6 @@ interface AdminApplicationFilters {
   search?: string
   page?: number
 }
-
-// Dashboard Stats Hook
 export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -58,7 +56,6 @@ export function useAdminStats() {
   return { stats, loading, error, refetch: fetchStats }
 }
 
-// Users Management Hook
 export function useAdminUsers(filters: AdminUserFilters = {}) {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [total, setTotal] = useState(0)
@@ -148,7 +145,6 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
   }
 }
 
-// Jobs Management Hook
 export function useAdminJobs(filters: AdminJobFilters = {}) {
   const [jobs, setJobs] = useState<AdminJob[]>([])
   const [total, setTotal] = useState(0)
@@ -239,7 +235,6 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
   }
 }
 
-// Houses Management Hook
 export function useAdminHouses(filters: AdminHouseFilters = {}) {
   const [houses, setHouses] = useState<AdminHouse[]>([])
   const [total, setTotal] = useState(0)
@@ -331,7 +326,6 @@ export function useAdminHouses(filters: AdminHouseFilters = {}) {
   }
 }
 
-// Applications Management Hook
 export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   const [applications, setApplications] = useState<AdminApplication[]>([])
   const [total, setTotal] = useState(0)
@@ -398,7 +392,6 @@ export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   }
 }
 
-// Activity Log Hook
 export function useAdminActivityLog(filters: { page?: number } = {}) {
   const [activities, setActivities] = useState<AdminActivity[]>([])
   const [total, setTotal] = useState(0)
@@ -438,7 +431,6 @@ export function useAdminActivityLog(filters: { page?: number } = {}) {
   }
 }
 
-// System Status Hook
 export function useSystemStatus() {
   const [status, setStatus] = useState<{ status: string; uptime: number; version: string } | null>(null)
   const [loading, setLoading] = useState(true)

@@ -1,6 +1,3 @@
-// Simple API Client that handles CORS issues
-// This client uses multiple strategies to avoid CORS problems
-
 import { corsProxyService } from './cors-proxy';
 
 export class SimpleApiClient {
@@ -14,12 +11,10 @@ export class SimpleApiClient {
     const url = `${this.baseURL}${endpoint}`;
     
     try {
-      // Strategy 1: Try direct request first
       return await this.directPost<T>(url, data);
     } catch {
       console.warn('Direct request failed, trying alternative methods...');
       
-      // Strategy 2: Try with CORS proxy
       try {
         return await corsProxyService.requestWithProxy<T>(url, {
           method: 'POST',
@@ -28,7 +23,6 @@ export class SimpleApiClient {
       } catch (proxyError) {
         console.error('Proxy request also failed:', proxyError);
         
-        // Strategy 3: Try with different headers
         try {
           return await this.postWithDifferentHeaders<T>(url, data);
         } catch (headerError) {
@@ -67,11 +61,9 @@ export class SimpleApiClient {
         'User-Agent': 'Mozilla/5.0 (compatible; API-Client/1.0)',
       },
       body: JSON.stringify(data),
-      mode: 'no-cors', // This might work for some cases
+      mode: 'no-cors',
     });
 
-    // Note: no-cors mode doesn't allow reading the response
-    // This is a last resort and might not work for all APIs
     throw new Error('no-cors mode not suitable for this API');
   }
 

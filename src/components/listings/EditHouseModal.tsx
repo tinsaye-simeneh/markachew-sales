@@ -33,7 +33,6 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
     category_id: ''
   })
 
-  // Initialize form data when house changes
   useEffect(() => {
     if (house) {
       try {

@@ -28,14 +28,12 @@ export default function JobsPage() {
   const itemsPerPage = 6
   const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Helper function to parse job requirements
   const getJobDetails = (job: Job) => {
     try {
       const requirements = JSON.parse(job.requirements || '{}');
@@ -55,11 +53,9 @@ export default function JobsPage() {
     }
   };
 
-  // Filter and search logic
   useEffect(() => {
     let filtered = jobs
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(job => {
         const jobDetails = getJobDetails(job);

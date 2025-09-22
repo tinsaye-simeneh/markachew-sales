@@ -1,6 +1,3 @@
-// CORS Proxy Service
-// This service provides multiple fallback options for CORS issues
-
 export class CorsProxyService {
   private static instance: CorsProxyService;
   private proxyUrls: string[] = [
@@ -46,15 +43,12 @@ export class CorsProxyService {
     } catch (error) {
       console.error(`❌ Proxy ${this.currentProxyIndex + 1} failed:`, error);
       
-      // Try next proxy
       this.currentProxyIndex = (this.currentProxyIndex + 1) % this.proxyUrls.length;
       
       if (this.currentProxyIndex === 0) {
-        // All proxies failed
         throw new Error('All CORS proxy services failed. Please try again later.');
       }
       
-      // Retry with next proxy
       return this.requestWithProxy(url, options);
     }
   }
@@ -95,11 +89,9 @@ export class CorsProxyService {
     options: RequestInit = {}
   ): Promise<T> {
     try {
-      // First try direct request
       return await this.directRequest<T>(url, options);
     } catch {
       console.warn('Direct request failed, trying proxy...');
-      // If direct fails, try proxy
       return await this.requestWithProxy<T>(url, options);
     }
   }

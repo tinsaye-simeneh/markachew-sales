@@ -55,10 +55,8 @@ export function Navbar() {
     e.preventDefault()
     closeMobileMenu()
     if (user) {
-      // User is logged in, navigate to houses page
       router.push('/houses')
     } else {
-      // User is not logged in, show sign-in modal
       setIsLoginOpen(true)
     }
   }
@@ -67,10 +65,8 @@ export function Navbar() {
     e.preventDefault()
     closeMobileMenu()
     if (user) {
-      // User is logged in, navigate to jobs page
       router.push('/jobs')
     } else {
-      // User is not logged in, show sign-in modal
       setIsLoginOpen(true)
     }
   }
@@ -79,10 +75,8 @@ export function Navbar() {
     e.preventDefault()
     closeMobileMenu()
     if (user) {
-      // User is logged in, navigate to saved page
       router.push('/saved')
     } else {
-      // User is not logged in, show sign-in modal
       setIsLoginOpen(true)
     }
   }

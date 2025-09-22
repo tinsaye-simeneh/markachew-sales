@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.luckbingogames.com';
 
 export async function GET(
   request: NextRequest,
@@ -27,7 +27,6 @@ export async function GET(
 
     const data = await response.json();
 
-    // Handle specific error cases
     if (response.status === 403) {
       return NextResponse.json(
         { success: false, message: 'Access forbidden. Your token may be invalid or expired. Please log in again.' },
