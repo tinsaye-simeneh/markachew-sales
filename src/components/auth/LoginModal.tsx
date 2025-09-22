@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { adminAuthService } from '@/lib/api'
-import { X, Mail, Phone, Shield, User } from 'lucide-react'
+import { X, Mail, Phone } from 'lucide-react'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -16,7 +15,6 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
-  const [loginType, setLoginType] = useState<'user' | 'admin'>('user')
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -49,16 +47,8 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     }
 
     try {
-      let success = false
-      
-      if (loginType === 'admin') {
-        // Admin login - use admin endpoint
-        const response = await adminAuthService.login({ email, password })
-        success = !!response
-      } else {
-        // Regular user login - use user endpoint
-        success = await login(email, password)
-      }
+      // Regular user login
+      const success = await login(email, password)
       
       if (success) {
         onClose()
@@ -97,33 +87,6 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         </CardHeader>
         
         <CardContent>
-          {/* Login Type Switcher */}
-          <div className="flex border border-gray-200 rounded-lg mb-6 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setLoginType('user')}
-              className={`flex-1 cursor-pointer flex items-center justify-center py-3 px-4 text-sm font-medium transition-colors ${
-                loginType === 'user'
-                  ? 'bg-[#007a7f] text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <User className="h-4 w-4 mr-2" />
-              User Login
-            </button>
-            <button
-              type="button"
-              onClick={() => setLoginType('admin')}
-              className={`flex-1 cursor-pointer flex items-center justify-center py-3 px-4 text-sm font-medium transition-colors ${
-                loginType === 'admin'
-                  ? 'bg-[#007a7f] text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              Admin Login
-            </button>
-          </div>
           {/* Login Method Switcher */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
             <button

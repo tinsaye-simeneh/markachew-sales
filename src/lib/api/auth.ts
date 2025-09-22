@@ -110,9 +110,29 @@ export class AuthService {
   getStoredUser(): User | null {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem('user');
-      return userStr ? JSON.parse(userStr) : null;
+      if (userStr && userStr !== 'undefined' && userStr !== 'null') {
+        try {
+          return JSON.parse(userStr);
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          // Clear invalid data
+          localStorage.removeItem('user');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('isAdmin');
+          return null;
+        }
+      }
     }
     return null;
+  }
+
+  // Clear all auth data
+  clearAuthData(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('isAdmin');
+    }
   }
 
   // Check if user is authenticated
@@ -167,22 +187,56 @@ export class AuthService {
 export class AdminAuthService {
   // Admin login
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>(
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data: {
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: string;
+      };
+      timestamp: string;
+    }>(
       API_CONFIG.ENDPOINTS.ADMIN.LOGIN,
       credentials as unknown as Record<string, unknown>
     );
 
     if (response.success) {
       // Store tokens
-      apiClient.setAuthToken(response.data.accessToken);
+      apiClient.setAuthToken(response.data.data.accessToken);
       if (typeof window !== 'undefined') {
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
         localStorage.setItem('isAdmin', 'true');
+        
+        // Create a minimal user object for admin since the API doesn't return user data
+        const adminUser = {
+          id: 'admin',
+          full_name: 'Admin User',
+          email: credentials.email,
+          phone: '',
+          user_type: 'ADMIN' as any,
+          createdAt: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        localStorage.setItem('user', JSON.stringify(adminUser));
       }
     }
 
-    return response.data;
+    // Return in the expected AuthResponse format
+    return {
+      accessToken: response.data.data.accessToken,
+      refreshToken: response.data.data.refreshToken,
+      user: {
+        id: 'admin',
+        full_name: 'Admin User',
+        email: credentials.email,
+        phone: '',
+        user_type: 'ADMIN' as any,
+        createdAt: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      success: response.success,
+    };
   }
 
   // Create admin user (super admin only)
