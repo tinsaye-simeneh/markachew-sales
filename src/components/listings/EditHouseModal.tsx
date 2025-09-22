@@ -83,8 +83,6 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
         price: parseFloat(formData.price) || 0,
         location: formData.location,
         category_id: formData.category_id,
-        // Note: We're not updating images/video in this edit modal
-        // Those would require separate file upload handling
       }
 
       await housesService.updateHouse(house.id, houseData)
@@ -103,7 +101,7 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
   if (!isOpen || !house) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -159,12 +157,12 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
               <div>
                 <Label htmlFor="type" className='mb-2'>Property Type *</Label>
                 <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select property type" />
+                  <SelectTrigger className='cursor-pointer'>
+                    <SelectValue placeholder="Select property type"  className='cursor-pointer'/>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="SALES">For Sale</SelectItem>
-                    <SelectItem value="RENT">For Rent</SelectItem>
+                    <SelectItem value="SALES" className='cursor-pointer'>For Sale</SelectItem>
+                    <SelectItem value="RENT" className='cursor-pointer'>For Rent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -177,7 +175,7 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
                   value={formData.price}
                   onChange={(e) => handleInputChange('price', e.target.value)}
                   placeholder="e.g., 5000000"
-                  required
+                  required 
                 />
               </div>
             </div>

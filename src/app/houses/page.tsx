@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HouseCard } from '@/components/listings/HouseCard'
+import { EditHouseModal } from '@/components/listings/EditHouseModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -25,6 +26,8 @@ export default function HousesPage() {
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [filteredHouses, setFilteredHouses] = useState<House[] | []>([])
+  const [editingHouse, setEditingHouse] = useState<House | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const itemsPerPage = 6
   const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
@@ -107,8 +110,23 @@ export default function HousesPage() {
   const endIndex = startIndex + itemsPerPage
   const currentHouses = filteredHouses.slice(startIndex, endIndex)
 
-    const handleHouseClick = (houseId: string) => {
+  const handleHouseClick = (houseId: string) => {
     router.push(`/houses/${houseId}`)
+  }
+
+  const handleEditHouse = (house: House) => {
+    setEditingHouse(house)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Force a page refresh to get updated data
+    window.location.reload()
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingHouse(null)
   }
 
   if (authLoading || housesLoading) {
@@ -234,7 +252,7 @@ export default function HousesPage() {
       onClick={clickable ? () => handleHouseClick(house.id) : undefined}
       className={clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}
     >
-      <HouseCard house={house} onEdit={undefined} />
+      <HouseCard house={house} onEdit={handleEditHouse} />
     </div>
   );
 })}
@@ -283,6 +301,13 @@ export default function HousesPage() {
             </Button>
           </div>
         )}
+
+        <EditHouseModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          house={editingHouse}
+          onSuccess={handleEditSuccess}
+        />
       </div>
 
       <Footer />
