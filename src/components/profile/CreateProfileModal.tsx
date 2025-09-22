@@ -10,6 +10,7 @@ import { useCreateProfile } from '@/hooks/useProfile'
 import { useAuth } from '@/contexts/AuthContext'
 import { UserType } from '@/lib/api'
 import { AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface CreateProfileModalProps {
   isOpen: boolean
@@ -53,8 +54,11 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
       
       onSuccess()
       onClose()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Failed to create profile:', error)
+      toast.error('Failed to create profile', {
+        description: 'Failed to create profile'
+      })
     }
   }
 

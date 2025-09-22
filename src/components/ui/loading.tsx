@@ -2,9 +2,9 @@ export function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center space-x-2">
       <div className="flex space-x-1">
-        <div className="w-3 h-8 bg-[#007a7f] rounded-sm animate-pulse" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-3 h-8 bg-[#007a7f] rounded-sm animate-pulse" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-3 h-8 bg-[#007a7f] rounded-sm animate-pulse" style={{ animationDelay: '300ms' }}></div>
+<div className="w-3 h-8 bg-primary rounded-sm animate-pulse" style={{ animationDelay: '0ms' }}></div>
+<div className="w-3 h-8 bg-primary rounded-sm animate-pulse" style={{ animationDelay: '150ms' }}></div>
+<div className="w-3 h-8 bg-primary rounded-sm animate-pulse" style={{ animationDelay: '300ms' }}></div>
       </div>
     </div>
   )

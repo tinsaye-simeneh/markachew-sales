@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { House, Job } from '@/lib/api'
+import { toast } from 'sonner'
 
 interface FavoritesContextType {
   favoriteHouses: House[]
@@ -18,7 +19,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([])
   const [isClient, setIsClient] = useState(false)
 
-  // Load favorites from localStorage on mount
   useEffect(() => {
     setIsClient(true)
     if (typeof window !== 'undefined') {
@@ -32,19 +32,24 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         if (savedJobs) {
           setFavoriteJobs(JSON.parse(savedJobs))
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error loading favorites from localStorage:', error)
+        toast.error('Error loading favorites from localStorage:', {
+          description: 'Error loading favorites from localStorage'
+        })
       }
     }
   }, [])
 
-  // Save to localStorage whenever favorites change
   useEffect(() => {
     if (isClient && typeof window !== 'undefined') {
       try {
         localStorage.setItem('favoriteHouses', JSON.stringify(favoriteHouses))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error saving houses to localStorage:', error)
+        toast.error('Error saving houses to localStorage:', {
+          description: 'Error saving houses to localStorage'
+        })
       }
     }
   }, [favoriteHouses, isClient])
@@ -53,8 +58,11 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     if (isClient && typeof window !== 'undefined') {
       try {
         localStorage.setItem('favoriteJobs', JSON.stringify(favoriteJobs))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error saving jobs to localStorage:', error)
+        toast.error('Error saving jobs to localStorage:', {
+          description: 'Error saving jobs to localStorage'
+        })
       }
     }
   }, [favoriteJobs, isClient])

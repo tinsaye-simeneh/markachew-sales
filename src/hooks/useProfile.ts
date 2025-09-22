@@ -18,7 +18,6 @@ export function useProfile(userId?: string) {
         setProfile(profileData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-        console.error('Profile fetch error:', err);
       } finally {
         setLoading(false);
       }
@@ -43,7 +42,6 @@ export function useCurrentUserProfile() {
         const profileData = await profilesService.getCurrentUserProfile();
         setProfile(profileData);
       } catch (err) {
-        // Check if it's a 404 (profile doesn't exist) vs other errors
         if (err instanceof Error && (err.message.includes('404') || err.message.includes('Profile not found'))) {
           setProfile(null); // This will trigger the create profile flow
           setError(null); // Clear error for 404

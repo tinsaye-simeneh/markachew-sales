@@ -1,11 +1,6 @@
-// Development Configuration for CORS Issues
-// This file provides alternative configurations for development
-
 export const DEV_CONFIG = {
-  // Use proxy in development to avoid CORS issues
   USE_PROXY: process.env.NODE_ENV === 'development',
   
-  // Alternative API endpoints for development
   PROXY_ENDPOINTS: {
     REGISTER: '/api/auth/register',
     LOGIN: '/api/auth/login',
@@ -14,7 +9,6 @@ export const DEV_CONFIG = {
     CATEGORIES: '/api/categories',
   },
   
-  // Direct API endpoints (for production)
   DIRECT_ENDPOINTS: {
     REGISTER: '/api/users/register',
     LOGIN: '/api/users/login',
@@ -23,7 +17,6 @@ export const DEV_CONFIG = {
     CATEGORIES: '/api/categories',
   },
   
-  // Get the appropriate endpoint based on environment
   getEndpoint: (endpoint: string) => {
     if (DEV_CONFIG.USE_PROXY) {
       return DEV_CONFIG.PROXY_ENDPOINTS[endpoint as keyof typeof DEV_CONFIG.PROXY_ENDPOINTS] || endpoint;
@@ -32,7 +25,6 @@ export const DEV_CONFIG = {
   }
 };
 
-// CORS-friendly fetch wrapper
 export async function corsFriendlyFetch(url: string, options: RequestInit = {}) {
   const defaultOptions: RequestInit = {
     mode: 'cors',
@@ -48,7 +40,6 @@ export async function corsFriendlyFetch(url: string, options: RequestInit = {}) 
     const response = await fetch(url, { ...defaultOptions, ...options });
     return response;
   } catch (error) {
-    // If CORS error, try with proxy
     if (error instanceof TypeError && error.message.includes('CORS')) {
       console.warn('CORS error detected, trying proxy route...');
       const proxyUrl = `/api/proxy${url.replace(/^https?:\/\/[^\/]+/, '')}`;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { JobCard } from '@/components/listings/JobCard'
+import { EditJobModal } from '@/components/listings/EditJobModal'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
@@ -15,15 +16,15 @@ export function JobListings() {
   const [experience, setExperience] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
+  const [editingJob, setEditingJob] = useState<Job | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   
   const itemsPerPage = 6
   const { jobs, loading, error, total, totalPages } = useJobs(currentPage, itemsPerPage)
   
-  // Filter jobs based on search and filters
   useEffect(() => {
     let filtered = jobs
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(job =>
         job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -32,12 +33,7 @@ export function JobListings() {
       )
     }
 
-    // Job type filter - Note: API doesn't have job type field, so we'll skip this filter
-    // if (jobType !== 'all') {
-    //   filtered = filtered.filter(job => job.type?.toLowerCase() === jobType.toLowerCase())
-    // }
-
-    // Experience filter - Parse requirements JSON string
+   
     if (experience !== 'all') {
       filtered = filtered.filter(job => {
         try {
@@ -51,6 +47,20 @@ export function JobListings() {
 
     setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
   }, [jobs, searchQuery, jobType, experience])
+
+  const handleEditJob = (job: Job) => {
+    setEditingJob(job)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    window.location.reload()
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingJob(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -79,11 +89,11 @@ export function JobListings() {
               <SelectValue placeholder="Job Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="Full-time">Full Time</SelectItem>
-              <SelectItem value="Part-time">Part Time</SelectItem>
-              <SelectItem value="Contract">Contract</SelectItem>
-              <SelectItem value="Remote">Remote</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Types</SelectItem>
+              <SelectItem value="Full-time" className='cursor-pointer'>Full Time</SelectItem>
+              <SelectItem value="Part-time" className='cursor-pointer'>Part Time</SelectItem>
+              <SelectItem value="Contract" className='cursor-pointer'>Contract</SelectItem>
+              <SelectItem value="Remote" className='cursor-pointer'>Remote</SelectItem>
             </SelectContent>
           </Select>
       </div> 
@@ -94,11 +104,11 @@ export function JobListings() {
               <SelectValue placeholder="Experience Level" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Levels</SelectItem>
-              <SelectItem value="1-2 years">1-2 years</SelectItem>
-              <SelectItem value="2-3 years">2-3 years</SelectItem>
-              <SelectItem value="3-5 years">3-5 years</SelectItem>
-              <SelectItem value="5+ years">5+ years</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Levels</SelectItem>
+              <SelectItem value="1-2 years" className='cursor-pointer'>1-2 years</SelectItem>
+              <SelectItem value="2-3 years" className='cursor-pointer'>2-3 years</SelectItem>
+              <SelectItem value="3-5 years" className='cursor-pointer'>3-5 years</SelectItem>
+              <SelectItem value="5+ years" className='cursor-pointer'>5+ years</SelectItem>
             </SelectContent>
           </Select>
           </div>
@@ -115,7 +125,7 @@ export function JobListings() {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[#007a7f]" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="ml-2 text-gray-600">Loading jobs...</span>
         </div>
       )}
@@ -139,7 +149,7 @@ export function JobListings() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job: Job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} onEdit={handleEditJob} />
             ))
           ) : (
             <div className="col-span-full text-center py-12">
@@ -187,6 +197,14 @@ export function JobListings() {
           </Button>
         </div>
       )}
+
+      {/* Edit Job Modal */}
+      <EditJobModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        job={editingJob}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   )
 }

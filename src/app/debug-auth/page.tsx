@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 
 export default function DebugAuthPage() {
   const { user, isLoading } = useAuth()
@@ -101,7 +102,9 @@ export default function DebugAuthPage() {
                 try {
                   const user = localStorageData.user ? JSON.parse(localStorageData.user) : null;
                   if (!user || !user.id) {
-                    alert('No user ID found. Please log in first.');
+                    toast.error('No user ID found. Please log in first.', {
+                      description: 'No user ID found. Please log in first.'
+                    })
                     return;
                   }
                   
@@ -111,11 +114,13 @@ export default function DebugAuthPage() {
                     }
                   })
                   const data = await response.json()
-                  console.log('API Response:', data)
-                  alert(`Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`)
+                  toast.success('API Response:', {
+                    description: `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`
+                  })
                 } catch (error) {
-                  console.error('API Error:', error)
-                  alert(`Error: ${error}`)
+                  toast.error('API Error:', {
+                    description: `Error: ${error}`
+                  })
                 }
               }}
               disabled={!localStorageData.accessToken || !localStorageData.user}

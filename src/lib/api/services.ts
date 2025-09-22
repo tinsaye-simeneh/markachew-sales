@@ -12,7 +12,6 @@ import type {
   CreateProfileRequest,
 } from './config';
 
-// Jobs Service
 export class JobsService {
   async createJob(jobData: CreateJobRequest): Promise<Job> {
     const formData = new FormData();
@@ -55,7 +54,6 @@ export class JobsService {
       { page, limit }
     );
     
-    // Transform the response to match expected structure
     return {
       jobs: response.data.jobs || [],
       total: response.data.meta.totalItems,
@@ -83,7 +81,6 @@ export class JobsService {
   }
 }
 
-// Houses Service
 export class HousesService {
   async createHouse(houseData: CreateHouseRequest): Promise<House> {
     const formData = new FormData();
@@ -126,7 +123,6 @@ export class HousesService {
       };
     }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, { page, limit });
     
-    // Transform the response to match expected structure
     return {
       houses: response.data.houses || [],
       total: response.data.meta.totalItems,
@@ -154,7 +150,6 @@ export class HousesService {
   }
 }
 
-// Applications Service
 export class ApplicationsService {
   async createApplication(applicationData: CreateApplicationRequest): Promise<Application> {
     const response = await apiClient.post<Application>(
@@ -216,7 +211,6 @@ export class ApplicationsService {
   }
 }
 
-// Categories Service
 export class CategoriesService {
   async createCategory(categoryData: { name: string }): Promise<Category> {
     const response = await apiClient.post<Category>(
@@ -251,7 +245,6 @@ export class CategoriesService {
   }
 }
 
-// Profiles Service
 export class ProfilesService {
   async getCurrentUserProfile(): Promise<Profile> {
     const response = await apiClient.get<Profile>(API_CONFIG.ENDPOINTS.USERS.ME);
@@ -362,7 +355,6 @@ export class ProfilesService {
   }
 }
 
-// Payments Service
 export class PaymentsService {
   async createPayment(paymentData: {
     recipient_id: string;
@@ -417,7 +409,6 @@ export class PaymentsService {
   }
 }
 
-// Ratings Service
 export class RatingsService {
   async createRating(ratingData: {
     target_id: string;
@@ -472,7 +463,6 @@ export class RatingsService {
   }
 }
 
-// Create singleton instances
 export const jobsService = new JobsService();
 export const housesService = new HousesService();
 export const applicationsService = new ApplicationsService();

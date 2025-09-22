@@ -1,6 +1,3 @@
-// CORS Proxy Service
-// This service provides multiple fallback options for CORS issues
-
 export class CorsProxyService {
   private static instance: CorsProxyService;
   private proxyUrls: string[] = [
@@ -25,7 +22,6 @@ export class CorsProxyService {
     const proxiedUrl = `${proxyUrl}${encodeURIComponent(url)}`;
 
     try {
-      console.log(`🔄 Trying proxy ${this.currentProxyIndex + 1}: ${proxyUrl}`);
       
       const response = await fetch(proxiedUrl, {
         ...options,
@@ -41,20 +37,16 @@ export class CorsProxyService {
       }
 
       const data = await response.json();
-      console.log('✅ Proxy request successful');
       return data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error(`❌ Proxy ${this.currentProxyIndex + 1} failed:`, error);
       
-      // Try next proxy
       this.currentProxyIndex = (this.currentProxyIndex + 1) % this.proxyUrls.length;
       
       if (this.currentProxyIndex === 0) {
-        // All proxies failed
         throw new Error('All CORS proxy services failed. Please try again later.');
       }
       
-      // Retry with next proxy
       return this.requestWithProxy(url, options);
     }
   }
@@ -64,7 +56,6 @@ export class CorsProxyService {
     options: RequestInit = {}
   ): Promise<T> {
     try {
-      console.log('🌐 Attempting direct request...');
       
       const response = await fetch(url, {
         ...options,
@@ -82,10 +73,8 @@ export class CorsProxyService {
       }
 
       const data = await response.json();
-      console.log('✅ Direct request successful');
       return data;
     } catch (error) {
-      console.error('❌ Direct request failed:', error);
       throw error;
     }
   }
@@ -95,11 +84,8 @@ export class CorsProxyService {
     options: RequestInit = {}
   ): Promise<T> {
     try {
-      // First try direct request
       return await this.directRequest<T>(url, options);
     } catch {
-      console.warn('Direct request failed, trying proxy...');
-      // If direct fails, try proxy
       return await this.requestWithProxy<T>(url, options);
     }
   }

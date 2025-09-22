@@ -41,7 +41,7 @@ export function Step3({
         <CardDescription>
           We&apos;ve sent a 6-digit verification code to
         </CardDescription>
-        <div className="font-medium text-[#007a7f]">{email}</div>
+            <div className="font-medium text-primary">{email}</div>
       </CardHeader>
       
       <CardContent className='mt-4'>

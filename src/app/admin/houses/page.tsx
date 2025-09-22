@@ -23,6 +23,7 @@ import { useAdminHouses } from '@/hooks/useAdminApi'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function AdminHousesPage() {
   const router = useRouter()
@@ -71,8 +72,11 @@ export default function AdminHousesPage() {
           }
           break
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error performing house action:', error)
+      toast.error('Error performing house action', {
+        description: 'Error performing house action'
+      })
     }
   }
 
@@ -272,11 +276,11 @@ export default function AdminHousesPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => console.log('View house', house.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => console.log('Edit house', house.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Listing
                               </DropdownMenuItem>

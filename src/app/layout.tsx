@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./Providers";
+import { APP_TITLE, APP_DESCRIPTION } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Markachew - Find Your Dream Home & Perfect Job",
-  description: "Connect with opportunities that matter. Whether you're looking for your next home or your next career move, we've got you covered with AI-powered matching and personalized recommendations.",
+  title: APP_TITLE,
+  description: APP_DESCRIPTION,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

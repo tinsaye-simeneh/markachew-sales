@@ -3,6 +3,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent } from '@/components/ui/card'
+import { COMPANY_DISPLAY_NAME } from '@/lib/constants'
 import { Building2, Users, Target, Award } from 'lucide-react'
 
 export default function AboutPage() {
@@ -13,7 +14,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">About MPEM</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">About {COMPANY_DISPLAY_NAME}</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Connecting dreams with opportunities. We&apos;re your trusted platform for finding the perfect home and advancing your career.
           </p>
@@ -23,7 +24,7 @@ export default function AboutPage() {
         <Card className="mb-12">
           <CardContent className="p-8">
             <div className="text-center">
-              <Target className="h-12 w-12 text-[#007a7f] mx-auto mb-4" />
+              <Target className="h-12 w-12 text-primary mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
               <p className="text-gray-600 text-lg leading-relaxed">
                 To simplify the process of finding your dream home and perfect job by providing a seamless, 
@@ -37,7 +38,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <Card>
             <CardContent className="p-6 text-center">
-              <Building2 className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Building2 className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Quality Properties</h3>
               <p className="text-gray-600">
                 We curate only the best properties, ensuring every listing meets our high standards for quality and value.
@@ -47,7 +48,7 @@ export default function AboutPage() {
 
           <Card>
             <CardContent className="p-6 text-center">
-              <Users className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Users className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Trusted Community</h3>
               <p className="text-gray-600">
                 Building a community of verified users, reliable agents, and reputable employers you can trust.
@@ -57,7 +58,7 @@ export default function AboutPage() {
 
           <Card>
             <CardContent className="p-6 text-center">
-              <Award className="h-10 w-10 text-[#007a7f] mx-auto mb-4" />
+              <Award className="h-10 w-10 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Excellence</h3>
               <p className="text-gray-600">
                 Committed to delivering exceptional service and results that exceed your expectations.
@@ -72,7 +73,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
             <div className="prose prose-lg max-w-none text-gray-600">
               <p className="mb-4">
-                Founded in 2024, MPEM emerged from a simple observation: finding the right home or job shouldn&apos;t be complicated. 
+                Founded in 2024, {COMPANY_DISPLAY_NAME} emerged from a simple observation: finding the right home or job shouldn&apos;t be complicated. 
                 We noticed that people were struggling with fragmented platforms, unreliable information, and time-consuming processes.
               </p>
               <p className="mb-4">
@@ -80,7 +81,7 @@ export default function AboutPage() {
                 these pain points. We combined the best of both worlds to offer a comprehensive solution for life&apos;s most important decisions.
               </p>
               <p>
-                Today, MPEM serves thousands of users across Ethiopia, helping them find their perfect home and advance their careers 
+                Today, {COMPANY_DISPLAY_NAME} serves thousands of users across Ethiopia, helping them find their perfect home and advance their careers 
                 with confidence and ease.
               </p>
             </div>

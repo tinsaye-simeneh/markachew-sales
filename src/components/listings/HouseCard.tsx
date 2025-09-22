@@ -3,24 +3,26 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Bed, Bath, Square, Heart, Home } from 'lucide-react'
+import { MapPin, Bed, Bath, Square, Heart, Home, Edit } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { House } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { House, UserType } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface HouseCardProps {
   house: House
+  onEdit?: (house: House) => void
 }
 
-export function HouseCard({ house }: HouseCardProps) {
+export function HouseCard({ house, onEdit }: HouseCardProps) {
   const router = useRouter()
   const [imageError, setImageError] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const { user } = useAuth()
   
-  // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
 
   useEffect(() => {
@@ -37,7 +39,6 @@ export function HouseCard({ house }: HouseCardProps) {
     }).format(numPrice)
   }
 
-  // Parse images JSON string
   const getHouseImages = () => {
     try {
       const images = JSON.parse(house.images || '[]');
@@ -47,7 +48,6 @@ export function HouseCard({ house }: HouseCardProps) {
     }
   }
 
-  // Parse features JSON string
   const getHouseFeatures = () => {
     try {
       const features = JSON.parse(house.features || '{}');
@@ -78,7 +78,7 @@ export function HouseCard({ house }: HouseCardProps) {
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return // Don't handle clicks during SSR
+    if (!isClient) return 
     
     if (isFavorite(house.id, 'house')) {
       removeFromFavorites(house.id, 'house')
@@ -100,6 +100,15 @@ export function HouseCard({ house }: HouseCardProps) {
       })
     }
   }
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onEdit) {
+      onEdit(house)
+    }
+  }
+
+  const isSeller = user?.user_type === UserType.SELLER && user?.id === house.user_id
 
   const isHouseFavorited = isClient ? isFavorite(house.id, 'house') : false
 
@@ -124,18 +133,31 @@ export function HouseCard({ house }: HouseCardProps) {
         )}
          
         
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute top-2 right-2 bg-white/90 hover:bg-white cursor-pointer"
-          onClick={handleFavoriteClick}
-        >
-          <Heart className={`h-4 w-4 ${isHouseFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-        </Button>
+        <div className="absolute top-2 right-2 flex gap-1">
+          {isSeller && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="bg-white/90 hover:bg-white cursor-pointer"
+              onClick={handleEditClick}
+              title="Edit house"
+            >
+              <Edit className="h-4 w-4 text-primary" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-white/90 hover:bg-white cursor-pointer"
+            onClick={handleFavoriteClick}
+          >
+            <Heart className={`h-4 w-4 ${isHouseFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          </Button>
+        </div>
         
         <Badge 
           variant={house.status === 'active' ? 'default' : house.status === 'sold' ? 'secondary' : 'destructive'}
-          className={`absolute top-2 left-2 ${house.status === 'active' ? 'bg-[#007a7f]' : house.status === 'sold' ? 'bg-[#007a7f]' : 'bg-red-500'} text-white`}
+            className={`absolute top-2 left-2 ${house.status === 'active' ? 'bg-primary' : house.status === 'sold' ? 'bg-primary' : 'bg-red-500'} text-white`}
         >
           {house.status === 'active' ? 'Active' : house.status === 'sold' ? 'Sold' : 'Inactive'}
         </Badge>
@@ -143,7 +165,7 @@ export function HouseCard({ house }: HouseCardProps) {
       
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold cursor-pointer text-lg group-hover:text-[#007a7f] transition-colors" onClick={() => handleHouseClick(house.id)}>
+          <h3 className="font-semibold cursor-pointer text-lg group-hover:text-primary transition-colors" onClick={() => handleHouseClick(house.id)}>
             {house.title}
           </h3>
           <div className="flex items-center gap-2">
@@ -163,7 +185,7 @@ export function HouseCard({ house }: HouseCardProps) {
       
       <CardContent className="pt-0">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-[#007a7f]">
+          <span className="text-2xl font-bold text-primary">
             {formatPrice(house.price || 0)}
           </span>
         </div>
@@ -183,7 +205,7 @@ export function HouseCard({ house }: HouseCardProps) {
           </div>
         </div>
         
-        <Button className="w-full cursor-pointer" variant="outline">
+        <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
           View Details
         </Button>
       </CardContent>

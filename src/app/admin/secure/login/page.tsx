@@ -1,0 +1,178 @@
+"use client"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { adminAuthService } from '@/lib/api'
+import { Mail, Phone, Shield, ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+export default function AdminLoginPage() {
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const validatePhoneNumber = (phone: string): boolean => {
+    const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
+    return ethiopianPhoneRegex.test(phone)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+    
+    const identifier = loginMethod === 'email' ? email : phone
+    
+    if (!identifier || !password) {
+      setError('Please fill in all fields')
+      setIsLoading(false)
+      return
+    }
+
+    if (loginMethod === 'phone' && !validatePhoneNumber(phone)) {
+      setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const response = await adminAuthService.login({ email, password })
+      
+      if (response) {
+        router.push('/admin')
+      } else {
+        setError('Invalid credentials')
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Back to home link */}
+        <div className="text-center">
+          <Link 
+            href="/" 
+            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Home
+          </Link>
+        </div>
+
+        <Card className="w-full">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-primary rounded-full">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+            <CardDescription>
+              Enter your admin credentials to access the dashboard
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            {/* Login Method Switcher */}
+            <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+              <button
+                type="button"
+                onClick={() => setLoginMethod('email')}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  loginMethod === 'email'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMethod('phone')}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  loginMethod === 'phone'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                Phone
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor={loginMethod}>
+                  {loginMethod === 'email' ? 'Email' : 'Phone Number'}
+                </Label>
+                <Input
+                  id={loginMethod}
+                  type={loginMethod === 'email' ? 'email' : 'tel'}
+                  placeholder={
+                    loginMethod === 'email' 
+                      ? 'Enter your email' 
+                      : '09xxxxxxxx or +2519xxxxxxxx'
+                  }
+                  value={loginMethod === 'email' ? email : phone}
+                  onChange={(e) => {
+                    if (loginMethod === 'email') {
+                      setEmail(e.target.value)
+                    } else {
+                      setPhone(e.target.value)
+                    }
+                  }}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                  {error}
+                </div>
+              )}
+              
+              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign In as Admin'}
+              </Button>
+            </form>
+            
+            <div className="mt-6 text-center text-sm">
+              <Link
+                href="/admin/secure/register"
+                className="text-primary hover:underline cursor-pointer"
+              >
+                Create Admin Account
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}

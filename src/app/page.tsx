@@ -20,7 +20,6 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirect admin users to admin panel
     if (user && (user.user_type === UserType.ADMIN || user.user_type === UserType.SUPER_ADMIN)) {
       router.push('/admin')
     }
@@ -30,7 +29,6 @@ export default function Home() {
     return <LoadingPage />
   }
 
-  // Don't render anything for admin users (they'll be redirected)
   if (user && (user.user_type === UserType.ADMIN || user.user_type === UserType.SUPER_ADMIN)) {
     return <LoadingPage />
   }

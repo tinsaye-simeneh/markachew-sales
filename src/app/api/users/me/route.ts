@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.luckbingogames.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(request: NextRequest) {
   try {
-    // Get the authorization header from the request
     const authHeader = request.headers.get('authorization');
     
     if (!authHeader) {

@@ -1,18 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
-
 export default function GlobalError({
+  //eslint-disable-next-line @typescript-eslint/no-unused-vars
   error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error)
-  }, [error])
 
   return (
     <html>
@@ -29,7 +24,7 @@ export default function GlobalError({
             
             <button
               onClick={reset}
-              className="bg-[#007a7f] text-white px-6 py-3 rounded-lg hover:bg-[#006a6f] transition-colors cursor-pointer"
+              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-[#006a6f] transition-colors cursor-pointer"
             >
               Try Again
             </button>

@@ -21,7 +21,6 @@ class ApiClient {
       'Accept': 'application/json',
     };
 
-    // Add authorization header if token exists
     const token = this.getToken();
     if (token) {
       defaultHeaders.Authorization = `Bearer ${token}`;
@@ -49,11 +48,9 @@ class ApiClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        // Handle 401 Unauthorized - try to refresh token
         if (response.status === 401 && !this.isRefreshing) {
           const refreshed = await this.handleTokenRefresh();
           if (refreshed) {
-            // Retry the original request with new token
             const retryConfig = {
               ...config,
               headers: {
@@ -86,7 +83,6 @@ class ApiClient {
         if (error.name === 'AbortError') {
           throw new Error('Request timeout');
         }
-        // Check if it's a CORS error
         if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
           console.error('CORS Error detected:', error.message);
           throw new Error('CORS Error: Unable to connect to the API server. Please check your network connection or contact support.');
@@ -155,7 +151,6 @@ class ApiClient {
         }
       }
       
-      // If refresh fails, clear tokens and redirect to login
       this.removeToken();
       this.isRefreshing = false;
       if (typeof window !== 'undefined') {
@@ -163,7 +158,6 @@ class ApiClient {
       }
       return false;
     } catch {
-      // If refresh fails, clear tokens and redirect to login
       this.removeToken();
       this.isRefreshing = false;
       if (typeof window !== 'undefined') {
@@ -186,7 +180,6 @@ class ApiClient {
     }
   }
 
-  // GET request
   async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
     let url = endpoint;
     if (params) {
@@ -204,7 +197,6 @@ class ApiClient {
     });
   }
 
-  // POST request
   async post<T>(endpoint: string, data?: Record<string, unknown> | FormData): Promise<ApiResponse<T>> {
     const isFormData = data instanceof FormData;
     
@@ -215,7 +207,6 @@ class ApiClient {
     });
   }
 
-  // PUT request
   async put<T>(endpoint: string, data?: Record<string, unknown> | FormData): Promise<ApiResponse<T>> {
     const isFormData = data instanceof FormData;
     
@@ -226,14 +217,12 @@ class ApiClient {
     });
   }
 
-  // DELETE request
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'DELETE',
     });
   }
 
-  // Handle authentication
   setAuthToken(token: string): void {
     this.setToken(token);
   }
@@ -246,7 +235,6 @@ class ApiClient {
     return !!this.getToken();
   }
 
-  // Refresh token method
   async refreshToken(): Promise<boolean> {
     try {
       const refreshToken = typeof window !== 'undefined' 
@@ -279,6 +267,5 @@ class ApiClient {
   }
 }
 
-// Create and export a singleton instance
 export const apiClient = new ApiClient();
 export default apiClient;

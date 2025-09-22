@@ -22,6 +22,7 @@ import {
 import { useAdminApplications } from '@/hooks/useAdminApi'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 export default function AdminApplicationsPage() {
   const [filters, setFilters] = useState({
@@ -67,8 +68,11 @@ export default function AdminApplicationsPage() {
           }
           break
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error performing application action:', error)
+      toast.error('Error performing application action', {
+        description: 'Error performing application action'
+      })
     }
   }
 
@@ -258,11 +262,11 @@ export default function AdminApplicationsPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => console.log('View application', application.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => console.log('Edit application', application.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Application
                               </DropdownMenuItem>

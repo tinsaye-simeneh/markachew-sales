@@ -3,22 +3,24 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Clock, Building, Heart } from 'lucide-react'
+import { MapPin, Clock, Building, Heart, Edit } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { Job } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { Job, UserType } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface JobCardProps {
   job: Job
+  onEdit?: (job: Job) => void
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, onEdit }: JobCardProps) {
   const router = useRouter()
   const [isClient, setIsClient] = useState(false)
+  const { user } = useAuth()
   
-  // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function JobCard({ job }: JobCardProps) {
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return // Don't handle clicks during SSR
+    if (!isClient) return
     
     if (isFavorite(job.id, 'job')) {
       removeFromFavorites(job.id, 'job')
@@ -54,6 +56,15 @@ export function JobCard({ job }: JobCardProps) {
     }
   }
 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onEdit) {
+      onEdit(job)
+    }
+  }
+
+  const isEmployer = user?.user_type === UserType.EMPLOYER && user?.id === job.user_id
+
   const isJobFavorited = isClient ? isFavorite(job.id, 'job') : false
 
   const getExperienceColor = (exp: string) => {
@@ -74,7 +85,6 @@ export function JobCard({ job }: JobCardProps) {
     }
   }
 
-  // Parse requirements to get experience and type
   const getJobDetails = () => {
     try {
       const requirements = JSON.parse(job.requirements || '{}');
@@ -101,7 +111,7 @@ export function JobCard({ job }: JobCardProps) {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg group-hover:text-[#007a7f] transition-colors mb-1 cursor-pointer">
+            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors mb-1 cursor-pointer">
               {job.title}
             </h3>
             <div className="flex items-center text-gray-600 text-sm mb-2">
@@ -114,14 +124,27 @@ export function JobCard({ job }: JobCardProps) {
             </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-2 cursor-pointer"
-            onClick={handleFavoriteClick}
-          >
-            <Heart className={`h-4 w-4 ${isJobFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-          </Button>
+          <div className="flex items-center gap-1 ml-2">
+            {isEmployer && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="cursor-pointer"
+                onClick={handleEditClick}
+                title="Edit job"
+              >
+                <Edit className="h-4 w-4 text-blue-600" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer"
+              onClick={handleFavoriteClick}
+            >
+              <Heart className={`h-4 w-4 ${isJobFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       
@@ -140,7 +163,7 @@ export function JobCard({ job }: JobCardProps) {
         </p>
         
         <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold text-[#007a7f]">
+          <div className="text-lg font-semibold text-primary">
             {jobDetails.salary || 'Salary not specified'}
           </div>
           <div className="flex items-center text-gray-500 text-sm">

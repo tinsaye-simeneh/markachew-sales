@@ -28,14 +28,12 @@ export default function JobsPage() {
   const itemsPerPage = 6
   const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Helper function to parse job requirements
   const getJobDetails = (job: Job) => {
     try {
       const requirements = JSON.parse(job.requirements || '{}');
@@ -55,11 +53,9 @@ export default function JobsPage() {
     }
   };
 
-  // Filter and search logic
   useEffect(() => {
     let filtered = jobs
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(job => {
         const jobDetails = getJobDetails(job);
@@ -157,7 +153,7 @@ export default function JobsPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
           <p className="text-gray-600">{jobsError}</p>
-          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-[#007a7f] cursor-pointer'>Go to Home</Button>
+          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-primary cursor-pointer'>Go to Home</Button>
         </div>
       </div>
     )
@@ -261,7 +257,7 @@ export default function JobsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentJobs.map((job: Job) => (
             <div key={job.id} onClick={() => handleJobClick(job.id)} className="cursor-pointer">
-              <JobCard job={job} />
+              <JobCard job={job} onEdit={undefined} />
             </div>
           ))}
         </div>

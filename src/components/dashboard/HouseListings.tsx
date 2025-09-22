@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { HouseCard } from '@/components/listings/HouseCard'
+import { EditHouseModal } from '@/components/listings/EditHouseModal'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
@@ -16,15 +17,15 @@ export function HouseListings() {
   const [bedrooms, setBedrooms] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredHouses, setFilteredHouses] = useState<House[]>([])
+  const [editingHouse, setEditingHouse] = useState<House | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   
   const itemsPerPage = 6
   const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)
   
-  // Filter houses based on search and filters
   useEffect(() => {
     let filtered = houses
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(house =>
         house.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -33,7 +34,6 @@ export function HouseListings() {
       )
     }
 
-    // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
         const price = parseFloat(house.price) || 0
@@ -52,12 +52,10 @@ export function HouseListings() {
       })
     }
 
-    // Property type filter
     if (propertyType !== 'all') {
       filtered = filtered.filter(house => house.type === propertyType)
     }
 
-    // Bedrooms filter - Parse features JSON string
     if (bedrooms !== 'all') {
       filtered = filtered.filter(house => {
         try {
@@ -71,6 +69,20 @@ export function HouseListings() {
 
     setFilteredHouses(filtered)
   }, [houses, searchQuery, priceRange, propertyType, bedrooms])
+
+  const handleEditHouse = (house: House) => {
+    setEditingHouse(house)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    window.location.reload()
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingHouse(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -99,11 +111,11 @@ export function HouseListings() {
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Prices</SelectItem>
-              <SelectItem value="under-5m">Under 5M ETB</SelectItem>
-              <SelectItem value="5m-10m">5M - 10M ETB</SelectItem>
-              <SelectItem value="10m-20m">10M - 20M ETB</SelectItem>
-              <SelectItem value="over-20m">Over 20M ETB</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Prices</SelectItem>
+              <SelectItem value="under-5m" className='cursor-pointer'>Under 5M ETB</SelectItem>
+              <SelectItem value="5m-10m" className='cursor-pointer'>5M - 10M ETB</SelectItem>
+              <SelectItem value="10m-20m" className='cursor-pointer'>10M - 20M ETB</SelectItem>
+              <SelectItem value="over-20m" className='cursor-pointer'>Over 20M ETB</SelectItem>
             </SelectContent>
           </Select>
           
@@ -115,13 +127,13 @@ export function HouseListings() {
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="villa">Villa</SelectItem>
-              <SelectItem value="apartment">Apartment</SelectItem>
-              <SelectItem value="house">House</SelectItem>
-              <SelectItem value="penthouse">Penthouse</SelectItem>
-              <SelectItem value="studio">Studio</SelectItem>
-              <SelectItem value="townhouse">Townhouse</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Types</SelectItem>
+              <SelectItem value="villa" className='cursor-pointer'>Villa</SelectItem>
+              <SelectItem value="apartment" className='cursor-pointer'>Apartment</SelectItem>
+              <SelectItem value="house" className='cursor-pointer'>House</SelectItem>
+              <SelectItem value="penthouse" className='cursor-pointer'>Penthouse</SelectItem>
+              <SelectItem value="studio" className='cursor-pointer'>Studio</SelectItem>
+              <SelectItem value="townhouse" className='cursor-pointer'>Townhouse</SelectItem>
             </SelectContent>
           </Select>
           </div>
@@ -132,11 +144,11 @@ export function HouseListings() {
               <SelectValue placeholder="Bedrooms" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="1">1+</SelectItem>
-              <SelectItem value="2">2+</SelectItem>
-              <SelectItem value="3">3+</SelectItem>
-              <SelectItem value="4">4+</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All</SelectItem>
+              <SelectItem value="1" className='cursor-pointer'>1+</SelectItem>
+              <SelectItem value="2" className='cursor-pointer'>2+</SelectItem>
+              <SelectItem value="3" className='cursor-pointer'>3+</SelectItem>
+              <SelectItem value="4" className='cursor-pointer'>4+</SelectItem>
             </SelectContent>
           </Select>
           </div>
@@ -153,7 +165,7 @@ export function HouseListings() {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[#007a7f]" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="ml-2 text-gray-600">Loading houses...</span>
         </div>
       )}
@@ -177,7 +189,7 @@ export function HouseListings() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredHouses.length > 0 ? (
             filteredHouses.map((house) => (
-              <HouseCard key={house.id} house={house} />
+              <HouseCard key={house.id} house={house} onEdit={handleEditHouse} />
             ))
           ) : (
             <div className="col-span-full text-center py-12">
@@ -225,6 +237,14 @@ export function HouseListings() {
           </Button>
         </div>
       )}
+
+      {/* Edit House Modal */}
+      <EditHouseModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        house={editingHouse}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   )
 }

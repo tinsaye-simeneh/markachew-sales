@@ -12,6 +12,7 @@ import { LoadingPage } from '@/components/ui/loading'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { FileText, Calendar, Eye, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ApplicationsPage() {
   const router = useRouter()
@@ -37,7 +38,9 @@ export default function ApplicationsPage() {
       
       setApplications(response.applications || [])
     } catch (err) {
-      console.error('Error fetching applications:', err)
+      toast.error('Error fetching applications', {
+        description: 'Error fetching applications'
+      })
       setError(err instanceof Error ? err.message : 'Failed to fetch applications')
     } finally {
       setLoading(false)
@@ -68,9 +71,11 @@ export default function ApplicationsPage() {
     try {
       await applicationsService.deleteApplication(applicationId)
       setApplications(prev => prev.filter(app => app.id !== applicationId))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Error deleting application:', err)
-      alert('Failed to delete application')
+      toast.error('Error deleting application', {
+        description: 'Error deleting application'
+      })
     }
   }
 
@@ -207,7 +212,7 @@ export default function ApplicationsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => router.push(`/jobs/${application.job_id}`)}
-                        className="cursor-pointer text-[#007a7f] hover:text-[#005a5f]"
+                        className="cursor-pointer text-primary hover:text-[#005a5f]"
                       >
                         View Job
                       </Button>

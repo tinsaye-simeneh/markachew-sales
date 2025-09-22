@@ -23,6 +23,7 @@ import { useAdminJobs } from '@/hooks/useAdminApi'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 export default function AdminJobsPage() {
   const router = useRouter()
@@ -70,8 +71,11 @@ export default function AdminJobsPage() {
           }
           break
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error performing job action:', error)
+      toast.error('Error performing job action', {
+        description: 'Error performing job action'
+      })
     }
   }
 
@@ -254,11 +258,11 @@ export default function AdminJobsPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => console.log('View job', job.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => console.log('Edit job', job.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Job
                               </DropdownMenuItem>

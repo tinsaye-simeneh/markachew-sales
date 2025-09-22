@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react'
+import { COMPANY_EMAIL } from '@/lib/constants'
 import { toast } from 'sonner'
 
 export default function ContactPage() {
@@ -111,7 +112,7 @@ export default function ContactPage() {
                   <textarea
                     id="message"
                     rows={5}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                     placeholder="Tell us how we can help you..."
                     value={formData.message}
                     onChange={(e) => handleChange('message', e.target.value)}
@@ -136,7 +137,7 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <MapPin className="h-6 w-6 text-[#007a7f] mt-1" />
+                  <MapPin className="h-6 w-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Address</h3>
                     <p className="text-gray-600">
@@ -147,7 +148,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Phone className="h-6 w-6 text-[#007a7f] mt-1" />
+                  <Phone className="h-6 w-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Phone</h3>
                     <p className="text-gray-600">+251 11 123 4567</p>
@@ -155,15 +156,15 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Mail className="h-6 w-6 text-[#007a7f] mt-1" />
+                  <Mail className="h-6 w-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
-                    <p className="text-gray-600">info@mpem.com</p>
+                    <p className="text-gray-600">{COMPANY_EMAIL}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Clock className="h-6 w-6 text-[#007a7f] mt-1" />
+                  <Clock className="h-6 w-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Business Hours</h3>
                     <p className="text-gray-600">
@@ -181,13 +182,13 @@ export default function ContactPage() {
                 <CardTitle className="text-xl">Quick Links</CardTitle>
               </CardHeader>
               <CardContent>
-                <Link href="/houses" className="text-[#007a7f] hover:underline cursor-pointer">
+                <Link href="/houses" className="text-primary hover:underline cursor-pointer">
                     Browse Properties
                   </Link> {' - '}
-                  <Link href="/jobs" className="text-[#007a7f] hover:underline cursor-pointer">
+                  <Link href="/jobs" className="text-primary hover:underline cursor-pointer">
                     Find Jobs
                   </Link> {' - '}
-                  <Link href="/about" className=" text-[#007a7f] hover:underline cursor-pointer">
+                  <Link href="/about" className=" text-primary hover:underline cursor-pointer">
                     About Us
                   </Link>
                  

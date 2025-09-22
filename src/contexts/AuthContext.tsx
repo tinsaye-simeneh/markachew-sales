@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { authService, User, UserType } from '@/lib/api'
+import { toast } from 'sonner'
 
 interface AuthContextType {
   user: User | null
@@ -21,7 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check for stored user data on mount
     const storedUser = authService.getStoredUser()
     if (storedUser && authService.isAuthenticated()) {
       setUser(storedUser)
@@ -72,16 +72,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const completeRegistration = () => {
-    // This method is kept for backward compatibility
-    // In the new API, registration is completed immediately
   }
 
   const logout = async () => {
     setIsLoading(true)
     try {
       await authService.logout()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Logout error:', err)
+      toast.error('Logout error:', {
+        description: 'Logout error'
+      })
     } finally {
       setUser(null)
       setIsLoading(false)

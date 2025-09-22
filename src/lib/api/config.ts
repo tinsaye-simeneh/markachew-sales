@@ -1,17 +1,14 @@
-// API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NODE_ENV === 'development' 
-    ? '' // Use Next.js API routes in development to avoid CORS
+    ? ''
     : process.env.NEXT_PUBLIC_API_BASE_URL || 'https://employee.luckbingogames.com',
   ENDPOINTS: {
-    // Admin endpoints
     ADMIN: {
       LOGIN: '/api/admin/login',
       CREATE: '/api/admin/create',
       REFRESH: '/api/admin/refresh',
       LOGOUT: '/api/admin/logout',
     },
-    // User endpoints
     USERS: {
       REGISTER: process.env.NODE_ENV === 'development' ? '/api/auth/register' : '/api/users/register',
       LOGIN: process.env.NODE_ENV === 'development' ? '/api/auth/login' : '/api/users/login',
@@ -22,7 +19,6 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/users/${id}`,
       LIST: '/api/users',
     },
-    // Job endpoints
     JOBS: {
       CREATE: process.env.NODE_ENV === 'development' ? '/api/jobs' : '/api/jobs',
       LIST: process.env.NODE_ENV === 'development' ? '/api/jobs' : '/api/jobs',
@@ -31,7 +27,6 @@ export const API_CONFIG = {
       DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
       APPLY: '/api/jobs/apply',
     },
-    // Application endpoints
     APPLICATIONS: {
       CREATE: '/api/applications',
       LIST: '/api/applications',
@@ -40,7 +35,6 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/applications/${id}`,
       RESTORE: (id: string) => `/api/applications/${id}/restore`,
     },
-    // House endpoints
     HOUSES: {
       CREATE: process.env.NODE_ENV === 'development' ? '/api/houses' : '/api/houses',
       LIST: process.env.NODE_ENV === 'development' ? '/api/houses' : '/api/houses',
@@ -48,7 +42,6 @@ export const API_CONFIG = {
       UPDATE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/houses/${id}` : `/api/houses/${id}`,
       DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/houses/${id}` : `/api/houses/${id}`,
     },
-    // Category endpoints
     CATEGORIES: {
       CREATE: '/api/categories',
       LIST: '/api/categories',
@@ -56,7 +49,6 @@ export const API_CONFIG = {
       UPDATE: (id: string) => `/api/categories/${id}`,
       DELETE: (id: string) => `/api/categories/${id}`,
     },
-    // Payment endpoints
     PAYMENTS: {
       CREATE: '/api/payments',
       LIST: '/api/payments',
@@ -64,7 +56,6 @@ export const API_CONFIG = {
       UPDATE: (id: string) => `/api/payments/${id}`,
       DELETE: (id: string) => `/api/payments/${id}`,
     },
-    // Rating endpoints
     RATINGS: {
       CREATE: '/api/ratings',
       LIST: '/api/ratings',
@@ -72,7 +63,6 @@ export const API_CONFIG = {
       UPDATE: (id: string) => `/api/ratings/${id}`,
       DELETE: (id: string) => `/api/ratings/${id}`,
     },
-    // Profile endpoints
     PROFILES: {
       CREATE: process.env.NODE_ENV === 'development' ? '/api/profile' : '/api/profile',
       GET: (id: string) => process.env.NODE_ENV === 'development' ? `/api/profile/${id}` : `/api/profile/${id}`,
@@ -80,11 +70,10 @@ export const API_CONFIG = {
       DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/profile/${id}` : `/api/profile/${id}`,
     },
   },
-  TIMEOUT: 10000, // 10 seconds
+  TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 };
 
-// User types
 export enum UserType {
   EMPLOYER = 'EMPLOYER',
   EMPLOYEE = 'EMPLOYEE',
@@ -94,7 +83,6 @@ export enum UserType {
   SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
-// API Response types
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
@@ -120,7 +108,6 @@ export interface PaginatedResponse<T> {
   timestamp: string;
 }
 
-// Auth types
 export interface LoginRequest {
   email: string;
   password: string;
@@ -151,7 +138,6 @@ export interface User {
   updated_at: string;
 }
 
-// Job types
 export interface Job {
   id: string;
   user_id: string;
@@ -181,7 +167,6 @@ export interface CreateJobRequest {
   image?: File;
 }
 
-// House types
 export interface House {
   id: string;
   title: string;
@@ -247,7 +232,6 @@ export interface CreateHouseRequest {
   video?: File;
 }
 
-// Application types
 export interface Application {
   id: string;
   user_id: string;
@@ -264,7 +248,6 @@ export interface CreateApplicationRequest {
   cover_letter: string;
 }
 
-// Category types
 export interface Category {
   id: string;
   name: string;
@@ -272,7 +255,6 @@ export interface Category {
   updated_at: string;
 }
 
-// Profile types
 export interface Profile {
   id: string;
   user_id: string;

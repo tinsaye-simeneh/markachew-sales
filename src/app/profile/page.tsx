@@ -15,6 +15,7 @@ import { LoadingPage } from '@/components/ui/loading'
 import { useCurrentUserProfile, useUpdateProfile } from '@/hooks/useProfile'
 import { CreateProfileModal } from '@/components/profile/CreateProfileModal'
 import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Lock, AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ProfilePage() {
   const { user, isLoading: authLoading } = useAuth()
@@ -46,18 +47,15 @@ export default function ProfilePage() {
   const [updateMessage, setUpdateMessage] = useState('')
   const [showCreateProfile, setShowCreateProfile] = useState(false)
 
-  // Fetch profile data
   const { profile, loading: profileLoading, error: profileError } = useCurrentUserProfile()
   const { updateProfile, loading: updateLoading } = useUpdateProfile()
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Initialize profile data when user or profile is loaded
   useEffect(() => {
     if (user) {
       setProfileData(prev => ({
@@ -74,7 +72,6 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  // Update profile data when profile is fetched
   useEffect(() => {
     if (profile) {
       setProfileData(prev => ({
@@ -115,9 +112,11 @@ export default function ProfilePage() {
       
       // Clear success message after 3 seconds
       setTimeout(() => setUpdateMessage(''), 3000);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Failed to update profile:', error);
-      setUpdateMessage('Failed to update profile. Please try again.');
+        toast.error('Failed to update profile', {
+        description: 'Failed to update profile. Please try again.'
+      })
     }
   }
 

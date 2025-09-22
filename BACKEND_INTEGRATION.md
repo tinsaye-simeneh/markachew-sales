@@ -192,9 +192,9 @@ const CreateJobForm = () => {
   const handleSubmit = async (jobData: any) => {
     try {
       const newJob = await createJob(jobData)
-      console.log('Job created:', newJob)
+      
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Failed to create job:', error)
     }
   }
   

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HouseCard } from '@/components/listings/HouseCard'
+import { EditHouseModal } from '@/components/listings/EditHouseModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -25,22 +26,21 @@ export default function HousesPage() {
   const [location] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [filteredHouses, setFilteredHouses] = useState<House[] | []>([])
+  const [editingHouse, setEditingHouse] = useState<House | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const itemsPerPage = 6
   const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
     }
   }, [user, authLoading, router])
 
-  // Filter and search logic
   useEffect(() => {
     let filtered = houses
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(house =>
         house.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +50,6 @@ export default function HousesPage() {
       )
     }
 
-    // Price filter
     if (priceRange !== 'all') {
       filtered = filtered.filter(house => {
         const price = parseFloat(house.price) || 0;
@@ -107,8 +106,23 @@ export default function HousesPage() {
   const endIndex = startIndex + itemsPerPage
   const currentHouses = filteredHouses.slice(startIndex, endIndex)
 
-    const handleHouseClick = (houseId: string) => {
+  const handleHouseClick = (houseId: string) => {
     router.push(`/houses/${houseId}`)
+  }
+
+  const handleEditHouse = (house: House) => {
+    setEditingHouse(house)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Force a page refresh to get updated data
+    window.location.reload()
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingHouse(null)
   }
 
   if (authLoading || housesLoading) {
@@ -121,7 +135,7 @@ export default function HousesPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Houses</h2>
           <p className="text-gray-600">{housesError}</p>
-          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-[#007a7f] cursor-pointer'>Go to Home</Button>
+          <Button variant="outline" onClick={() => router.push('/')} className='mt-4 text-white bg-primary cursor-pointer'>Go to Home</Button>
        
         </div>
       </div>
@@ -234,7 +248,7 @@ export default function HousesPage() {
       onClick={clickable ? () => handleHouseClick(house.id) : undefined}
       className={clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}
     >
-      <HouseCard house={house} />
+      <HouseCard house={house} onEdit={handleEditHouse} />
     </div>
   );
 })}
@@ -283,6 +297,13 @@ export default function HousesPage() {
             </Button>
           </div>
         )}
+
+        <EditHouseModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          house={editingHouse}
+          onSuccess={handleEditSuccess}
+        />
       </div>
 
       <Footer />

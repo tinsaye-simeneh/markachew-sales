@@ -13,6 +13,7 @@ import { Step1 } from './Step1'
 import { Step2 } from './Step2'
 import { Step3 } from './Step3'
 import { RegistrationNavigation } from './RegistrationNavigation'
+import { toast } from 'sonner'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -22,22 +23,16 @@ interface RegisterModalProps {
 
 
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
-  // Lock body scroll when modal is open
   useBodyScrollLock(isOpen)
 
-  // Step management
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 3
-
-  // Step 1: Basic user information
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [userType, setUserType] = useState<UserType>(UserType.BUYER)
-
-  // Step 2: Profile information
   const [location, setLocation] = useState('')
   const [address, setAddress] = useState('')
   const [degree, setDegree] = useState('')
@@ -48,29 +43,21 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [photo, setPhoto] = useState<File | null>(null)
   const [document, setDocument] = useState<File | null>(null)
   const [license, setLicense] = useState<File | null>(null)
-
-  // Step 3: Email verification
   const [otp, setOtp] = useState('')
-  const [timeLeft] = useState(300) // 5 minutes
-
-  // Error and loading states
+  const [timeLeft] = useState(300)
   const [error, setError] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
   const { register, isLoading, error: authError } = useAuth()
   const router = useRouter()
 
-  // Static OTP for demo
   const STATIC_OTP = '123456'
 
   const validatePhoneNumber = (phone: string): boolean => {
-    // Ethiopian phone number validation
-    // Format: 09xxxxxxxx (10 digits starting with 09) or +2519xxxxxxxx (international format)
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
     return ethiopianPhoneRegex.test(phone)
   }
 
-  // Step validation functions
   const validateStep1 = (): boolean => {
     if (!name.trim()) {
       setError('Full name is required')
@@ -180,21 +167,28 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const handleFinalSubmit = async () => {
     setError('')
     
-    // Register user with API
-    const success = await register(name, email, phone, password, userType)
-    if (success) {
-      // User registration successful, now create profile
-      try {
-        // Profile creation will be handled by the profile page
-        onClose()
-        resetForm()
-        router.push('/profile')
-      } catch (error) {
-        console.error('Profile creation error:', error)
-        setError('Registration successful, but profile creation failed. Please complete your profile manually.')
+    try {
+      // Regular user registration
+      const success = await register(name, email, phone, password, userType)
+      if (success) {
+        // User registration successful, now create profile
+        try {
+          // Profile creation will be handled by the profile page
+          onClose()
+          resetForm()
+          router.push('/profile')
+        } catch (error) {
+          toast.error('Profile creation error:', {
+            description: 'Profile creation error'
+          })
+          setError('Registration successful, but profile creation failed. Please complete your profile manually.')
+        }
+      } else {
+        setError(authError || 'Registration failed')
       }
-    } else {
-      setError(authError || 'Registration failed')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Registration failed')
     }
   }
 
@@ -256,6 +250,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           <div className="p-6 pb-8">
             <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
             
+            {/* Regular user registration steps */}
             {currentStep === 1 && (
               <Step1 
                 name={name} setName={setName}
@@ -306,6 +301,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           </div>
         )}
         
+        
         {/* Navigation */}
         <RegistrationNavigation
           currentStep={currentStep}
@@ -313,8 +309,18 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           isLoading={isLoading}
           onPrevStep={prevStep}
           onNextStep={nextStep}
-          onSwitchToLogin={onSwitchToLogin}
-        />
+        /> 
+        
+        <div className="text-center text-sm">
+        Already have an account?{' '}
+        <button
+          type="button"
+              className="text-primary hover:underline cursor-pointer"
+          onClick={onSwitchToLogin}
+        >
+          Sign in
+        </button>
+      </div>
       </Card>
     </div>
   )
