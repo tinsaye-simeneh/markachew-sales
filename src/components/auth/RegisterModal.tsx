@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { UserType } from '@/lib/api'
-import { X } from 'lucide-react'
+import { UserType, adminAuthService } from '@/lib/api'
+import { X, Shield, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { StepIndicator } from './StepIndicator'
@@ -25,9 +25,21 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   // Lock body scroll when modal is open
   useBodyScrollLock(isOpen)
 
+  // Registration type (user or admin)
+  const [registerType, setRegisterType] = useState<'user' | 'admin'>('user')
+
+  // Set user type to ADMIN when admin registration is selected
+  useEffect(() => {
+    if (registerType === 'admin') {
+      setUserType(UserType.ADMIN)
+    } else {
+      setUserType(UserType.BUYER) // Default for regular users
+    }
+  }, [registerType])
+
   // Step management
   const [currentStep, setCurrentStep] = useState(1)
-  const totalSteps = 3
+  const totalSteps = registerType === 'admin' ? 1 : 3 // Admin registration is simpler
 
   // Step 1: Basic user information
   const [name, setName] = useState('')
@@ -180,21 +192,59 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const handleFinalSubmit = async () => {
     setError('')
     
-    // Register user with API
-    const success = await register(name, email, phone, password, userType)
-    if (success) {
-      // User registration successful, now create profile
-      try {
-        // Profile creation will be handled by the profile page
-        onClose()
-        resetForm()
-        router.push('/profile')
-      } catch (error) {
-        console.error('Profile creation error:', error)
-        setError('Registration successful, but profile creation failed. Please complete your profile manually.')
+    try {
+      if (registerType === 'admin') {
+        // Admin registration - same validation and endpoint as user but with ADMIN user type
+        if (!name || !email || !password || !confirmPassword) {
+          setError('Please fill in all required fields')
+          return
+        }
+        
+        if (password !== confirmPassword) {
+          setError('Passwords do not match')
+          return
+        }
+        
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters')
+          return
+        }
+        
+        if (phone && !validatePhoneNumber(phone)) {
+          setError('Please enter a valid Ethiopian phone number (09xxxxxxxx or +2519xxxxxxxx)')
+          return
+        }
+        
+        // Use regular user registration with ADMIN user type
+        const success = await register(name, email, phone, password, UserType.ADMIN)
+        if (success) {
+          onClose()
+          resetForm()
+          // Reload page to trigger redirect logic
+          window.location.reload()
+        } else {
+          setError(authError || 'Admin registration failed')
+        }
+      } else {
+        // Regular user registration
+        const success = await register(name, email, phone, password, userType)
+        if (success) {
+          // User registration successful, now create profile
+          try {
+            // Profile creation will be handled by the profile page
+            onClose()
+            resetForm()
+            router.push('/profile')
+          } catch (error) {
+            console.error('Profile creation error:', error)
+            setError('Registration successful, but profile creation failed. Please complete your profile manually.')
+          }
+        } else {
+          setError(authError || 'Registration failed')
+        }
       }
-    } else {
-      setError(authError || 'Registration failed')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Registration failed')
     }
   }
 
@@ -254,45 +304,168 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           <div className="p-6 pb-8">
+            {/* Registration Type Switcher */}
+            <div className="flex border border-gray-200 rounded-lg mb-6 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setRegisterType('user')}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-3 px-4 text-sm font-medium transition-colors ${
+                  registerType === 'user'
+                    ? 'bg-[#007a7f] text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <User className="h-4 w-4 mr-2" />
+                User Registration
+              </button>
+              <button
+                type="button"
+                onClick={() => setRegisterType('admin')}
+                className={`flex-1 cursor-pointer flex items-center justify-center py-3 px-4 text-sm font-medium transition-colors ${
+                  registerType === 'admin'
+                    ? 'bg-[#007a7f] text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Admin Registration
+              </button>
+            </div>
+            
             <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
             
-            {currentStep === 1 && (
-              <Step1 
-                name={name} setName={setName}
-                email={email} setEmail={setEmail}
-                phone={phone} setPhone={setPhone}
-                userType={userType} setUserType={setUserType}
-                password={password} setPassword={setPassword}
-                confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
-              />
-            )}
-            {currentStep === 2 && (
-              <Step2 
-                location={location} setLocation={setLocation}
-                address={address} setAddress={setAddress}
-                degree={degree} setDegree={setDegree}
-                department={department} setDepartment={setDepartment}
-                experience={experience} setExperience={setExperience}
-                availability={availability} setAvailability={setAvailability}
-                salaryExpectation={salaryExpectation} setSalaryExpectation={setSalaryExpectation}
-                photo={photo} setPhoto={setPhoto}
-                document={document} setDocument={setDocument}
-                license={license} setLicense={setLicense}
-                userType={userType}
-                handleFileUpload={handleFileUpload}
-              />
-            )}
-            {currentStep === 3 && (
-              <Step3 
-                email={email}
-                otp={otp}
-                timeLeft={timeLeft}
-                STATIC_OTP={STATIC_OTP}
-                otpError={otpError}
-                isVerifying={isVerifying}
-                handleOtpChange={handleOtpChange}
-                handleOTPSubmit={handleOTPSubmit}
-              />
+            {registerType === 'admin' ? (
+              // Admin registration form - same inputs as user but different endpoint
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="09xxxxxxxx or +2519xxxxxxxx"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    User Type
+                  </label>
+                  <select
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value as UserType)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                    disabled
+                    aria-label="User type (automatically set to Admin)"
+                  >
+                    <option value={UserType.ADMIN}>Admin</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">User type is automatically set to Admin</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm password"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007a7f] focus:border-transparent"
+                    required
+                  />
+                </div>
+                <Button
+                  onClick={handleFinalSubmit}
+                  disabled={isLoading}
+                  className="w-full cursor-pointer"
+                >
+                  {isLoading ? 'Creating Admin...' : 'Create Admin Account'}
+                </Button>
+              </div>
+            ) : (
+              // Regular user registration steps
+              <>
+                {currentStep === 1 && (
+                  <Step1 
+                    name={name} setName={setName}
+                    email={email} setEmail={setEmail}
+                    phone={phone} setPhone={setPhone}
+                    userType={userType} setUserType={setUserType}
+                    password={password} setPassword={setPassword}
+                    confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
+                  />
+                )}
+                {currentStep === 2 && (
+                  <Step2 
+                    location={location} setLocation={setLocation}
+                    address={address} setAddress={setAddress}
+                    degree={degree} setDegree={setDegree}
+                    department={department} setDepartment={setDepartment}
+                    experience={experience} setExperience={setExperience}
+                    availability={availability} setAvailability={setAvailability}
+                    salaryExpectation={salaryExpectation} setSalaryExpectation={setSalaryExpectation}
+                    photo={photo} setPhoto={setPhoto}
+                    document={document} setDocument={setDocument}
+                    license={license} setLicense={setLicense}
+                    userType={userType}
+                    handleFileUpload={handleFileUpload}
+                  />
+                )}
+                {currentStep === 3 && (
+                  <Step3 
+                    email={email}
+                    otp={otp}
+                    timeLeft={timeLeft}
+                    STATIC_OTP={STATIC_OTP}
+                    otpError={otpError}
+                    isVerifying={isVerifying}
+                    handleOtpChange={handleOtpChange}
+                    handleOTPSubmit={handleOTPSubmit}
+                  />
+                )}
+              </>
             )}
           </div>
         </div>
@@ -306,15 +479,17 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           </div>
         )}
         
-        {/* Navigation */}
-        <RegistrationNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          isLoading={isLoading}
-          onPrevStep={prevStep}
-          onNextStep={nextStep}
-          onSwitchToLogin={onSwitchToLogin}
-        />
+        {/* Navigation - Only for regular user registration */}
+        {registerType === 'user' && (
+          <RegistrationNavigation
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            isLoading={isLoading}
+            onPrevStep={prevStep}
+            onNextStep={nextStep}
+            onSwitchToLogin={onSwitchToLogin}
+          />
+        )}
       </Card>
     </div>
   )
