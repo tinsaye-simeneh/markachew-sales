@@ -332,7 +332,9 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               </button>
             </div>
             
+           {registerType === 'user' && (
             <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+           )}
             
             {registerType === 'admin' ? (
               // Admin registration form - same inputs as user but different endpoint
@@ -479,8 +481,9 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           </div>
         )}
         
+        
         {/* Navigation - Only for regular user registration */}
-        {registerType === 'user' && (
+        {registerType === 'user' ? (
           <RegistrationNavigation
             currentStep={currentStep}
             totalSteps={totalSteps}
@@ -489,7 +492,18 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
             onNextStep={nextStep}
             onSwitchToLogin={onSwitchToLogin}
           />
-        )}
+        ) : null} 
+        
+        <div className="text-center text-sm">
+        Already have an account?{' '}
+        <button
+          type="button"
+          className="text-[#007a7f] hover:underline cursor-pointer"
+          onClick={onSwitchToLogin}
+        >
+          Sign in
+        </button>
+      </div>
       </Card>
     </div>
   )
