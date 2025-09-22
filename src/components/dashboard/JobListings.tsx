@@ -74,11 +74,11 @@ export function JobListings() {
               <SelectValue placeholder="Job Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="Full-time">Full Time</SelectItem>
-              <SelectItem value="Part-time">Part Time</SelectItem>
-              <SelectItem value="Contract">Contract</SelectItem>
-              <SelectItem value="Remote">Remote</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Types</SelectItem>
+              <SelectItem value="Full-time" className='cursor-pointer'>Full Time</SelectItem>
+              <SelectItem value="Part-time" className='cursor-pointer'>Part Time</SelectItem>
+              <SelectItem value="Contract" className='cursor-pointer'>Contract</SelectItem>
+              <SelectItem value="Remote" className='cursor-pointer'>Remote</SelectItem>
             </SelectContent>
           </Select>
       </div> 
@@ -89,11 +89,11 @@ export function JobListings() {
               <SelectValue placeholder="Experience Level" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Levels</SelectItem>
-              <SelectItem value="1-2 years">1-2 years</SelectItem>
-              <SelectItem value="2-3 years">2-3 years</SelectItem>
-              <SelectItem value="3-5 years">3-5 years</SelectItem>
-              <SelectItem value="5+ years">5+ years</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Levels</SelectItem>
+              <SelectItem value="1-2 years" className='cursor-pointer'>1-2 years</SelectItem>
+              <SelectItem value="2-3 years" className='cursor-pointer'>2-3 years</SelectItem>
+              <SelectItem value="3-5 years" className='cursor-pointer'>3-5 years</SelectItem>
+              <SelectItem value="5+ years" className='cursor-pointer'>5+ years</SelectItem>
             </SelectContent>
           </Select>
           </div>

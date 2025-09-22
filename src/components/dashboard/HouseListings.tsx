@@ -99,11 +99,11 @@ export function HouseListings() {
               <SelectValue placeholder="Price Range" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Prices</SelectItem>
-              <SelectItem value="under-5m">Under 5M ETB</SelectItem>
-              <SelectItem value="5m-10m">5M - 10M ETB</SelectItem>
-              <SelectItem value="10m-20m">10M - 20M ETB</SelectItem>
-              <SelectItem value="over-20m">Over 20M ETB</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Prices</SelectItem>
+              <SelectItem value="under-5m" className='cursor-pointer'>Under 5M ETB</SelectItem>
+              <SelectItem value="5m-10m" className='cursor-pointer'>5M - 10M ETB</SelectItem>
+              <SelectItem value="10m-20m" className='cursor-pointer'>10M - 20M ETB</SelectItem>
+              <SelectItem value="over-20m" className='cursor-pointer'>Over 20M ETB</SelectItem>
             </SelectContent>
           </Select>
           
@@ -115,13 +115,13 @@ export function HouseListings() {
               <SelectValue placeholder="Property Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="villa">Villa</SelectItem>
-              <SelectItem value="apartment">Apartment</SelectItem>
-              <SelectItem value="house">House</SelectItem>
-              <SelectItem value="penthouse">Penthouse</SelectItem>
-              <SelectItem value="studio">Studio</SelectItem>
-              <SelectItem value="townhouse">Townhouse</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All Types</SelectItem>
+              <SelectItem value="villa" className='cursor-pointer'>Villa</SelectItem>
+              <SelectItem value="apartment" className='cursor-pointer'>Apartment</SelectItem>
+              <SelectItem value="house" className='cursor-pointer'>House</SelectItem>
+              <SelectItem value="penthouse" className='cursor-pointer'>Penthouse</SelectItem>
+              <SelectItem value="studio" className='cursor-pointer'>Studio</SelectItem>
+              <SelectItem value="townhouse" className='cursor-pointer'>Townhouse</SelectItem>
             </SelectContent>
           </Select>
           </div>
@@ -132,11 +132,11 @@ export function HouseListings() {
               <SelectValue placeholder="Bedrooms" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="1">1+</SelectItem>
-              <SelectItem value="2">2+</SelectItem>
-              <SelectItem value="3">3+</SelectItem>
-              <SelectItem value="4">4+</SelectItem>
+              <SelectItem value="all" className='cursor-pointer'>All</SelectItem>
+              <SelectItem value="1" className='cursor-pointer'>1+</SelectItem>
+              <SelectItem value="2" className='cursor-pointer'>2+</SelectItem>
+              <SelectItem value="3" className='cursor-pointer'>3+</SelectItem>
+              <SelectItem value="4" className='cursor-pointer'>4+</SelectItem>
             </SelectContent>
           </Select>
           </div>
