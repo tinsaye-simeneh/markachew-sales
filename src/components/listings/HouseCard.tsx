@@ -183,7 +183,7 @@ export function HouseCard({ house }: HouseCardProps) {
           </div>
         </div>
         
-        <Button className="w-full cursor-pointer" variant="outline">
+        <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
           View Details
         </Button>
       </CardContent>
