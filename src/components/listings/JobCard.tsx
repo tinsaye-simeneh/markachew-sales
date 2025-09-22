@@ -3,20 +3,23 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Clock, Building, Heart } from 'lucide-react'
+import { MapPin, Clock, Building, Heart, Edit } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { Job } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { Job, UserType } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface JobCardProps {
   job: Job
+  onEdit?: (job: Job) => void
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, onEdit }: JobCardProps) {
   const router = useRouter()
   const [isClient, setIsClient] = useState(false)
+  const { user } = useAuth()
   
   // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
@@ -53,6 +56,16 @@ export function JobCard({ job }: JobCardProps) {
       })
     }
   }
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onEdit) {
+      onEdit(job)
+    }
+  }
+
+  // Check if current user is the employer of this job
+  const isEmployer = user?.user_type === UserType.EMPLOYER && user?.id === job.user_id
 
   const isJobFavorited = isClient ? isFavorite(job.id, 'job') : false
 
@@ -114,14 +127,27 @@ export function JobCard({ job }: JobCardProps) {
             </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-2 cursor-pointer"
-            onClick={handleFavoriteClick}
-          >
-            <Heart className={`h-4 w-4 ${isJobFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-          </Button>
+          <div className="flex items-center gap-1 ml-2">
+            {isEmployer && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="cursor-pointer"
+                onClick={handleEditClick}
+                title="Edit job"
+              >
+                <Edit className="h-4 w-4 text-blue-600" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer"
+              onClick={handleFavoriteClick}
+            >
+              <Heart className={`h-4 w-4 ${isJobFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       

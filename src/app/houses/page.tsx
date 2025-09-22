@@ -234,7 +234,7 @@ export default function HousesPage() {
       onClick={clickable ? () => handleHouseClick(house.id) : undefined}
       className={clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}
     >
-      <HouseCard house={house} />
+      <HouseCard house={house} onEdit={undefined} />
     </div>
   );
 })}

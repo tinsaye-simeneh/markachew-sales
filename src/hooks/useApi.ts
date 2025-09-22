@@ -10,26 +10,33 @@ export function useJobs(page = 1, limit = 10) {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await jobsService.getAllJobs(page, limit);
-          setJobs(response.jobs);
-        setTotal(response.total);
-        setTotalPages(response.totalPages);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch jobs');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await jobsService.getAllJobs(page, limit);
+      setJobs(response.jobs);
+      setTotal(response.total);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch jobs');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchJobs();
   }, [page, limit]);
 
-  return { jobs, loading, error, total, totalPages };
+  return { 
+    jobs, 
+    loading, 
+    error, 
+    total, 
+    totalPages, 
+    refetch: fetchJobs 
+  };
 }
 
 // Hook for fetching a single job

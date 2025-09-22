@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { HouseCard } from '@/components/listings/HouseCard'
+import { EditHouseModal } from '@/components/listings/EditHouseModal'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
@@ -16,6 +17,8 @@ export function HouseListings() {
   const [bedrooms, setBedrooms] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredHouses, setFilteredHouses] = useState<House[]>([])
+  const [editingHouse, setEditingHouse] = useState<House | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   
   const itemsPerPage = 6
   const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)
@@ -71,6 +74,21 @@ export function HouseListings() {
 
     setFilteredHouses(filtered)
   }, [houses, searchQuery, priceRange, propertyType, bedrooms])
+
+  const handleEditHouse = (house: House) => {
+    setEditingHouse(house)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Force a page refresh to get updated data
+    window.location.reload()
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingHouse(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -177,7 +195,7 @@ export function HouseListings() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredHouses.length > 0 ? (
             filteredHouses.map((house) => (
-              <HouseCard key={house.id} house={house} />
+              <HouseCard key={house.id} house={house} onEdit={handleEditHouse} />
             ))
           ) : (
             <div className="col-span-full text-center py-12">
@@ -225,6 +243,14 @@ export function HouseListings() {
           </Button>
         </div>
       )}
+
+      {/* Edit House Modal */}
+      <EditHouseModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        house={editingHouse}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   )
 }

@@ -3,22 +3,25 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Bed, Bath, Square, Heart, Home } from 'lucide-react'
+import { MapPin, Bed, Bath, Square, Heart, Home, Edit } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
-import { House } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
+import { House, UserType } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface HouseCardProps {
   house: House
+  onEdit?: (house: House) => void
 }
 
-export function HouseCard({ house }: HouseCardProps) {
+export function HouseCard({ house, onEdit }: HouseCardProps) {
   const router = useRouter()
   const [imageError, setImageError] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const { user } = useAuth()
   
   // Always call the hook, but handle client-side logic inside
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
@@ -47,7 +50,6 @@ export function HouseCard({ house }: HouseCardProps) {
     }
   }
 
-  // Parse features JSON string
   const getHouseFeatures = () => {
     try {
       const features = JSON.parse(house.features || '{}');
@@ -78,7 +80,7 @@ export function HouseCard({ house }: HouseCardProps) {
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return // Don't handle clicks during SSR
+    if (!isClient) return 
     
     if (isFavorite(house.id, 'house')) {
       removeFromFavorites(house.id, 'house')
@@ -100,6 +102,15 @@ export function HouseCard({ house }: HouseCardProps) {
       })
     }
   }
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onEdit) {
+      onEdit(house)
+    }
+  }
+
+  const isSeller = user?.user_type === UserType.SELLER && user?.id === house.user_id
 
   const isHouseFavorited = isClient ? isFavorite(house.id, 'house') : false
 
@@ -124,14 +135,27 @@ export function HouseCard({ house }: HouseCardProps) {
         )}
          
         
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute top-2 right-2 bg-white/90 hover:bg-white cursor-pointer"
-          onClick={handleFavoriteClick}
-        >
-          <Heart className={`h-4 w-4 ${isHouseFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-        </Button>
+        <div className="absolute top-2 right-2 flex gap-1">
+          {isSeller && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="bg-white/90 hover:bg-white cursor-pointer"
+              onClick={handleEditClick}
+              title="Edit house"
+            >
+              <Edit className="h-4 w-4 text-primary" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-white/90 hover:bg-white cursor-pointer"
+            onClick={handleFavoriteClick}
+          >
+            <Heart className={`h-4 w-4 ${isHouseFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          </Button>
+        </div>
         
         <Badge 
           variant={house.status === 'active' ? 'default' : house.status === 'sold' ? 'secondary' : 'destructive'}

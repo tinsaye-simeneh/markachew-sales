@@ -65,7 +65,7 @@ export default function SavedPage() {
           {favoriteHouses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favoriteHouses.map((house) => (
-                <HouseCard key={house.id} house={house} />
+                <HouseCard key={house.id} house={house} onEdit={undefined} />
               ))}
             </div>
           ) : (
@@ -96,7 +96,7 @@ export default function SavedPage() {
           {favoriteJobs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favoriteJobs.map((job: Job) => (
-                <JobCard key={job.id} job={job} />
+                <JobCard key={job.id} job={job} onEdit={undefined} />
               ))}
             </div>
           ) : (
