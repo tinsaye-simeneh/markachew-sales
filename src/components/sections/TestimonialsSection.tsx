@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { COMPANY_FULL_NAME } from '@/lib/constants'
 import { Star } from 'lucide-react'
 
 const testimonials = [
@@ -10,7 +11,7 @@ const testimonials = [
     role: "Software Engineer",
     company: "TechCorp",
     image: "",
-    content: "Markachew helped me find my dream apartment in just 2 weeks! The AI matching was incredibly accurate and saved me so much time.",
+    content: `${COMPANY_FULL_NAME} helped me find my dream apartment in just 2 weeks! The AI matching was incredibly accurate and saved me so much time.`,
     rating: 5,
     type: "Property"
   },
@@ -19,7 +20,7 @@ const testimonials = [
     role: "Marketing Manager",
     company: "Creative Agency",
     image: "",
-    content: "I landed my dream job through Markachew. The platform connected me with the perfect company that matched my skills and values.",
+    content: `I landed my dream job through ${COMPANY_FULL_NAME}. The platform connected me with the perfect company that matched my skills and values.`,
     rating: 5,
     type: "Job"
   },
@@ -28,7 +29,7 @@ const testimonials = [
     role: "Real Estate Agent",
     company: "Premier Properties",
     image: "",
-    content: "As a real estate agent, Markachew has been invaluable for finding qualified buyers. The quality of leads is outstanding.",
+    content: `As a real estate agent, ${COMPANY_FULL_NAME} has been invaluable for finding qualified buyers. The quality of leads is outstanding.`,
     rating: 5,
     type: "Property"
   },
@@ -46,7 +47,7 @@ const testimonials = [
     role: "HR Director",
     company: "Global Corp",
     image: "",
-    content: "We've hired 15 amazing employees through Markachew. The platform attracts high-quality candidates.",
+    content: `We've hired 15 amazing employees through ${COMPANY_FULL_NAME}. The platform attracts high-quality candidates.`,
     rating: 5,
     type: "Job"
   },
@@ -55,7 +56,7 @@ const testimonials = [
     role: "Home Buyer",
     company: "",
     image: "",
-    content: "After months of searching, Markachew found me the perfect family home. The process was transparent and stress-free.",
+    content: `After months of searching, ${COMPANY_FULL_NAME} found me the perfect family home. The process was transparent and stress-free.`,
     rating: 5,
     type: "Property"
   }
@@ -70,7 +71,7 @@ export function TestimonialsSection() {
             What Our Users Say
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Don&apos;t just take our word for it. Here&apos;s what real users have to say about their experience with Markachew.
+            Don&apos;t just take our word for it. Here&apos;s what real users have to say about their experience with {COMPANY_FULL_NAME}.
           </p>
         </div>
         

@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
+import { COMPANY_DISPLAY_NAME } from '@/lib/constants'
 import {  User, LogOut, Menu, X, Heart, FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -93,7 +94,7 @@ export function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <button className="text-xl font-bold text-primary cursor-pointer" onClick={() => router.push('/')}>MPEM</button>
+              <button className="text-xl font-bold text-primary cursor-pointer" onClick={() => router.push('/')}>{COMPANY_DISPLAY_NAME}</button>
             </div>
 
             {/* Desktop Navigation Links */}

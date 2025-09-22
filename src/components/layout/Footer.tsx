@@ -1,6 +1,7 @@
 "use client"
 
 import { Home, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react'
+import { COMPANY_DISPLAY_NAME, COMPANY_DESCRIPTION, COMPANY_EMAIL, COMPANY_COPYRIGHT } from '@/lib/constants'
 
 const footerLinks = {
   company: [
@@ -43,17 +44,17 @@ export function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <Home className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">MPEM</span>
+              <span className="text-2xl font-bold">{COMPANY_DISPLAY_NAME}</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Connecting people with their dream homes and perfect career opportunities through AI-powered matching and personalized recommendations.
+              {COMPANY_DESCRIPTION}
             </p>
             
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center text-gray-400">
                 <Mail className="h-4 w-4 mr-3" />
-                <span>hello@mpem.com</span>
+                <span>{COMPANY_EMAIL}</span>
               </div>
               <div className="flex items-center text-gray-400">
                 <Phone className="h-4 w-4 mr-3" />
@@ -139,7 +140,7 @@ export function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} MPEM. All rights reserved.
+              {COMPANY_COPYRIGHT}
             </div>
             
             {/* Social Links */}

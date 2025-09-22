@@ -3,6 +3,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent } from '@/components/ui/card'
+import { COMPANY_DISPLAY_NAME, COMPANY_FULL_NAME } from '@/lib/constants'
 import { Building2, Users, Target, Award } from 'lucide-react'
 
 export default function AboutPage() {
@@ -13,7 +14,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">About MPEM</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">About {COMPANY_DISPLAY_NAME}</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Connecting dreams with opportunities. We&apos;re your trusted platform for finding the perfect home and advancing your career.
           </p>
@@ -72,7 +73,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
             <div className="prose prose-lg max-w-none text-gray-600">
               <p className="mb-4">
-                Founded in 2024, MPEM emerged from a simple observation: finding the right home or job shouldn&apos;t be complicated. 
+                Founded in 2024, {COMPANY_DISPLAY_NAME} emerged from a simple observation: finding the right home or job shouldn&apos;t be complicated. 
                 We noticed that people were struggling with fragmented platforms, unreliable information, and time-consuming processes.
               </p>
               <p className="mb-4">
@@ -80,7 +81,7 @@ export default function AboutPage() {
                 these pain points. We combined the best of both worlds to offer a comprehensive solution for life&apos;s most important decisions.
               </p>
               <p>
-                Today, MPEM serves thousands of users across Ethiopia, helping them find their perfect home and advance their careers 
+                Today, {COMPANY_DISPLAY_NAME} serves thousands of users across Ethiopia, helping them find their perfect home and advance their careers 
                 with confidence and ease.
               </p>
             </div>

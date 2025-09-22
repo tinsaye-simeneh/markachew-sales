@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent } from '@/components/ui/card'
+import { COMPANY_FULL_NAME } from '@/lib/constants'
 import { Shield, Zap, Users, TrendingUp, Smartphone, Headphones } from 'lucide-react'
 
 const features = [
@@ -48,7 +49,7 @@ export function FeaturesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Why Choose Markachew?
+            Why Choose {COMPANY_FULL_NAME}?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             We combine cutting-edge technology with personalized service to help you find exactly what you&apos;re looking for.

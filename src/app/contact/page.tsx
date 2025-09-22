@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react'
+import { COMPANY_EMAIL } from '@/lib/constants'
 import { toast } from 'sonner'
 
 export default function ContactPage() {
@@ -158,7 +159,7 @@ export default function ContactPage() {
                   <Mail className="h-6 w-6 text-primary mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
-                    <p className="text-gray-600">info@mpem.com</p>
+                    <p className="text-gray-600">{COMPANY_EMAIL}</p>
                   </div>
                 </div>
 
