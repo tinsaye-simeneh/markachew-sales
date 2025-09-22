@@ -32,12 +32,7 @@ export function JobListings() {
       )
     }
 
-    // Job type filter - Note: API doesn't have job type field, so we'll skip this filter
-    // if (jobType !== 'all') {
-    //   filtered = filtered.filter(job => job.type?.toLowerCase() === jobType.toLowerCase())
-    // }
-
-    // Experience filter - Parse requirements JSON string
+   
     if (experience !== 'all') {
       filtered = filtered.filter(job => {
         try {
