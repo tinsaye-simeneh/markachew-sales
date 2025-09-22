@@ -89,7 +89,9 @@ export function EditJobModal({ isOpen, onClose, job, onSuccess }: EditJobModalPr
       onSuccess()
       onClose()
     } catch (error) {
-      console.error('Failed to update job:', error)
+      toast.error('Failed to update job', {
+        description: 'Failed to update job'
+      })
       setError(error instanceof Error ? error.message : 'Failed to update job')
     } finally {
       setLoading(false)

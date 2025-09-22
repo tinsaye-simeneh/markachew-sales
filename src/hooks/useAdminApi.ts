@@ -64,7 +64,7 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchUsers = useCallback(async (pageNum = 1, newFilters = filters) => {
+  const fetchUsers = useCallback(async (newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
@@ -153,13 +153,13 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchJobs = useCallback(async (pageNum = 1, newFilters = filters) => {
+  const fetchJobs = useCallback(async (newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
       const data = await adminService.getAllJobs({ 
         search: newFilters.search,
-        page: pageNum
+        page: 1
        })
       setJobs(data.jobs)
       setTotal(data.total)
@@ -243,14 +243,14 @@ export function useAdminHouses(filters: AdminHouseFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchHouses = useCallback(async (pageNum = 1, newFilters = filters) => {
+  const fetchHouses = useCallback(async (newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
       const data = await adminService.getAllHouses({ 
         type: newFilters.type as HouseType,
         search: newFilters.search,
-        page: pageNum
+        page: 1
        })
       setHouses(data.houses)
       setTotal(data.total)
@@ -334,13 +334,13 @@ export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchApplications = useCallback(async (_pageNum = 1, _newFilters = filters) => {
+  const fetchApplications = useCallback(async (_newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)
           const data = await adminService.getAllApplications({
           
-          page: _pageNum
+          page: 1
        })
       setApplications(data.applications)
       setTotal(data.total)
@@ -400,7 +400,7 @@ export function useAdminActivityLog(filters: { page?: number } = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchActivities = useCallback(async (_pageNum = 1, _newFilters = filters) => {
+  const fetchActivities = useCallback(async (_newFilters = filters) => {
     try {
       setLoading(true)
       setError(null)

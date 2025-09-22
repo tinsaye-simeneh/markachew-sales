@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
@@ -13,6 +13,7 @@ import { Step1 } from './Step1'
 import { Step2 } from './Step2'
 import { Step3 } from './Step3'
 import { RegistrationNavigation } from './RegistrationNavigation'
+import { toast } from 'sonner'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -177,12 +178,15 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           resetForm()
           router.push('/profile')
         } catch (error) {
-          console.error('Profile creation error:', error)
+          toast.error('Profile creation error:', {
+            description: 'Profile creation error'
+          })
           setError('Registration successful, but profile creation failed. Please complete your profile manually.')
         }
       } else {
         setError(authError || 'Registration failed')
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Registration failed')
     }
@@ -305,7 +309,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           isLoading={isLoading}
           onPrevStep={prevStep}
           onNextStep={nextStep}
-          onSwitchToLogin={onSwitchToLogin}
         /> 
         
         <div className="text-center text-sm">

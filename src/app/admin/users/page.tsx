@@ -21,6 +21,7 @@ import {
 import { useAdminUsers } from '@/hooks/useAdminApi'
 import { UserType } from '@/lib/api'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 
 export default function AdminUsersPage() {
   const [filters, setFilters] = useState({
@@ -69,8 +70,11 @@ export default function AdminUsersPage() {
           }
           break
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error performing user action:', error)
+      toast.error('Error performing user action', {
+        description: 'Error performing user action'
+      })
     }
   }
 
@@ -271,7 +275,7 @@ export default function AdminUsersPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => console.log('View user', user.id)}>
+                              <DropdownMenuItem onClick={() => {}}>
                             <Edit className="mr-2 h-4 w-4" />
                             View Details
                           </DropdownMenuItem>

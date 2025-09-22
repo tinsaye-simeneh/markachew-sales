@@ -90,7 +90,9 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
       onSuccess()
       onClose()
     } catch (error) {
-      console.error('Failed to update house:', error)
+      toast.error('Failed to update house', {
+        description: 'Failed to update house'
+      })
       setError(error instanceof Error ? error.message : 'Failed to update house')
     } finally {
       setLoading(false)

@@ -24,6 +24,7 @@ import {
   CheckCircle,
   ExternalLink
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function JobDetailPage() {
   const { user, isLoading } = useAuth()
@@ -54,7 +55,9 @@ export default function JobDetailPage() {
 
   const handleApply = () => {
     if (user?.user_type !== 'EMPLOYEE') {
-      alert('Only employees can apply for jobs')
+      toast.error('Only employees can apply for jobs', {
+        description: 'Only employees can apply for jobs'
+      })
       return
     }
     setShowApplicationForm(true)
@@ -62,7 +65,9 @@ export default function JobDetailPage() {
 
   const handleSubmitApplication = async () => {
     if (!user?.id || !coverLetter.trim()) {
-      alert('Please provide a cover letter')
+      toast.error('Please provide a cover letter', {
+        description: 'Please provide a cover letter'
+      })
       return
     }
 
@@ -78,9 +83,11 @@ export default function JobDetailPage() {
       setShowApplicationForm(false)
       setOpenModal(true)
       setCoverLetter('')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error submitting application:', error)
-      alert('Failed to submit application. Please try again.')
+        toast.error('Error submitting application', {
+        description: 'Error submitting application'
+      })
     } finally {
       setIsSubmitting(false)
     }

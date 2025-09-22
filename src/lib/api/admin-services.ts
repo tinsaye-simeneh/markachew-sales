@@ -110,8 +110,8 @@ export class AdminService {
         activeUsers: Math.floor(usersResponse.total * 0.85), // Mock 85% active
         pendingApprovals: Math.floor(usersResponse.total * 0.02), // Mock 2% pending
       };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
       return {
         totalUsers: 1248,
         totalJobs: 89,
@@ -160,8 +160,9 @@ export class AdminService {
         limit: response.data.data.meta.perPage,
         totalPages: response.data.data.meta.totalPages,
       };
+      
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error fetching users:', error);
       throw error;
     }
   }
@@ -233,7 +234,6 @@ export class AdminService {
         totalPages: response.data.data.meta.totalPages,
       };
     } catch (error) {
-      console.error('Error fetching jobs:', error);
       throw error;
     }
   }
@@ -304,8 +304,8 @@ export class AdminService {
         limit: response.data.data.meta.perPage,
         totalPages: response.data.data.meta.totalPages,
       };
+      
     } catch (error) {
-      console.error('Error fetching houses:', error);
       throw error;
     }
   }
@@ -376,8 +376,8 @@ export class AdminService {
         limit: response.data.data.meta.perPage,
         totalPages: response.data.data.meta.totalPages,
       };
+      
     } catch (error) {
-      console.error('Error fetching applications:', error);
       throw error;
     }
   }
@@ -468,7 +468,6 @@ export class AdminService {
         totalPages: 1,
       };
     } catch (error) {
-      console.error('Error fetching activity log:', error);
       throw error;
     }
   }
@@ -489,7 +488,7 @@ export class AdminService {
         last_backup: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
       };
     } catch (error) {
-      console.error('Error fetching system status:', error);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       throw error;
     }
   }

@@ -63,7 +63,6 @@ export class AuthService {
 
         return response;
       } catch (fallbackError) {
-        console.error('All registration methods failed:', fallbackError);
         if (isCorsError(error) || isCorsError(fallbackError)) {
           throw new Error('CORS Error: Unable to register. Please try using a different browser or contact support.');
         }
@@ -191,6 +190,7 @@ export class AdminAuthService {
           full_name: 'Admin User',
           email: credentials.email,
           phone: '',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           user_type: 'ADMIN' as any,
           createdAt: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -207,6 +207,7 @@ export class AdminAuthService {
         full_name: 'Admin User',
         email: credentials.email,
         phone: '',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         user_type: 'ADMIN' as any,
         createdAt: new Date().toISOString(),
         updated_at: new Date().toISOString(),

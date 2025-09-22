@@ -12,6 +12,7 @@ import { LoadingPage } from '@/components/ui/loading'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ArrowLeft, Calendar, FileText, Trash2, ExternalLink } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ApplicationDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -28,7 +29,9 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       const response = await applicationsService.getApplication(params.id)
       setApplication(response)
     } catch (err) {
-      console.error('Error fetching application:', err)
+      toast.error('Error fetching application', {
+        description: 'Error fetching application'
+      })
       setError(err instanceof Error ? err.message : 'Failed to fetch application')
     } finally {
       setLoading(false)
@@ -59,9 +62,11 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
     try {
       await applicationsService.deleteApplication(params.id)
       router.push('/applications')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Error deleting application:', err)
-      alert('Failed to delete application')
+      toast.error('Error deleting application', {
+        description: 'Error deleting application'
+      })
     }
   }
 

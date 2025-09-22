@@ -22,7 +22,6 @@ export class CorsProxyService {
     const proxiedUrl = `${proxyUrl}${encodeURIComponent(url)}`;
 
     try {
-      console.log(`🔄 Trying proxy ${this.currentProxyIndex + 1}: ${proxyUrl}`);
       
       const response = await fetch(proxiedUrl, {
         ...options,
@@ -38,10 +37,9 @@ export class CorsProxyService {
       }
 
       const data = await response.json();
-      console.log('✅ Proxy request successful');
       return data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error(`❌ Proxy ${this.currentProxyIndex + 1} failed:`, error);
       
       this.currentProxyIndex = (this.currentProxyIndex + 1) % this.proxyUrls.length;
       
@@ -58,7 +56,6 @@ export class CorsProxyService {
     options: RequestInit = {}
   ): Promise<T> {
     try {
-      console.log('🌐 Attempting direct request...');
       
       const response = await fetch(url, {
         ...options,
@@ -76,10 +73,8 @@ export class CorsProxyService {
       }
 
       const data = await response.json();
-      console.log('✅ Direct request successful');
       return data;
     } catch (error) {
-      console.error('❌ Direct request failed:', error);
       throw error;
     }
   }
@@ -91,7 +86,6 @@ export class CorsProxyService {
     try {
       return await this.directRequest<T>(url, options);
     } catch {
-      console.warn('Direct request failed, trying proxy...');
       return await this.requestWithProxy<T>(url, options);
     }
   }

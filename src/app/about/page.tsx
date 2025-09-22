@@ -3,7 +3,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent } from '@/components/ui/card'
-import { COMPANY_DISPLAY_NAME, COMPANY_FULL_NAME } from '@/lib/constants'
+import { COMPANY_DISPLAY_NAME } from '@/lib/constants'
 import { Building2, Users, Target, Award } from 'lucide-react'
 
 export default function AboutPage() {

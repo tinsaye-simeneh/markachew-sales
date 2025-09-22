@@ -7,7 +7,6 @@ interface RegistrationNavigationProps {
   isLoading: boolean;
   onPrevStep: () => void;
   onNextStep: () => void;
-  onSwitchToLogin: () => void;
 }
 
 export function RegistrationNavigation({
@@ -16,7 +15,6 @@ export function RegistrationNavigation({
   isLoading,
   onPrevStep,
   onNextStep,
-  onSwitchToLogin,
 }: RegistrationNavigationProps) {
   return (
     <div className="border-t bg-white px-6 py-3 flex-shrink-0">

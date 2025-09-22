@@ -18,7 +18,6 @@ export function useProfile(userId?: string) {
         setProfile(profileData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-        console.error('Profile fetch error:', err);
       } finally {
         setLoading(false);
       }

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { authService, User, UserType } from '@/lib/api'
+import { toast } from 'sonner'
 
 interface AuthContextType {
   user: User | null
@@ -77,8 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true)
     try {
       await authService.logout()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Logout error:', err)
+      toast.error('Logout error:', {
+        description: 'Logout error'
+      })
     } finally {
       setUser(null)
       setIsLoading(false)
