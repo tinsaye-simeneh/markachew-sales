@@ -36,16 +36,28 @@ export function JobListings() {
    
     if (experience !== 'all') {
       filtered = filtered.filter(job => {
-        try {
-          const requirements = JSON.parse(job.requirements || '{}');
-          return requirements.experience?.toLowerCase() === experience.toLowerCase();
-        } catch {
-          return false;
+        if (Array.isArray(job.requirements)) {
+          // If requirements is an array, check if any item matches
+          return job.requirements.some(req => 
+            req.toLowerCase().includes(experience.toLowerCase())
+          );
+        } else {
+          // Handle string format (legacy)
+          try {
+            const requirements = JSON.parse(job.requirements || '{}');
+            return requirements.experience?.toLowerCase() === experience.toLowerCase();
+          } catch {
+            return false;
+          }
         }
       })
     }
 
-    setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
+    setFilteredJobs(filtered.filter((job: Job) => 
+      job.status === 'ACTIVE' || 
+      job.status === 'active' || 
+      job.status === 'PENDING'
+    ))
   }, [jobs, searchQuery, jobType, experience])
 
   const handleEditJob = (job: Job) => {
@@ -82,21 +94,6 @@ export function JobListings() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-1">
-          <Select value={jobType} onValueChange={setJobType}>
-            <label htmlFor="jobType" className='block'>Job Type</label>
-            <SelectTrigger className="w-full lg:w-48">
-              <SelectValue placeholder="Job Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className='cursor-pointer'>All Types</SelectItem>
-              <SelectItem value="Full-time" className='cursor-pointer'>Full Time</SelectItem>
-              <SelectItem value="Part-time" className='cursor-pointer'>Part Time</SelectItem>
-              <SelectItem value="Contract" className='cursor-pointer'>Contract</SelectItem>
-              <SelectItem value="Remote" className='cursor-pointer'>Remote</SelectItem>
-            </SelectContent>
-          </Select>
-      </div> 
           <div className="flex flex-col gap-1">
           <Select value={experience} onValueChange={setExperience}>
             <label htmlFor="experience" className='block'>Experience Level</label>

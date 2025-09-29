@@ -35,7 +35,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {/* Hide navbar for EMPLOYER and SELLER user types */}
+      {user && (user.user_type === UserType.EMPLOYER || user.user_type === UserType.SELLER) ? null : (
+        <Navbar />
+      )}
       {user ? (
         <Dashboard />
       ) : (

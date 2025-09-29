@@ -13,6 +13,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { FileText, Calendar, Eye, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmationModal } from '@/components/ui/confirmation-modal'
 
 export default function ApplicationsPage() {
   const router = useRouter()
@@ -20,6 +21,8 @@ export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [applicationToDelete, setApplicationToDelete] = useState<Application | null>(null)
 
   const fetchApplications = useCallback(async () => {
     try {
@@ -64,19 +67,15 @@ export default function ApplicationsPage() {
 
  
   const handleDeleteApplication = async (applicationId: string) => {
-    if (!confirm('Are you sure you want to delete this application?')) {
-      return
-    }
+    setApplicationToDelete(applicationId as unknown as Application)
+    setIsDeleteModalOpen(true)
+  }
 
-    try {
-      await applicationsService.deleteApplication(applicationId)
-      setApplications(prev => prev.filter(app => app.id !== applicationId))
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      toast.error('Error deleting application', {
-        description: 'Error deleting application'
-      })
-    }
+  const confirmDeleteApplication = async (applicationId: string) => {
+    await applicationsService.deleteApplication(applicationId)
+    setApplications(prev => prev.filter(app => app.id !== applicationId))
+    toast.success('Application deleted successfully')
+    setIsDeleteModalOpen(false)
   }
 
   const getStatusBadge = (status: string) => {
@@ -225,6 +224,13 @@ export default function ApplicationsPage() {
         )}
       </div>
 
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => confirmDeleteApplication(applicationToDelete?.id || '')}
+        title="Delete Application"
+        message="Are you sure you want to delete this application?"
+      />
       <Footer />
     </div>
   )

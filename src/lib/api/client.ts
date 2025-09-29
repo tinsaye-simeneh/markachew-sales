@@ -17,9 +17,15 @@ class ApiClient {
     const url = `${this.baseURL}${endpoint}`;
     
     const defaultHeaders: HeadersInit = {
-      'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
+    // Only set Content-Type if it's not already set (for FormData)
+    // Check if Content-Type is explicitly set to empty object or not set at all
+    const hasContentType = options.headers && 'Content-Type' in options.headers;
+    if (!hasContentType) {
+      defaultHeaders['Content-Type'] = 'application/json';
+    }
 
     const token = this.getToken();
     if (token) {
@@ -48,29 +54,29 @@ class ApiClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        if (response.status === 401 && !this.isRefreshing) {
-          const refreshed = await this.handleTokenRefresh();
-          if (refreshed) {
-            const retryConfig = {
-              ...config,
-              headers: {
-                ...config.headers,
-                Authorization: `Bearer ${this.getToken()}`,
-              },
-            };
-            const retryResponse = await fetch(url, {
-              ...retryConfig,
-              signal: controller.signal,
-              mode: 'cors',
-              credentials: 'omit',
-            });
+        // if (response.status === 401 && !this.isRefreshing) {
+        //   const refreshed = await this.handleTokenRefresh();
+        //   if (refreshed) {
+        //     const retryConfig = {
+        //       ...config,
+        //       headers: {
+        //         ...config.headers,
+        //         Authorization: `Bearer ${this.getToken()}`,
+        //       },
+        //     };
+        //     const retryResponse = await fetch(url, {
+        //       ...retryConfig,
+        //       signal: controller.signal,
+        //       mode: 'cors',
+        //       credentials: 'omit',
+        //     });
             
-            if (retryResponse.ok) {
-              const retryData = await retryResponse.json();
-              return retryData;
-            }
-          }
-        }
+        //     if (retryResponse.ok) {
+        //       const retryData = await retryResponse.json();
+        //       return retryData;
+        //     }
+        //   }
+        // }
         
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);

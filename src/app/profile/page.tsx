@@ -42,8 +42,10 @@ export default function ProfilePage() {
     department: '',
     experience: '',
     availability: '',
-    salary_expectation: ''
+    salary_expectation: '',
+    cv: ''
   })
+  const [cvFile, setCvFile] = useState<File | null>(null)
   const [updateMessage, setUpdateMessage] = useState('')
   const [showCreateProfile, setShowCreateProfile] = useState(false)
 
@@ -83,7 +85,8 @@ export default function ProfilePage() {
         department: profile.department || '',
         experience: profile.experience?.toString() || '',
         availability: profile.availability || '',
-        salary_expectation: profile.salary_expectation?.toString() || ''
+        salary_expectation: profile.salary_expectation?.toString() || '',
+        cv: profile.cv || ''
       }))
     }
   }, [profile])
@@ -105,6 +108,7 @@ export default function ProfilePage() {
         experience: profileData.experience ? parseInt(profileData.experience) : undefined,
         availability: profileData.availability as 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | undefined,
         salary_expectation: profileData.salary_expectation ? parseInt(profileData.salary_expectation) : undefined,
+        cv: cvFile || undefined,
       });
       
       setUpdateMessage('Profile updated successfully!');
@@ -145,15 +149,22 @@ export default function ProfilePage() {
         department: profile.department || '',
         experience: profile.experience?.toString() || '',
         availability: profile.availability || '',
-        salary_expectation: profile.salary_expectation?.toString() || ''
+        salary_expectation: profile.salary_expectation?.toString() || '',
+        cv: profile.cv || ''
       }))
     }
+    setCvFile(null)
     setIsEditing(false)
     setUpdateMessage('')
   }
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null
+    setCvFile(file)
   }
 
   const handlePasswordChange = (field: string, value: string) => {
@@ -590,6 +601,46 @@ export default function ProfilePage() {
                           <div className="flex items-center mt-1">
                             <User className="h-4 w-4 mr-2 text-gray-400" />
                             <span className="text-gray-900">{profileData.salary_expectation ? `ETB ${parseInt(profileData.salary_expectation).toLocaleString()}` : 'Not specified'}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="cv" className='mb-2'>CV/Resume</Label>
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <Input
+                              id="cv"
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              onChange={handleCvUpload}
+                            />
+                            {cvFile && (
+                              <p className="text-sm text-green-600">✓ {cvFile.name}</p>
+                            )}
+                            {profileData.cv && !cvFile && (
+                              <p className="text-sm text-blue-600">Current: CV uploaded</p>
+                            )}
+                            <p className="text-xs text-gray-500">Upload your CV in PDF or Word format</p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center mt-1">
+                            <User className="h-4 w-4 mr-2 text-gray-400" />
+                            {profileData.cv ? (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-gray-900">CV uploaded</span>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(profileData.cv, '_blank')}
+                                  className="cursor-pointer"
+                                >
+                                  View CV
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-gray-900">No CV uploaded</span>
+                            )}
                           </div>
                         )}
                       </div>

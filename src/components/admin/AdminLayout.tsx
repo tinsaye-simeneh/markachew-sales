@@ -9,18 +9,17 @@ import { useAuth } from '@/contexts/AuthContext'
 import { 
   Home, 
   Users, 
-  Briefcase, 
   Building, 
   Settings, 
-  BarChart3, 
-  FileText, 
-  MessageSquare, 
-  Bell,
   Menu,
   X,
   LogOut,
-  User,
-  Shield
+  Shield,
+  Tag,
+  CreditCard,
+  Briefcase,
+  DollarSign,
+  Calendar
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -32,9 +31,10 @@ const navigation = [
   { name: 'Users', href: '/admin/users', icon: Users, current: false },
   { name: 'Jobs', href: '/admin/jobs', icon: Briefcase, current: false },
   { name: 'Houses', href: '/admin/houses', icon: Building, current: false },
-  { name: 'Applications', href: '/admin/applications', icon: FileText, current: false },
-  { name: 'Reports', href: '/admin/reports', icon: BarChart3, current: false },
-  { name: 'Messages', href: '/admin/messages', icon: MessageSquare, current: false },
+  { name: 'Categories', href: '/admin/categories', icon: Tag, current: false },
+  { name: 'Commissions', href: '/admin/commissions', icon: DollarSign, current: false },
+  { name: 'Subscriptions', href: '/admin/subscriptions', icon: Calendar, current: false },
+  { name: 'Payments', href: '/admin/payments', icon: CreditCard, current: false },
   { name: 'Settings', href: '/admin/settings', icon: Settings, current: false },
 ]
 
@@ -49,9 +49,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     router.push('/')
   }
 
-  const handleGoToMain = () => {
-    router.push('/')
-  }
+
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -156,25 +154,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </h2>
             </div>
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleGoToMain}
-                className="hidden md:inline-flex cursor-pointer"
-              >
-                Go to Main Site
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="relative cursor-pointer">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-
+    
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.full_name}`} />
                       <AvatarFallback>
@@ -194,15 +177,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       </div>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/admin/profile')} className='cursor-pointer'>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/admin/settings')} className='cursor-pointer'>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
                     <LogOut className="mr-2 h-4 w-4" />

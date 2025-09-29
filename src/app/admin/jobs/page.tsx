@@ -3,61 +3,37 @@
 import { useState } from 'react'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { JobStatus } from '@/lib/api/config'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Briefcase, 
-  Plus, 
-  MoreHorizontal,
-  Edit,
-  Trash2,
+  RefreshCw,
   CheckCircle,
   XCircle,
-  RefreshCw,
-  Eye
+  FileText
 } from 'lucide-react'
 import { useAdminJobs } from '@/hooks/useAdminApi'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { useRouter } from 'next/navigation'
-import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { DataDisplay, DataDisplayColumn, createDataDisplayActions } from '@/components/ui/data-display'
+import type { AdminJob } from '@/lib/api/admin-services'
+import { ConfirmationModal } from '@/components/ui/confirmation-modal'
+import { adminService } from '@/lib/api/admin-services'
 
 export default function AdminJobsPage() {
-  const router = useRouter()
-  const [filters, setFilters] = useState({
-    status: '',
-    search: ''
-  })
-  const [currentPage, setCurrentPage] = useState(1)
-
   const {
     jobs,
     total,
-    page,
-    totalPages,
     loading,
-    error,
     fetchJobs,
-    deleteJob,
     approveJob,
     rejectJob
-  } = useAdminJobs({ ...filters, page: currentPage })
+  } = useAdminJobs({})
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [jobToDelete, setJobToDelete] = useState<AdminJob | null>(null)
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value === 'all' ? '' : value }))
-    setCurrentPage(1)
-  }
-
-  const handleSearch = (searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }))
-    setCurrentPage(1)
-  }
 
   const handleJobAction = async (action: string, jobId: string, reason?: string) => {
-    try {
       switch (action) {
         case 'approve':
           await approveJob(jobId)
@@ -65,26 +41,25 @@ export default function AdminJobsPage() {
         case 'reject':
           await rejectJob(jobId, reason || 'Administrative rejection')
           break
-        case 'delete':
-          if (confirm('Are you sure you want to delete this job?')) {
-            await deleteJob(jobId)
-          }
-          break
+          case 'delete':
+              setJobToDelete(jobId as unknown as AdminJob)
+            setIsDeleteModalOpen(true)
+            break
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      toast.error('Error performing job action', {
-        description: 'Error performing job action'
-      })
     }
+
+  const confirmDeleteJob = async (jobId: string) => {
+    await adminService.deleteJob(jobId) 
+    toast.success('Job deleted successfully')
+    setIsDeleteModalOpen(false)
   }
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      active: 'default',
-      inactive: 'secondary',
-      pending: 'outline',
-      expired: 'destructive'
+      ACTIVE: 'default',
+      INACTIVE: 'secondary',
+      PENDING: 'outline',
+      EXPIRED: 'destructive'
     } as const
 
     return (
@@ -92,6 +67,101 @@ export default function AdminJobsPage() {
         {status}
       </Badge>
     )
+  }
+
+  // Define columns for DataDisplay
+  const columns: DataDisplayColumn[] = [
+    {
+      key: 'title',
+      label: 'Job Title',
+      sortable: true,
+      render: (value) => (
+        <div className="flex items-center  gap-2">
+          <FileText className="h-4 w-4 text-gray-500" />
+          <span className="font-medium">{value}</span>
+        </div>
+      )
+    },
+    {
+      key: 'employer.full_name',
+      label: 'Employer',
+      render: (value) => (
+        <>
+          <span>{value || 'Unknown'}</span>
+          </>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      filterable: true,
+      filterOptions: [
+        { value: 'ACTIVE', label: 'Active' },
+        { value: 'INACTIVE', label: 'Inactive' },
+        { value: 'PENDING', label: 'Pending' },
+        { value: 'EXPIRED', label: 'Expired' }
+      ],
+      render: (value) => getStatusBadge(value)
+    },
+    {
+      key: 'applications_count',
+      label: 'Applications',
+      render: (value) => (
+          <span className="font-medium">{value || 0}</span>
+       
+      )
+    },
+    {
+      key: 'views_count',
+      label: 'Views',
+      render: (value) => (
+          <span className="font-medium">{value || 0}</span>
+      )
+    },
+    {
+      key: 'createdAt',
+      label: 'Posted',
+      render: (value) => (
+         <span>{new Date(value).toLocaleDateString()}</span>
+        )
+    }
+  ]
+
+  // Define actions for DataDisplay
+  const actions = [
+    {
+      key: 'approve',
+      label: 'Approve',
+      icon: <CheckCircle className="h-4 w-4" />,
+      onClick: (job: AdminJob) => {
+        if (job.status === JobStatus.PENDING) {
+          handleJobAction('approve', job.id, 'Approved by admin')
+        }
+      },
+      className: 'text-green-600'
+    },
+    {
+      key: 'reject',
+      label: 'Reject',
+      icon: <XCircle className="h-4 w-4" />,
+      onClick: (job: AdminJob) => {
+        if (job.status === JobStatus.PENDING) {
+          handleJobAction('reject', job.id)
+        }
+      },
+      variant: 'destructive' as const
+    },
+    createDataDisplayActions.delete((job: AdminJob) => {
+      handleJobAction('delete', job.id)
+    })
+  ]
+
+  // Filter actions based on job status
+  const getActionsForJob = (job: AdminJob) => {
+    if (job.status === JobStatus.PENDING) {
+      return actions
+    }
+    return [actions[2]] // Only Delete action for non-pending jobs
   }
 
   if (loading && jobs.length === 0) {
@@ -118,10 +188,6 @@ export default function AdminJobsPage() {
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
-          <Button className='cursor-pointer' onClick={() => router.push('/admin/jobs/add')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Job
-          </Button>
           </div>
         </div>
 
@@ -170,160 +236,39 @@ export default function AdminJobsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {jobs.filter(j => j.status === JobStatus.INACTIVE).length}
+                {jobs.filter(j => j.status === JobStatus.PENDING).length}
               </div>
               <p className="text-xs text-muted-foreground">Requires review</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className='mt-1' >
-              <Label htmlFor="search" className='mb-2'>Search</Label>
-              <Input
-                id="search" 
-                placeholder="Search jobs by title or description..."
-                value={filters.search}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <div>
-                  <Label htmlFor="status" className='mb-2'>Status</Label>
-            <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value)}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
-              </SelectContent>
-            </Select>
-            </div>
-            <div>
-                
-            </div>
-            </div>
-        </div>
 
-        {/* Jobs Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Job Listings</CardTitle>
-            <CardDescription>Manage all job postings and applications</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">Error: {error}</p>
-              </div>
-            )}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <RefreshCw className="h-6 w-6 animate-spin" />
-                </div>
-              ) : jobs.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No jobs found</p>
-                </div>
-              ) : (
-                jobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium">{job.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{job.description}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                            <span>Posted by: {job.employer?.full_name || job.employer_name || 'Unknown'}</span>
-                            <span>Applications: {job.applications_count || 0}</span>
-                            <span>Views: {job.views_count || 0}</span>
-                            <span>Posted: {new Date(job.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          {getStatusBadge(job.status)}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => {}}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => {}}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Job
-                              </DropdownMenuItem>
-                              {job.status === JobStatus.INACTIVE && (
-                                <>
-                                  <DropdownMenuItem onClick={() => handleJobAction('approve', job.id)}>
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Approve Job
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleJobAction('reject', job.id)}>
-                                    <XCircle className="mr-2 h-4 w-4" />
-                                    Reject Job
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                              <DropdownMenuItem 
-                                onClick={() => handleJobAction('delete', job.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Job
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-gray-500">
-                  Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, total)} of {total} jobs
-                </p>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(page - 1)}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(page + 1)}
-                    disabled={page === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <DataDisplay
+          data={jobs}
+          columns={columns}
+          actions={getActionsForJob}
+          loading={loading}
+          title="Job Listings"
+          description="Manage all job postings and applications"
+          defaultView="table"
+          emptyMessage="No jobs found. Job postings will appear here."
+          searchPlaceholder="Search jobs by title, employer, or description..."
+          searchFields={['title', 'employer.full_name', 'employer_name', 'description']}
+          itemsPerPage={5}
+          totalItems={total}
+          onItemClick={() => {
+          }}
+        />
       </div>
+      
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => confirmDeleteJob(jobToDelete?.id || '')}
+        title="Delete Job"
+        message="Are you sure you want to delete this job?"
+      />
     </AdminLayout>
-  )
+  );
 }

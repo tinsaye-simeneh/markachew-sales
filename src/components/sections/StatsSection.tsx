@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp, Users, Home, Briefcase } from 'lucide-react'
+import {  Users, Home, Briefcase } from 'lucide-react'
 
 const stats = [
   {
@@ -24,13 +24,6 @@ const stats = [
     description: "Trusted by professionals and families",
     color: "text-green-600"
   },
-  {
-    icon: TrendingUp,
-    value: "95%",
-    label: "Success Rate",
-    description: "Users find what they're looking for",
-    color: "text-orange-600"
-  }
 ]
 
 export function StatsSection() {

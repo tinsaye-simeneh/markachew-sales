@@ -6,17 +6,10 @@ export interface AdminStats {
   totalUsers: number;
   totalJobs: number;
   totalHouses: number;
-  totalApplications: number;
-  recentUsers: number;
-  recentJobs: number;
-  recentHouses: number;
-  recentApplications: number;
-  activeUsers: number;
-  pendingApprovals: number;
 }
 
 export interface AdminUser extends User {
-  status: 'active' | 'inactive' | 'pending' | 'suspended';
+  status: boolean;
   last_login?: string;
   profile_completed: boolean;
   verification_status: 'verified' | 'pending' | 'rejected';
@@ -24,7 +17,7 @@ export interface AdminUser extends User {
 
 export interface AdminUserFilters {
   user_type?: UserType;
-  status?: 'active' | 'inactive' | 'pending' | 'suspended';
+  status?: boolean;
   verification_status?: 'verified' | 'pending' | 'rejected';
   search?: string;
   page?: number;
@@ -89,45 +82,28 @@ export interface AdminActivity {
 export class AdminService {
   async getDashboardStats(): Promise<AdminStats> {
     try {
-      // For now, we'll aggregate data from existing endpoints
-      // In a real implementation, you'd have a dedicated admin stats endpoint
-      const [usersResponse, jobsResponse, housesResponse, applicationsResponse] = await Promise.all([
-        this.getAllUsers({ limit: 1 }),
-        this.getAllJobs({ limit: 1 }),
-        this.getAllHouses({ limit: 1 }),
-        this.getAllApplications({ limit: 1 })
+      const [users, jobs, houses] = await Promise.allSettled([
+        this.getAllUsers(),
+        this.getAllJobs(),
+        this.getAllHouses(),
       ]);
-
+      
       return {
-        totalUsers: usersResponse.total,
-        totalJobs: jobsResponse.total,
-        totalHouses: housesResponse.total,
-        totalApplications: applicationsResponse.total,
-        recentUsers: Math.floor(usersResponse.total * 0.05), // Mock 5% recent
-        recentJobs: Math.floor(jobsResponse.total * 0.1), // Mock 10% recent
-        recentHouses: Math.floor(housesResponse.total * 0.08), // Mock 8% recent
-        recentApplications: Math.floor(applicationsResponse.total * 0.15), // Mock 15% recent
-        activeUsers: Math.floor(usersResponse.total * 0.85), // Mock 85% active
-        pendingApprovals: Math.floor(usersResponse.total * 0.02), // Mock 2% pending
+        totalUsers: users.status === 'fulfilled' ? users.value.total : 0,
+        totalJobs: jobs.status === 'fulfilled' ? jobs.value.total : 0,
+        totalHouses: houses.status === 'fulfilled' ? houses.value.total : 0,
       };
+      
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return {
-        totalUsers: 1248,
-        totalJobs: 89,
-        totalHouses: 156,
-        totalApplications: 342,
-        recentUsers: 23,
-        recentJobs: 5,
-        recentHouses: 8,
-        recentApplications: 17,
-        activeUsers: 1060,
-        pendingApprovals: 25,
+        totalUsers: 0,
+        totalJobs: 0,
+        totalHouses: 0,
       };
     }
   }
 
-  // User Management
   async getAllUsers(filters: AdminUserFilters = {}): Promise<{
     users: AdminUser[];
     total: number;
@@ -139,29 +115,26 @@ export class AdminService {
       const response = await apiClient.get<{
         success: boolean;
         message: string;
-        data: {
-          users: AdminUser[];
-          meta: {
-            currentPage: number;
-            perPage: number;
-            totalItems: number;
-            totalPages: number;
-            hasNext: boolean;
-            hasPrev: boolean;
-          };
+        users: AdminUser[];
+        meta: {
+          currentPage: number;
+          perPage: number;
+          totalItems: number;
+          totalPages: number;
+          hasNext: boolean;
+          hasPrev: boolean;
         };
         timestamp: string;
       }>(API_CONFIG.ENDPOINTS.USERS.LIST, filters as unknown as Record<string, unknown>);
 
       return {
-        users: response.data.data.users || [],
-        total: response.data.data.meta.totalItems,
-        page: response.data.data.meta.currentPage,
-        limit: response.data.data.meta.perPage,
-        totalPages: response.data.data.meta.totalPages,
+        users: response.data.users || [],
+        total: response.data.meta.totalItems,
+        page: response.data.meta.currentPage,
+        limit: response.data.meta.perPage,
+        totalPages: response.data.meta.totalPages,
       };
       
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw error;
     }
@@ -212,26 +185,25 @@ export class AdminService {
       const response = await apiClient.get<{
         success: boolean;
         message: string;
-        data: {
-          jobs: AdminJob[];
-          meta: {
-            currentPage: number;
-            perPage: number;
-            totalItems: number;
-            totalPages: number;
-            hasNext: boolean;
-            hasPrev: boolean;
-          };
+        jobs: AdminJob[];
+        meta: {
+          currentPage: number;
+          perPage: number;
+          totalItems: number;
+          totalPages: number;
+          hasNext: boolean;
+          hasPrev: boolean;
         };
         timestamp: string;
       }>(API_CONFIG.ENDPOINTS.JOBS.LIST, filters as unknown as Record<string, unknown>);
 
+
       return {
-        jobs: response.data.data.jobs || [],
-        total: response.data.data.meta.totalItems,
-        page: response.data.data.meta.currentPage,
-        limit: response.data.data.meta.perPage,
-        totalPages: response.data.data.meta.totalPages,
+        jobs: response.data.jobs || [],
+        total: response.data.meta.totalItems,
+        page: response.data.meta.currentPage,
+        limit: response.data.meta.perPage,
+        totalPages: response.data.meta.totalPages,
       };
     } catch (error) {
       throw error;
@@ -258,7 +230,7 @@ export class AdminService {
   async approveJob(jobId: string): Promise<AdminJob> {
     const response = await apiClient.put<AdminJob>(
       API_CONFIG.ENDPOINTS.JOBS.UPDATE(jobId),
-      { status: 'active' }
+      { status: 'ACTIVE' }
     );
     return response.data;
   }
@@ -266,7 +238,7 @@ export class AdminService {
   async rejectJob(jobId: string, reason: string): Promise<AdminJob> {
     const response = await apiClient.put<AdminJob>(
       API_CONFIG.ENDPOINTS.JOBS.UPDATE(jobId),
-      { status: 'inactive', rejection_reason: reason }
+      { status: 'INACTIVE', rejection_reason: reason }
     );
     return response.data;
   }
@@ -283,26 +255,24 @@ export class AdminService {
       const response = await apiClient.get<{
         success: boolean;
         message: string;
-        data: {
-          houses: AdminHouse[];
-          meta: {
-            currentPage: number;
-            perPage: number;
-            totalItems: number;
-            totalPages: number;
-            hasNext: boolean;
-            hasPrev: boolean;
-          };
+        houses: AdminHouse[];
+        meta: {
+          currentPage: number;
+          perPage: number;
+          totalItems: number;
+          totalPages: number;
+          hasNext: boolean;
+          hasPrev: boolean;
         };
         timestamp: string;
       }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, filters as unknown as Record<string, unknown>);
 
       return {
-        houses: response.data.data.houses || [],
-        total: response.data.data.meta.totalItems,
-        page: response.data.data.meta.currentPage,
-        limit: response.data.data.meta.perPage,
-        totalPages: response.data.data.meta.totalPages,
+        houses: response.data.houses || [],
+        total: response.data.meta.totalItems,
+        page: response.data.meta.currentPage,
+        limit: response.data.meta.perPage,
+        totalPages: response.data.meta.totalPages,
       };
       
     } catch (error) {
@@ -355,26 +325,24 @@ export class AdminService {
       const response = await apiClient.get<{
         success: boolean;
         message: string;
-        data: {
-          applications: AdminApplication[];
-          meta: {
-            currentPage: number;
-            perPage: number;
-            totalItems: number;
-            totalPages: number;
-            hasNext: boolean;
-            hasPrev: boolean;
-          };
+        applications: AdminApplication[];
+        meta: {
+          currentPage: number;
+          perPage: number;
+          totalItems: number;
+          totalPages: number;
+          hasNext: boolean;
+          hasPrev: boolean;
         };
         timestamp: string;
       }>(API_CONFIG.ENDPOINTS.APPLICATIONS.LIST, filters as unknown as Record<string, unknown>);
 
       return {
-        applications: response.data.data.applications || [],
-        total: response.data.data.meta.totalItems,
-        page: response.data.data.meta.currentPage,
-        limit: response.data.data.meta.perPage,
-        totalPages: response.data.data.meta.totalPages,
+        applications: response.data.applications || [],
+        total: response.data.meta.totalItems,
+        page: response.data.meta.currentPage,
+        limit: response.data.meta.perPage,
+        totalPages: response.data.meta.totalPages,
       };
       
     } catch (error) {
@@ -488,7 +456,6 @@ export class AdminService {
         last_backup: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
       };
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       throw error;
     }
   }

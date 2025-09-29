@@ -13,20 +13,25 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ArrowLeft, Calendar, FileText, Trash2, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmationModal } from '@/components/ui/confirmation-modal'
 
-export default function ApplicationDetailPage({ params }: { params: { id: string } }) {
+
+export default function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { user } = useAuth()
   const [application, setApplication] = useState<Application | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [applicationToDelete, setApplicationToDelete] = useState<Application | null>(null)
 
-  const fetchApplication = useCallback(async () => {
+  const fetchApplication = useCallback(async (id: string) => {
     try {
       setLoading(true)
       setError(null)
       
-      const response = await applicationsService.getApplication(params.id)
+      const response = await applicationsService.getApplication(id)
       setApplication(response)
     } catch (err) {
       toast.error('Error fetching application', {
@@ -36,7 +41,12 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
     } finally {
       setLoading(false)
     }
-  }, [params.id])
+  }, [])
+
+  useEffect(() => {
+    // Resolve params Promise
+    params.then(setResolvedParams)
+  }, [params])
 
   useEffect(() => {
     if (!user) {
@@ -49,25 +59,25 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       return
     }
 
-    fetchApplication()
-  }, [user, router, fetchApplication])
+    if (resolvedParams) {
+      fetchApplication(resolvedParams.id)
+    }
+  }, [user, router, fetchApplication, resolvedParams])
 
 
 
   const handleDeleteApplication = async () => {
-    if (!confirm('Are you sure you want to delete this application?')) {
-      return
-    }
+    if (!resolvedParams) return
 
-    try {
-      await applicationsService.deleteApplication(params.id)
-      router.push('/applications')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      toast.error('Error deleting application', {
-        description: 'Error deleting application'
-      })
-    }
+    setApplicationToDelete(resolvedParams as unknown as Application)
+    setIsDeleteModalOpen(true)
+  }
+
+  const confirmDeleteApplication = async () => {
+    await applicationsService.deleteApplication(applicationToDelete?.id || '')
+    router.push('/applications')
+    toast.success('Application deleted successfully')
+    setIsDeleteModalOpen(false)
   }
 
   const getStatusBadge = (status: string) => {
@@ -119,7 +129,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               <Button onClick={() => router.push('/applications')} className="cursor-pointer">
                 Back to Applications
               </Button>
-              <Button variant="outline" onClick={fetchApplication} className="cursor-pointer">
+              <Button variant="outline" onClick={() => resolvedParams && fetchApplication(resolvedParams.id)} className="cursor-pointer">
                 Try Again
               </Button>
             </div>
@@ -256,6 +266,13 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
         </div>
       </div>
 
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => confirmDeleteApplication()}
+        title="Delete Application"
+        message="Are you sure you want to delete this application?"
+      />
       <Footer />
     </div>
   )

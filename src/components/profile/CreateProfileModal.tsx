@@ -30,9 +30,15 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
     availability: 'FULL_TIME' as 'FULL_TIME' | 'PART_TIME' | 'CONTRACT',
     salary_expectation: ''
   })
+  const [cv, setCv] = useState<File | null>(null)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null
+    setCv(file)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,6 +56,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
         experience: formData.experience ? parseInt(formData.experience) : undefined,
         availability: formData.availability,
         salary_expectation: formData.salary_expectation ? parseInt(formData.salary_expectation) : undefined,
+        cv: cv || undefined,
       })
       
       onSuccess()
@@ -166,6 +173,20 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess }: CreateProfile
                     onChange={(e) => handleInputChange('salary_expectation', e.target.value)}
                     placeholder="e.g., 15000"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="cv" className='mb-2'>CV/Resume</Label>
+                  <Input
+                    id="cv"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileUpload}
+                  />
+                  {cv && (
+                    <p className="text-sm text-green-600 mt-1">✓ {cv.name}</p>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">Upload your CV in PDF or Word format</p>
                 </div>
               </>
             )}

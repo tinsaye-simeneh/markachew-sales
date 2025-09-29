@@ -86,22 +86,41 @@ export function JobCard({ job, onEdit }: JobCardProps) {
   }
 
   const getJobDetails = () => {
-    try {
-      const requirements = JSON.parse(job.requirements || '{}');
-      return {
-        experience: requirements.experience || 'Experience Not specified',
-        type: requirements.type || 'Type Not specified',
-        location: requirements.location || 'Location Not specified',
-        salary: requirements.salary || 'Salary Not specified'
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let requirements: any = {};
+    
+    if (Array.isArray(job.requirements)) {
+      requirements = {
+        experience: job.requirements[0] || 'Experience Not specified',
+        type: job.requirements[1] || 'Type Not specified',
+        location: job.requirements[2] || 'Location Not specified',
+        salary: job.requirements[3] || 'Salary Not specified'
       };
-    } catch {
-      return {
-        experience: 'Experience Not specified',
-        type: 'Type Not specified',
-        location: 'Location Not specified',
-        salary: 'Salary Not specified'
-      };
+    } else {
+      try {
+        requirements = JSON.parse(job.requirements || '{}');
+        return {
+          experience: requirements.experience || 'Experience Not specified',
+          type: requirements.type || 'Type Not specified',
+          location: requirements.location || 'Location Not specified',
+          salary: requirements.salary || 'Salary Not specified'
+        };
+      } catch {
+        return {
+          experience: 'Experience Not specified',
+          type: 'Type Not specified',
+          location: 'Location Not specified',
+          salary: 'Salary Not specified'
+        };
+      }
     }
+    
+    return {
+      experience: requirements.experience || 'Experience Not specified',
+      type: requirements.type || 'Type Not specified',
+      location: requirements.location || 'Location Not specified',
+      salary: requirements.salary || 'Salary Not specified'
+    };
   };
 
   const jobDetails = getJobDetails();

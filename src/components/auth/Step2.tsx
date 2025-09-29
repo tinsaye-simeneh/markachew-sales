@@ -26,6 +26,8 @@ interface Step2Props {
   setDocument: (file: File | null) => void;
   license: File | null;
   setLicense: (file: File | null) => void;
+  cv: File | null;
+  setCv: (file: File | null) => void;
   userType: UserType;
   handleFileUpload: (setter: (file: File | null) => void) => (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -51,6 +53,8 @@ export function Step2({
   setDocument,
   license,
   setLicense,
+  cv,
+  setCv,
   userType,
   handleFileUpload,
 }: Step2Props) {
@@ -155,6 +159,21 @@ export function Step2({
                   value={salaryExpectation}
                   onChange={(e) => setSalaryExpectation(e.target.value)}
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="cv" className='mb-2'>CV/Resume *</Label>
+                <Input
+                  id="cv"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileUpload(setCv)}
+                  required
+                />
+                {cv && (
+                  <p className="text-sm text-green-600">✓ {cv.name}</p>
+                )}
+                <p className="text-xs text-gray-500">Upload your CV in PDF or Word format</p>
               </div>
             </>
           )}

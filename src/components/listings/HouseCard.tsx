@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Bed, Bath, Square, Heart, Home, Edit } from 'lucide-react'
+import { MapPin,  Heart, Home, Edit, MessageCircle, X } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -21,6 +21,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
   const router = useRouter()
   const [imageError, setImageError] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const [showInquiryModal, setShowInquiryModal] = useState(false)
   const { user } = useAuth()
   
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
@@ -66,7 +67,6 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
   }
 
   const houseImage = getHouseImages();
-  const houseFeatures = getHouseFeatures();
 
   const handleHouseClick = (houseId: string) => {
     router.push(`/houses/${houseId}`)
@@ -170,16 +170,16 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
           </h3>
           <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
-           {house.category?.name || 'N/A'} 
+           {house.category?.name || 'N/A category'} 
           </Badge>
           <Badge variant="outline" className="text-xs">
-            {house.type || 'N/A'}
+            {house.type || 'N/A type'} 
           </Badge>
           </div>
         </div>
         <div className="flex items-center text-gray-600 text-sm">
           <MapPin className="h-4 w-4 mr-1" />
-          {house.location || 'N/A'}
+          {house.location || 'N/A location'}
         </div>
       </CardHeader>
       
@@ -190,25 +190,164 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
           </span>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-          <div className="flex items-center">
-            <Bed className="h-4 w-4 mr-1" />
-            {houseFeatures.bedrooms || 'N/A'} bed
-          </div>
-          <div className="flex items-center">
-            <Bath className="h-4 w-4 mr-1" />
-            {houseFeatures.bathrooms || 'N/A'} bath
-          </div>
-          <div className="flex items-center">
-            <Square className="h-4 w-4 mr-1" />
-            {houseFeatures.area || 'N/A'} sqft
-          </div>
-        </div>
+      
         
-        <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
-          View Details
-        </Button>
+        <div className="space-y-2">
+          <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
+            View Details
+          </Button>
+          {user?.user_type === 'BUYER' && house.status === 'active' && (
+            <Button 
+              className="w-full cursor-pointer" 
+              onClick={() => setShowInquiryModal(true)}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Send Message
+            </Button>
+          )}
+        </div>
       </CardContent>
+
+      {/* Inquiry Modal */}
+      {showInquiryModal && (
+        <InquiryModal
+          house={house}
+          onClose={() => setShowInquiryModal(false)}
+          onSuccess={() => {
+            setShowInquiryModal(false)
+            toast.success('Your inquiry has been sent successfully!')
+          }}
+        />
+      )}
     </Card>
+  )
+}
+
+// Inquiry Modal Component
+interface InquiryModalProps {
+  house: House
+  onClose: () => void
+  onSuccess: () => void
+}
+
+function InquiryModal({ house, onClose, onSuccess }: InquiryModalProps) {
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!message.trim()) {
+      setError('Please enter a message')
+      return
+    }
+
+    if (!user) {
+      setError('You must be logged in to send an inquiry')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Create inquiry data
+      const inquiryData = {
+        house_id: house.id,
+        user_id: user.id,
+        message: message.trim(),
+        status: 'PENDING'
+      }
+
+      // Submit inquiry (you'll need to implement this API call)
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inquiryData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send inquiry')
+      }
+
+      onSuccess()
+    } catch (error) {
+      console.error('Error sending inquiry:', error)
+      setError('Failed to send inquiry. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Send Inquiry</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Send a message to the seller about {house.title}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your Message
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Hi! I'm interested in this property. Could you tell me more about it?"
+                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={4}
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Be specific about what you&apos;d like to know about the property.
+              </p>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="flex-1 cursor-pointer"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 cursor-pointer"
+                disabled={loading || !message.trim()}
+              >
+                {loading ? 'Sending...' : 'Send Message'}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   )
 }

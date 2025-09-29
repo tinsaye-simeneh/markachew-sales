@@ -13,7 +13,6 @@ import { Step1 } from './Step1'
 import { Step2 } from './Step2'
 import { Step3 } from './Step3'
 import { RegistrationNavigation } from './RegistrationNavigation'
-import { toast } from 'sonner'
 
 interface RegisterModalProps {
   isOpen: boolean
@@ -43,12 +42,14 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [photo, setPhoto] = useState<File | null>(null)
   const [document, setDocument] = useState<File | null>(null)
   const [license, setLicense] = useState<File | null>(null)
+  const [cv, setCv] = useState<File | null>(null)
   const [otp, setOtp] = useState('')
   const [timeLeft] = useState(300)
   const [error, setError] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  const { register, isLoading, error: authError } = useAuth()
+  const { register, error: authError } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const STATIC_OTP = '123456'
@@ -100,7 +101,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       return false
     }
     
-    // Employee-specific validation
     if (userType === UserType.EMPLOYEE) {
       if (!degree.trim()) {
         setError('Degree/Education is required for employees')
@@ -123,7 +123,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     return true
   }
 
-  // Step navigation
   const nextStep = () => {
     setError('')
     if (currentStep === 1 && validateStep1()) {
@@ -140,7 +139,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     }
   }
 
-  // Reset form
   const resetForm = () => {
     setCurrentStep(1)
     setName('')
@@ -166,29 +164,25 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
   const handleFinalSubmit = async () => {
     setError('')
-    
+    setIsLoading(true)
     try {
-      // Regular user registration
       const success = await register(name, email, phone, password, userType)
       if (success) {
-        // User registration successful, now create profile
         try {
-          // Profile creation will be handled by the profile page
           onClose()
           resetForm()
           router.push('/profile')
+          //eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-          toast.error('Profile creation error:', {
-            description: 'Profile creation error'
-          })
           setError('Registration successful, but profile creation failed. Please complete your profile manually.')
         }
       } else {
         setError(authError || 'Registration failed')
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Registration failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -196,21 +190,20 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     e.preventDefault()
     setOtpError('')
     setIsVerifying(true)
+    setIsLoading(true)
 
-    // Simulate verification delay
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     if (otp === STATIC_OTP) {
-      // Complete registration and create profile
       await handleFinalSubmit()
     } else {
       setOtpError('Invalid OTP. Please try again.')
     }
     
     setIsVerifying(false)
+    setIsLoading(false)
   }
 
-  // File upload handlers
   const handleFileUpload = (setter: (file: File | null) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null
     setter(file)
@@ -218,14 +211,12 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '') // Only allow digits
+    const value = e.target.value.replace(/\D/g, '') 
     if (value.length <= 6) {
       setOtp(value)
       setOtpError('')
     }
   }
-
-
 
   if (!isOpen) return null
 
@@ -245,12 +236,10 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           <X className="h-4 w-4" />
         </Button>
         
-        {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           <div className="p-6 pb-8">
             <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
             
-            {/* Regular user registration steps */}
             {currentStep === 1 && (
               <Step1 
                 name={name} setName={setName}
@@ -273,6 +262,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                 photo={photo} setPhoto={setPhoto}
                 document={document} setDocument={setDocument}
                 license={license} setLicense={setLicense}
+                cv={cv} setCv={setCv}
                 userType={userType}
                 handleFileUpload={handleFileUpload}
               />
@@ -292,7 +282,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
           </div>
         </div>
         
-        {/* Error display */}
         {error && (
           <div className="border-t bg-white px-6 py-4">
             <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
@@ -302,7 +291,6 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         )}
         
         
-        {/* Navigation */}
         <RegistrationNavigation
           currentStep={currentStep}
           totalSteps={totalSteps}

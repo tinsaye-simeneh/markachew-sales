@@ -165,27 +165,49 @@ export class AuthService {
 
 export class AdminAuthService {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<{
-      success: boolean;
-      message: string;
-      data: {
-        accessToken: string;
-        refreshToken: string;
-        expiresIn: string;
-      };
-      timestamp: string;
-    }>(
-      API_CONFIG.ENDPOINTS.ADMIN.LOGIN,
-      credentials as unknown as Record<string, unknown>
-    );
+    try {
+      const response = await apiClient.post<{
+        success: boolean;
+        message: string;
+        data: {
+          accessToken: string;
+          refreshToken: string;
+          expiresIn: string;
+        };
+        timestamp: string;
+      }>(
+        API_CONFIG.ENDPOINTS.ADMIN.LOGIN,
+        credentials as unknown as Record<string, unknown>
+      );
 
-    if (response.success) {
-      apiClient.setAuthToken(response.data.data.accessToken);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('refreshToken', response.data.data.refreshToken);
-        localStorage.setItem('isAdmin', 'true');
-        
-        const adminUser = {
+      if (response.success) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        apiClient.setAuthToken((response as any).data.accessToken);
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          localStorage.setItem('refreshToken', (response as any).data.refreshToken);
+          localStorage.setItem('isAdmin', 'true');
+          
+          const adminUser = {
+            id: 'admin',
+            full_name: 'Admin User',
+            email: credentials.email,
+            phone: '',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            user_type: 'ADMIN' as any,
+            createdAt: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          localStorage.setItem('user', JSON.stringify(adminUser));
+        }
+      }
+
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        accessToken: (response as any).data.accessToken,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        refreshToken: (response as any).data.refreshToken,
+        user: {
           id: 'admin',
           full_name: 'Admin User',
           email: credentials.email,
@@ -194,26 +216,12 @@ export class AdminAuthService {
           user_type: 'ADMIN' as any,
           createdAt: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        };
-        localStorage.setItem('user', JSON.stringify(adminUser));
-      }
+        },
+        success: response.success,
+      };
+    } catch (error) {
+      throw error;
     }
-
-    return {
-      accessToken: response.data.data.accessToken,
-      refreshToken: response.data.data.refreshToken,
-      user: {
-        id: 'admin',
-        full_name: 'Admin User',
-        email: credentials.email,
-        phone: '',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        user_type: 'ADMIN' as any,
-        createdAt: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      success: response.success,
-    };
   }
 
   async createAdmin(adminData: {
@@ -258,15 +266,24 @@ export class AdminAuthService {
         return false;
       }
 
-      const response = await apiClient.post<{ accessToken: string; refreshToken: string }>(
+      const response = await apiClient.post<{
+        success: boolean;
+        message: string;
+        data: {
+          accessToken: string;
+          refreshToken: string;
+          expiresIn: string;
+        };
+        timestamp: string;
+      }>(
         API_CONFIG.ENDPOINTS.ADMIN.REFRESH,
         { refreshToken } as unknown as Record<string, unknown>
       );
 
       if (response.success) {
-        apiClient.setAuthToken(response.data.accessToken);
+        apiClient.setAuthToken(response.data.data.accessToken);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('refreshToken', response.data.refreshToken);
+          localStorage.setItem('refreshToken', response.data.data.refreshToken);
         }
         return true;
       }

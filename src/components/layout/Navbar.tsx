@@ -54,21 +54,13 @@ export function Navbar() {
   const handleHousesClick = (e: React.MouseEvent) => {
     e.preventDefault()
     closeMobileMenu()
-    if (user) {
-      router.push('/houses')
-    } else {
-      setIsLoginOpen(true)
-    }
+    router.push('/houses')
   }
 
   const handleJobsClick = (e: React.MouseEvent) => {
     e.preventDefault()
     closeMobileMenu()
-    if (user) {
-      router.push('/jobs')
-    } else {
-      setIsLoginOpen(true)
-    }
+    router.push('/jobs')
   }
 
   const handleSavedClick = (e: React.MouseEvent) => {
@@ -93,6 +85,14 @@ export function Navbar() {
 
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
+              {user && (user.user_type === 'EMPLOYER' || user.user_type === 'SELLER') && (
+            <button 
+                onClick={() => router.push('/')}
+                className="text-gray-700 hover:text-primary cursor-pointer transition-colors"
+              >
+                Dashboard
+              </button>
+              )}
               <button 
                 onClick={handleHousesClick}
                 className="text-gray-700 hover:text-primary cursor-pointer transition-colors"

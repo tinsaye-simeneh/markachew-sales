@@ -25,18 +25,16 @@ export default function AdminRootLayout({
     if (!isLoading && (!user || (user.user_type !== UserType.ADMIN && user.user_type !== UserType.SUPER_ADMIN))) {
       router.push('/')
     }
-  }, [user, isLoading, router, isAuthPage])
+  }, [user, isLoading, router, isAuthPage, pathname])
 
   if (isLoading) {
     return <LoadingPage />
   }
 
-  // Allow access to auth pages for everyone
   if (isAuthPage) {
     return <>{children}</>
   }
 
-  // For non-auth pages, require admin permissions
   if (!user || (user.user_type !== UserType.ADMIN && user.user_type !== UserType.SUPER_ADMIN)) {
     return null
   }

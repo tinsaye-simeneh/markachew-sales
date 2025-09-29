@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -11,13 +10,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LoadingPage } from '@/components/ui/loading'
-import { useHouses } from '@/hooks/useApi'
+import { useActiveHouses } from '@/hooks/useApi'
 import { Search, MapPin } from 'lucide-react'
 import { House } from '@/lib/api/config'
 
 
 export default function HousesPage() {
-  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
@@ -30,13 +28,14 @@ export default function HousesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const itemsPerPage = 6
-  const { houses, loading: housesLoading, error: housesError } = useHouses(currentPage, itemsPerPage)
+  const { houses, loading: housesLoading, error: housesError } = useActiveHouses(currentPage, itemsPerPage)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/')
-    }
-  }, [user, authLoading, router])
+  // Remove authentication requirement - make page publicly accessible
+  // useEffect(() => {
+  //   if (!authLoading && !user) {
+  //     router.push('/')
+  //   }
+  // }, [user, authLoading, router])
 
   useEffect(() => {
     let filtered = houses
@@ -96,7 +95,7 @@ export default function HousesPage() {
         break
     }
 
-    setFilteredHouses(filtered)
+    setFilteredHouses(filtered.filter((house) => house.status === "active"))
     setCurrentPage(1)
   }, [houses, searchTerm, priceRange, propertyType, location, sortBy])
 
@@ -125,7 +124,7 @@ export default function HousesPage() {
     setEditingHouse(null)
   }
 
-  if (authLoading || housesLoading) {
+  if (housesLoading) {
     return <LoadingPage />
   }
 
@@ -142,9 +141,10 @@ export default function HousesPage() {
     )
   }
 
-  if (!user) {
-    return null
-  }
+  // Remove user check - allow public access
+  // if (!user) {
+  //   return null
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -240,13 +240,12 @@ export default function HousesPage() {
         {/* Houses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {currentHouses.map((house) => {
-        const clickable = house.status === "active";
 
   return (
     <div
       key={house.id}
-      onClick={clickable ? () => handleHouseClick(house.id) : undefined}
-      className={clickable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}
+      onClick={() => handleHouseClick(house.id)}
+      className={`cursor-pointer`}
     >
       <HouseCard house={house} onEdit={handleEditHouse} />
     </div>

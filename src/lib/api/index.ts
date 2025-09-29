@@ -14,5 +14,6 @@ export {
   profilesService,
   paymentsService,
   ratingsService,
+  inquiriesService,
 } from './services';
 export { adminService } from './admin-services';

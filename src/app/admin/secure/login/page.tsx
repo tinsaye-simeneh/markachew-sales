@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { adminAuthService } from '@/lib/api'
 import { Mail, Phone, Shield, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 
 export default function AdminLoginPage() {
@@ -18,6 +18,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { adminLogin } = useAuth()
 
   const validatePhoneNumber = (phone: string): boolean => {
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
@@ -44,15 +45,16 @@ export default function AdminLoginPage() {
     }
 
     try {
-      const response = await adminAuthService.login({ email, password })
+      const success = await adminLogin(email, password)
       
-      if (response) {
+      if (success) {
         router.push('/admin')
       } else {
-        setError('Invalid credentials')
+        setError('Invalid admin credentials')
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Login failed')
+      const errorMessage = error instanceof Error ? error.message : 'Admin login failed'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -61,7 +63,6 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {/* Back to home link */}
         <div className="text-center">
           <Link 
             href="/" 
@@ -85,8 +86,7 @@ export default function AdminLoginPage() {
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
-            {/* Login Method Switcher */}
+          <CardContent> 
             <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
               <button
                 type="button"
@@ -152,8 +152,9 @@ export default function AdminLoginPage() {
               </div>
               
               {error && (
-                <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                  {error}
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-md">
+                  <div className="font-medium">Login Failed</div>
+                  <div className="mt-1">{error}</div>
                 </div>
               )}
               
@@ -162,14 +163,7 @@ export default function AdminLoginPage() {
               </Button>
             </form>
             
-            <div className="mt-6 text-center text-sm">
-              <Link
-                href="/admin/secure/register"
-                className="text-primary hover:underline cursor-pointer"
-              >
-                Create Admin Account
-              </Link>
-            </div>
+           
           </CardContent>
         </Card>
       </div>

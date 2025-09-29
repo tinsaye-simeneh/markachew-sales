@@ -6,7 +6,7 @@ import { EditHouseModal } from '@/components/listings/EditHouseModal'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { useHouses } from '@/hooks/useApi'
+import { useActiveHouses } from '@/hooks/useApi'
 import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { House } from '@/lib/api/config'
 
@@ -21,7 +21,7 @@ export function HouseListings() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   
   const itemsPerPage = 6
-  const { houses, loading, error, total, totalPages } = useHouses(currentPage, itemsPerPage)
+  const { houses, loading, error, total, totalPages } = useActiveHouses(currentPage, itemsPerPage)
   
   useEffect(() => {
     let filtered = houses
@@ -67,7 +67,7 @@ export function HouseListings() {
       })
     }
 
-    setFilteredHouses(filtered)
+    setFilteredHouses(filtered.filter(house => house.status === 'active'))
   }, [houses, searchQuery, priceRange, propertyType, bedrooms])
 
   const handleEditHouse = (house: House) => {

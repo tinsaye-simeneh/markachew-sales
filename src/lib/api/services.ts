@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+  import { apiClient } from './client';
 import { API_CONFIG } from './config';
 import type {
   Job,
@@ -10,26 +10,45 @@ import type {
   Category,
   Profile,
   CreateProfileRequest,
+  Inquiry,
+  CreateInquiryRequest,
 } from './config';
+
 
 export class JobsService {
   async createJob(jobData: CreateJobRequest): Promise<Job> {
-    const formData = new FormData();
-    formData.append('title', jobData.title);
-    formData.append('description', jobData.description);
-    formData.append('requirements', JSON.stringify(jobData.requirements));
-    formData.append('responsibility', JSON.stringify(jobData.responsibility));
-    
-    if (jobData.link) {
-      formData.append('link', jobData.link);
-    }
-    
+    // Convert image to base64 if present
+    let imageBase64: string | undefined;
     if (jobData.image) {
-      formData.append('image', jobData.image);
+      imageBase64 = await this.fileToBase64(jobData.image);
     }
 
-    const response = await apiClient.post<Job>(API_CONFIG.ENDPOINTS.JOBS.CREATE, formData);
+    const jsonData = {
+      title: jobData.title,
+      description: jobData.description,
+      requirements: JSON.stringify(jobData.requirements),
+      responsibility: JSON.stringify(jobData.responsibility),
+      link: jobData.link,
+      status: jobData.status,
+      image: imageBase64
+    };
+
+    const response = await apiClient.post<Job>(API_CONFIG.ENDPOINTS.JOBS.CREATE, jsonData);
     return response.data;
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove the data:image/...;base64, prefix
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 
   async getAllJobs(page = 1, limit = 10): Promise<{
@@ -49,10 +68,8 @@ export class JobsService {
         hasNext: boolean;
         hasPrev: boolean;
       };
-    }>(
-      API_CONFIG.ENDPOINTS.JOBS.LIST, 
-      { page, limit }
-    );
+    }>(API_CONFIG.ENDPOINTS.JOBS.LIST, { page, limit });
+    
     
     return {
       jobs: response.data.jobs || [],
@@ -83,25 +100,51 @@ export class JobsService {
 
 export class HousesService {
   async createHouse(houseData: CreateHouseRequest): Promise<House> {
-    const formData = new FormData();
-    formData.append('title', houseData.title);
-    formData.append('type', houseData.type);
-    formData.append('price', houseData.price.toString());
-    formData.append('location', houseData.location);
-    formData.append('category_id', houseData.category_id);
-    
-    if (houseData.images) {
-      houseData.images.forEach((image) => {
-        formData.append('image', image);
-      });
-    }
-    
-    if (houseData.video) {
-      formData.append('video', houseData.video);
+    // Convert images to base64 if present
+    let imagesBase64: string[] | undefined;
+    if (houseData.images && houseData.images.length > 0) {
+      imagesBase64 = await Promise.all(
+        houseData.images.map(image => this.fileToBase64(image))
+      );
     }
 
-    const response = await apiClient.post<House>(API_CONFIG.ENDPOINTS.HOUSES.CREATE, formData);
+    // Convert video to base64 if present
+    let videoBase64: string | undefined;
+    if (houseData.video) {
+      videoBase64 = await this.fileToBase64(houseData.video);
+    }
+
+    const jsonData = {
+      title: houseData.title,
+      type: houseData.type,
+      price: houseData.price,
+      location: houseData.location,
+      category_id: houseData.category_id,
+      description: houseData.description,
+      area: houseData.area,
+      availability_date: houseData.availability_date,
+      features: houseData.features ? JSON.stringify(houseData.features) : undefined,
+      status: houseData.status,
+      images: imagesBase64,
+      video: videoBase64
+    };
+
+    const response = await apiClient.post<House>(API_CONFIG.ENDPOINTS.HOUSES.CREATE, jsonData);
     return response.data;
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 
   async getAllHouses(page = 1, limit = 10): Promise<{
@@ -122,6 +165,34 @@ export class HousesService {
         hasPrev: boolean;
       };
     }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, { page, limit });
+    
+    return {
+      houses: response.data.houses || [],
+      total: response.data.meta.totalItems,
+      page: response.data.meta.currentPage,
+      limit: response.data.meta.perPage,
+      totalPages: response.data.meta.totalPages,
+    };
+  }
+
+  async getActiveHouses(page = 1, limit = 10): Promise<{
+    houses: House[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const response = await apiClient.get<{
+      houses: House[];
+      meta: {
+        currentPage: number;
+        perPage: number;
+        totalItems: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+    }>(API_CONFIG.ENDPOINTS.HOUSES.ACTIVE, { page, limit });
     
     return {
       houses: response.data.houses || [],
@@ -209,35 +280,86 @@ export class ApplicationsService {
     );
     return response.data;
   }
+
+  async getApplicationsByJob(jobId: string): Promise<{
+    applications: Application[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const response = await apiClient.get<{
+      applications: Application[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(API_CONFIG.ENDPOINTS.APPLICATIONS.BY_JOB(jobId));
+    return response.data;
+  }
 }
 
 export class CategoriesService {
   async createCategory(categoryData: { name: string }): Promise<Category> {
-    const response = await apiClient.post<Category>(
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data: Category;
+      timestamp: string;
+    }>(
       API_CONFIG.ENDPOINTS.CATEGORIES.CREATE,
       categoryData as unknown as Record<string, unknown>
     );
-    return response.data;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (response as any).data;
   }
 
   async getAllCategories(): Promise<Category[]> {
-    const response = await apiClient.get<Category[]>(API_CONFIG.ENDPOINTS.CATEGORIES.LIST);
-    return response.data;
+    const response = await apiClient.get<{
+      success: boolean;
+      message: string;
+      data: {
+        categories: Category[];
+        meta: {
+          currentPage: number;
+          perPage: number;
+          totalItems: number;
+          totalPages: number;
+          hasNext: boolean;
+          hasPrev: boolean;
+        };
+      };
+      timestamp: string;
+    }>(API_CONFIG.ENDPOINTS.CATEGORIES.LIST);
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (response as any).data.categories;
   }
 
   async getCategory(categoryId: string): Promise<Category> {
-    const response = await apiClient.get<Category>(
+    const response = await apiClient.get<{
+      success: boolean;
+      message: string;
+      data: Category;
+      timestamp: string;
+    }>(
       API_CONFIG.ENDPOINTS.CATEGORIES.GET(categoryId)
     );
-    return response.data;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (response as any).data;
   }
 
   async updateCategory(categoryId: string, categoryData: { name: string }): Promise<Category> {
-    const response = await apiClient.put<Category>(
+    const response = await apiClient.put<{
+      success: boolean;
+      message: string;
+      data: Category;
+      timestamp: string;
+    }>(
       API_CONFIG.ENDPOINTS.CATEGORIES.UPDATE(categoryId),
       categoryData
     );
-    return response.data;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (response as any).data;
   }
 
   async deleteCategory(categoryId: string): Promise<void> {
@@ -267,6 +389,10 @@ export class ProfilesService {
     
     if (profileData.license) {
       formData.append('license', profileData.license);
+    }
+    
+    if (profileData.cv) {
+      formData.append('cv', profileData.cv);
     }
     
     if (profileData.degree) {
@@ -321,6 +447,10 @@ export class ProfilesService {
     
     if (profileData.license) {
       formData.append('license', profileData.license);
+    }
+    
+    if (profileData.cv) {
+      formData.append('cv', profileData.cv);
     }
     
     if (profileData.degree) {
@@ -463,6 +593,25 @@ export class RatingsService {
   }
 }
 
+
+
+export class InquiriesService {
+  async createInquiry(inquiryData: CreateInquiryRequest): Promise<Inquiry> {
+    const response = await apiClient.post<Inquiry>(API_CONFIG.ENDPOINTS.INQUIRIES.CREATE, inquiryData as unknown as Record<string, unknown>);
+    return response.data;
+  }
+
+  async getInquiries(houseId: string): Promise<Inquiry[]> {
+    const response = await apiClient.get<Inquiry[]>(API_CONFIG.ENDPOINTS.INQUIRIES.LIST, { house_id: houseId });
+    return response.data;
+  }
+
+  async updateInquiry(inquiryId: string, inquiryData: Partial<CreateInquiryRequest>): Promise<Inquiry> {
+    const response = await apiClient.put<Inquiry>(API_CONFIG.ENDPOINTS.INQUIRIES.UPDATE(inquiryId), inquiryData);
+    return response.data;
+  }
+}
+
 export const jobsService = new JobsService();
 export const housesService = new HousesService();
 export const applicationsService = new ApplicationsService();
@@ -470,3 +619,4 @@ export const categoriesService = new CategoriesService();
 export const profilesService = new ProfilesService();
 export const paymentsService = new PaymentsService();
 export const ratingsService = new RatingsService();
+export const inquiriesService = new InquiriesService();

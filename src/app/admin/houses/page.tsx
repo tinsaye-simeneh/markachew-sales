@@ -3,73 +3,66 @@
 import { useState } from 'react'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { HouseStatus } from '@/lib/api/config'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Building, 
-  Plus, 
-  MoreHorizontal,
-  Edit,
-  Trash2,
+  RefreshCw,
   CheckCircle,
   XCircle,
-  RefreshCw,
-  Eye
+  User,
+  Calendar,
+  MapPin,
+  DollarSign
 } from 'lucide-react'
 import { useAdminHouses } from '@/hooks/useAdminApi'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Label } from '@/components/ui/label'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { DataDisplay, DataDisplayColumn, createDataDisplayActions } from '@/components/ui/data-display'
+import { ConfirmationModal } from '@/components/ui/confirmation-modal'
+import type { AdminHouse } from '@/lib/api/admin-services'
 
 export default function AdminHousesPage() {
-  const router = useRouter()
-  const [filters, setFilters] = useState({
-    status: '',
-    type: '',
-    search: ''
-  })
-  const [currentPage, setCurrentPage] = useState(1)
 
   const {
     houses,
     total,
-    page,
-    totalPages,
     loading,
     error,
     fetchHouses,
     deleteHouse,
     approveHouse,
     rejectHouse
-  } = useAdminHouses({ ...filters, page: currentPage })
+  } = useAdminHouses({})
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value === 'all' ? '' : value }))
-    setCurrentPage(1)
-  }
 
-  const handleSearch = (searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }))
-    setCurrentPage(1)
-  }
+  const [confirmationModal, setConfirmationModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    loading?: boolean
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  })
 
   const handleHouseAction = async (action: string, houseId: string, reason?: string) => {
     try {
       switch (action) {
         case 'approve':
           await approveHouse(houseId)
+          toast.success('House approved successfully')
           break
         case 'reject':
           await rejectHouse(houseId, reason || 'Administrative rejection')
+          toast.success('House rejected successfully')
           break
         case 'delete':
-          if (confirm('Are you sure you want to delete this house listing?')) {
-            await deleteHouse(houseId)
-          }
+          await deleteHouse(houseId)
+          toast.success('House deleted successfully')
           break
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,12 +73,30 @@ export default function AdminHousesPage() {
     }
   }
 
+  const showDeleteConfirmation = (house: AdminHouse) => {
+    setConfirmationModal({
+      isOpen: true,
+      title: 'Delete House Listing',
+      message: `Are you sure you want to delete "${house.title}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        setConfirmationModal(prev => ({ ...prev, loading: true }))
+        try {
+          await handleHouseAction('delete', house.id)
+          setConfirmationModal(prev => ({ ...prev, isOpen: false, loading: false }))
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+          setConfirmationModal(prev => ({ ...prev, loading: false }))
+        }
+      }
+    })
+  }
+
   const getStatusBadge = (status: string) => {
     const variants = {
-      active: 'default',
-      inactive: 'secondary',
-      pending: 'outline',
-      sold: 'destructive'
+      ACTIVE: 'default',
+      INACTIVE: 'secondary',
+      PENDING: 'outline',
+      SOLD: 'destructive'
     } as const
 
     return (
@@ -95,11 +106,146 @@ export default function AdminHousesPage() {
     )
   }
 
+  const columns: DataDisplayColumn[] = [
+    {
+      key: 'title',
+      label: 'House Title',
+      sortable: true,
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          <Building className="h-4 w-4 text-gray-500" />
+          <span className="font-medium">{value}</span>
+        </div>
+      )
+    },
+    {
+      key: 'location',
+      label: 'Location',
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-gray-500" />
+          <span>{value}</span>
+        </div>
+      )
+    },
+    {
+      key: 'type',
+      label: 'Type',
+      filterable: true,
+      filterOptions: [
+        { value: 'SALES', label: 'For Sale' },
+        { value: 'RENT', label: 'For Rent' }
+      ],
+      render: (value) => (
+        <Badge variant="outline">{value === 'SALES' ? 'For Sale' : value === 'RENT' ? 'For Rent' : value}</Badge>
+      )
+    },
+    {
+      key: 'price',
+      label: 'Price',
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          <DollarSign className="h-4 w-4 text-gray-500" />
+          <span className="font-medium">${parseFloat(value?.toString() || '0').toLocaleString()}</span>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      filterable: true,
+      filterOptions: [
+        { value: 'ACTIVE', label: 'Active' },
+        { value: 'INACTIVE', label: 'Inactive' },
+        { value: 'PENDING', label: 'Pending' },
+        { value: 'SOLD', label: 'Sold' }
+      ],
+      render: (value) => getStatusBadge(value)
+    },
+    {
+      key: 'owner.full_name',
+      label: 'Owner',
+      render: (value, house) => (
+        <div className="flex items-center gap-2">
+          <User className="h-4 w-4 text-gray-500" />
+          <span>{value || house.owner?.full_name || 'Unknown'}</span>
+        </div>
+      )
+    },
+    {
+      key: 'views_count',
+      label: 'Views',
+      render: (value) => (
+        <span className="font-medium">{value || 0}</span>
+      )
+    },
+    {
+      key: 'createdAt',
+      label: 'Posted',
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-gray-500" />
+          <span>{new Date(value).toLocaleDateString()}</span>
+        </div>
+      )
+    }
+  ]
+
+  const actions = [
+    {
+      key: 'approve',
+      label: 'Approve',
+      icon: <CheckCircle className="h-4 w-4" />,
+      onClick: (house: AdminHouse) => {
+        if (house.status === HouseStatus.INACTIVE) {
+          handleHouseAction('approve', house.id)
+        }
+      },
+      className: 'text-green-600'
+    },
+    {
+      key: 'reject',
+      label: 'Reject',
+      icon: <XCircle className="h-4 w-4"/>,
+      onClick: (house: AdminHouse) => {
+        if (house.status === HouseStatus.INACTIVE) {
+          handleHouseAction('reject', house.id)
+        }
+      },
+      variant: 'destructive' as const
+    },
+    createDataDisplayActions.delete((house: AdminHouse) => {
+      showDeleteConfirmation(house)
+    })
+  ]
+
+  const getActionsForHouse = (house: AdminHouse) => {
+    if (house.status === HouseStatus.INACTIVE) {
+      return actions
+    }
+    return [actions[2]] // Only Delete action for non-inactive houses
+  }
+
   if (loading && houses.length === 0) {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center h-64">
           <RefreshCw className="h-8 w-8 animate-spin" />
+        </div>
+      </AdminLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Error: {error}</p>
+            <Button onClick={() => fetchHouses()} variant="outline">
+              Try Again
+            </Button>
+          </div>
         </div>
       </AdminLayout>
     )
@@ -122,11 +268,6 @@ export default function AdminHousesPage() {
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
-           
-            <Button className='cursor-pointer' onClick={() => router.push('/admin/houses/add')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add House
-          </Button>
           </div>
         </div>
 
@@ -182,165 +323,34 @@ export default function AdminHousesPage() {
           </Card>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <Label htmlFor="search" className='mb-2'>Search</Label>
-            <Input
-              placeholder="Search houses by title or location..."
-              value={filters.search}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full mt-3"
-            />
-          </div>
-          <div className="flex gap-2">  
-            <div>
-                  <Label htmlFor="status" className='mb-2'>Status</Label>
+        <DataDisplay
+          data={houses || []}
+          columns={columns}
+          actions={getActionsForHouse}
+          loading={loading}
+          title="House Listings"
+          description="Manage all house listings and sales"
+          defaultView="table"
+          emptyMessage="No houses found. House listings will appear here."
+          searchPlaceholder="Search houses by title, location, or owner..."
+          searchFields={['title', 'location', 'owner.full_name', 'type']}
+          itemsPerPage={5}
+          totalItems={total || 0}
+          onItemClick={() => {
+          }}
+        />
 
-            <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value)}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="sold">Sold</SelectItem>
-              </SelectContent>
-            </Select>
-            </div>
-            <div>
-                  <Label htmlFor="type" className='mb-2'>Type</Label>
-
-            <Select value={filters.type || 'all'} onValueChange={(value) => handleFilterChange('type', value)}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="apartment">Apartment</SelectItem>
-                <SelectItem value="house">House</SelectItem>
-                <SelectItem value="condo">Condo</SelectItem>
-                <SelectItem value="townhouse">Townhouse</SelectItem>
-              </SelectContent>
-            </Select>
-            </div>
-           
-          </div>
-        </div>
-
-        {/* Houses Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>House Listings</CardTitle>
-            <CardDescription>Manage all house listings and sales</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">Error: Failed to load houses</p>
-              </div>
-            )}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <RefreshCw className="h-6 w-6 animate-spin" />
-                </div>
-              ) : houses.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No houses found</p>
-                </div>
-              ) : (
-                houses.map((house) => (
-                  <div key={house.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium">{house.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1">{house.location}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                            <span>Type: {house.type}</span>
-                            <span>Price: ${parseFloat(house.price || '0').toLocaleString()}</span>
-                            <span>Views: {house.views_count || 0}</span>
-                            <span>Posted by: {house.owner?.full_name || house.seller_name || 'Unknown'}</span>
-                            <span>Posted: {new Date(house.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          {getStatusBadge(house.status)}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => {}}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => {}}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Listing
-                              </DropdownMenuItem>
-                              {house.status === HouseStatus.INACTIVE && (
-                                <>
-                                  <DropdownMenuItem onClick={() => handleHouseAction('approve', house.id)}>
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Approve Listing
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleHouseAction('reject', house.id)}>
-                                    <XCircle className="mr-2 h-4 w-4" />
-                                    Reject Listing
-                                  </DropdownMenuItem>
-                                </>
-                              )}
-                              <DropdownMenuItem 
-                                onClick={() => handleHouseAction('delete', house.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Listing
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-gray-500">
-                  Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, total)} of {total} houses
-                </p>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(page - 1)}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(page + 1)}
-                    disabled={page === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ConfirmationModal
+          isOpen={confirmationModal.isOpen}
+          onClose={() => setConfirmationModal(prev => ({ ...prev, isOpen: false }))}
+          onConfirm={confirmationModal.onConfirm}
+          title={confirmationModal.title}
+          message={confirmationModal.message}
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="danger"
+          loading={confirmationModal.loading}
+        />
       </div>
     </AdminLayout>
   )

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -15,7 +14,6 @@ import { Search, Briefcase } from 'lucide-react'
 import { Job } from '@/lib/api'
 
 export default function JobsPage() {
-  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
@@ -28,28 +26,32 @@ export default function JobsPage() {
   const itemsPerPage = 6
   const { jobs, loading: jobsLoading, error: jobsError } = useJobs(currentPage, itemsPerPage)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/')
-    }
-  }, [user, authLoading, router])
 
   const getJobDetails = (job: Job) => {
-    try {
-      const requirements = JSON.parse(job.requirements || '{}');
+    if (Array.isArray(job.requirements)) {
       return {
-        experience: requirements.experience || 'Experience Not specified',
-        type: requirements.type || 'Type Not specified',
-        location: requirements.location || 'Location Not specified',
-        salary: requirements.salary || 'Salary Not specified'
+        experience: job.requirements[0] || 'Experience Not specified',
+        type: job.requirements[1] || 'Type Not specified',
+        location: job.requirements[2] || 'Location Not specified',
+        salary: job.requirements[3] || 'Salary Not specified'
       };
-    } catch {
-      return {
-        experience: 'Experience Not specified',
-        type: 'Type Not specified',
-        location: 'Location Not specified',
-        salary: 'Salary Not specified'
-      };
+    } else {
+      try {
+        const requirements = JSON.parse(job.requirements as string || '{}');
+        return {
+          experience: requirements.experience || 'Experience Not specified',
+          type: requirements.type || 'Type Not specified',
+          location: requirements.location || 'Location Not specified',
+          salary: requirements.salary || 'Salary Not specified'
+        };
+      } catch {
+        return {
+          experience: 'Experience Not specified',
+          type: 'Type Not specified',
+          location: 'Location Not specified',
+          salary: 'Salary Not specified'
+        };
+      }
     }
   };
 
@@ -68,15 +70,19 @@ export default function JobsPage() {
       })
     }
 
-    // Job type filter
     if (jobType !== 'all') {
       filtered = filtered.filter(job => {
-        const jobDetails = getJobDetails(job);
-        return jobDetails.type.toLowerCase() === jobType.toLowerCase()
+        if (Array.isArray(job.requirements)) {
+          return job.requirements.some(req => 
+            req.toLowerCase().includes(jobType.toLowerCase())
+          );
+        } else {
+          const jobDetails = getJobDetails(job);
+          return jobDetails.type.toLowerCase() === jobType.toLowerCase()
+        }
       })
     }
 
-    // Category filter - using job title/description for now since category is not in schema
     if (category !== 'all') {
       filtered = filtered.filter(job => {
         const jobText = (job.title + ' ' + job.description).toLowerCase();
@@ -84,24 +90,38 @@ export default function JobsPage() {
       })
     }
 
-    // Experience filter
     if (experience !== 'all') {
       filtered = filtered.filter(job => {
-        const jobDetails = getJobDetails(job);
-        switch (experience) {
-          case 'entry':
-            return jobDetails.experience.includes('1') || jobDetails.experience.includes('0-1')
-          case 'mid':
-            return jobDetails.experience.includes('2-3') || jobDetails.experience.includes('3-4')
-          case 'senior':
-            return jobDetails.experience.includes('3-5') || jobDetails.experience.includes('5+')
-          default:
-            return true
+        if (Array.isArray(job.requirements)) {
+          return job.requirements.some(req => {
+            const reqLower = req.toLowerCase();
+            switch (experience) {
+              case 'entry':
+                return reqLower.includes('1') || reqLower.includes('0-1') || reqLower.includes('entry')
+              case 'mid':
+                return reqLower.includes('2-3') || reqLower.includes('3-4') || reqLower.includes('mid')
+              case 'senior':
+                return reqLower.includes('3-5') || reqLower.includes('5+') || reqLower.includes('senior')
+              default:
+                return true
+            }
+          });
+        } else {
+          const jobDetails = getJobDetails(job);
+          switch (experience) {
+            case 'entry':
+              return jobDetails.experience.includes('1') || jobDetails.experience.includes('0-1')
+            case 'mid':
+              return jobDetails.experience.includes('2-3') || jobDetails.experience.includes('3-4')
+            case 'senior':
+              return jobDetails.experience.includes('3-5') || jobDetails.experience.includes('5+')
+            default:
+              return true
+          }
         }
       })
     }
 
-    // Sort
     switch (sortBy) {
       case 'newest':
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -129,11 +149,14 @@ export default function JobsPage() {
         break
     }
 
-    setFilteredJobs(filtered.filter((job: Job) => job.status === 'active'))
+    setFilteredJobs(filtered.filter((job: Job) => 
+      job.status === 'ACTIVE' || 
+      job.status === 'active' || 
+      job.status === 'PENDING'
+    ))
     setCurrentPage(1)
   }, [jobs, searchTerm, jobType, category, experience, sortBy])
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredJobs.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
@@ -143,7 +166,7 @@ export default function JobsPage() {
     router.push(`/jobs/${jobId}`)
   }
 
-  if (authLoading || jobsLoading) {
+  if (jobsLoading) {
     return <LoadingPage />
   }
 
@@ -159,56 +182,35 @@ export default function JobsPage() {
     )
   }
 
-  if (!user) {
-    return null
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Your Next Career</h1>
           <p className="text-gray-600">Discover exciting job opportunities that match your skills and aspirations</p>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* Search */}
             <div className="lg:col-span-2">
-              <div className="relative">
+            <div className="flex flex-col gap-1">
+            <label htmlFor="search" className='block'>Search</label>
+            <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   placeholder="Search by title, company, or skills..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Job Type */}
-            <div className="flex flex-col gap-1">
-            
-            <Select value={jobType} onValueChange={setJobType}>
-              <label htmlFor="jobType" className='block'>Job Type</label>
-              <SelectTrigger>
-                <SelectValue placeholder="Job Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="full-time">Full-time</SelectItem>
-                <SelectItem value="part-time">Part-time</SelectItem>
-                <SelectItem value="contract">Contract</SelectItem>
-                <SelectItem value="internship">Internship</SelectItem>
-              </SelectContent>
-            </Select>
-            </div>
 
-            {/* Category */}
         <div className="flex flex-col gap-1">
             <Select value={category} onValueChange={setCategory}>
               <label htmlFor="category" className='block'>Category</label>
@@ -228,7 +230,6 @@ export default function JobsPage() {
             </Select>
             </div>
 
-            {/* Sort */}
             <div className="flex flex-col gap-1">
             <Select value={sortBy} onValueChange={setSortBy}>
               <label htmlFor="sortBy" className='block'>Sort By</label>
@@ -246,14 +247,12 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {/* Results Count */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-gray-600">
             Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length} jobs
           </p>
         </div>
 
-        {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentJobs.map((job: Job) => (
             <div key={job.id} onClick={() => handleJobClick(job.id)} className="cursor-pointer">
@@ -262,7 +261,6 @@ export default function JobsPage() {
           ))}
         </div>
 
-        {/* No Results */}
         {filteredJobs.length === 0 && (
           <div className="text-center py-12">
             <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -271,7 +269,6 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center space-x-2">
             <Button

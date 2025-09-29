@@ -11,6 +11,9 @@ import { Badge } from '@/components/ui/badge'
 import { LoadingPage } from '@/components/ui/loading'
 import { useJob } from '@/hooks/useApi'
 import { applicationsService } from '@/lib/api/services'
+import { LoginModal } from '@/components/auth/LoginModal'
+import { RegisterModal } from '@/components/auth/RegisterModal'
+import { ShareModal } from '@/components/ui/share-modal'
 import { 
   ArrowLeft, 
   Heart, 
@@ -25,35 +28,67 @@ import {
   ExternalLink
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useFavorites } from '@/contexts/FavoritesContext'
 
 export default function JobDetailPage() {
-  const { user, isLoading } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
   const params = useParams()
   const jobId = params.id as string
-  
-  const [isFavorite, setIsFavorite] = useState(false)
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+  const [isClient, setIsClient] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
-  const [openModal, setOpenModal] = useState(false) // modal state
+  const [openModal, setOpenModal] = useState(false)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [coverLetter, setCoverLetter] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
 
-  // Use API hook to fetch job data
   const { job, loading: jobLoading, error: jobError } = useJob(jobId)
 
-  // Redirect if not logged in
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/')
-    }
-  }, [user, isLoading, router])
+    setIsClient(true)
+  }, [])
+
 
   const handleBack = () => {
     router.push('/jobs')
   }
 
+  const handleSwitchToRegister = () => {
+    setIsLoginModalOpen(false)
+    setIsRegisterModalOpen(true)
+  }
+
+  const handleSwitchToLogin = () => {
+    setIsRegisterModalOpen(false)
+    setIsLoginModalOpen(true)
+  }
+
+  const handleCloseModals = () => {
+    setIsLoginModalOpen(false)
+    setIsRegisterModalOpen(false)
+  }
+
+  const handleShare = () => {
+    setIsShareModalOpen(true)
+  }
+
+  const handleCloseShareModal = () => {
+    setIsShareModalOpen(false)
+  }
+
+  const handleCloseLoginModal = () => {
+    setIsLoginModalOpen(false)
+  }
+
   const handleApply = () => {
+    if (!user) {
+      setIsLoginModalOpen(true)
+      return
+    }
     if (user?.user_type !== 'EMPLOYEE') {
       toast.error('Only employees can apply for jobs', {
         description: 'Only employees can apply for jobs'
@@ -101,36 +136,67 @@ export default function JobDetailPage() {
     })
   }
 
-  // Parse requirements to get job details
   const getJobDetails = () => {
     if (!job) return { experience: 'N/A', type: 'N/A', location: 'N/A', salary: 'N/A' };
     
-    try {
-      const requirements = JSON.parse(job.requirements || '{}');
+    if (Array.isArray(job.requirements)) {
       return {
-        experience: requirements.experience || 'Experience Not specified',
-        type: requirements.type || 'Type Not specified',
-        location: requirements.location || 'Location Not specified',
-        salary: requirements.salary || 'Salary Not specified'
+        experience: job.requirements[0] || 'Experience Not specified',
+        type: job.requirements[1] || 'Type Not specified',
+        location: job.requirements[2] || 'Location Not specified',
+        salary: job.requirements[3] || 'Salary Not specified'
       };
-    } catch {
-      return {
-        experience: 'Experience Not specified',
-        type: 'Type Not specified',
-        location: 'Location Not specified',
-        salary: 'Salary Not specified'
-      };
+    } else {
+      try {
+        const requirements = JSON.parse(job.requirements || '{}');
+        return {
+          experience: requirements.experience || 'Experience Not specified',
+          type: requirements.type || 'Type Not specified',
+          location: requirements.location || 'Location Not specified',
+          salary: requirements.salary || 'Salary Not specified'
+        };
+      } catch {
+        return {
+          experience: 'Experience Not specified',
+          type: 'Type Not specified',
+          location: 'Location Not specified',
+          salary: 'Salary Not specified'
+        };
+      }
+    }
+  }
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!isClient) return
+    
+    if (job && isFavorite(job.id, 'job')) {
+      removeFromFavorites(job.id, 'job')
+      toast.success("Removed from favorites", {
+        description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been removed from your saved list`,
+        action: {
+          label: "View Saved",
+          onClick: () => router.push('/saved')
+        }
+      })
+    } else {
+      if (job) {
+        addToFavorites(job, 'job')
+        toast.success("Added to favorites!", {
+          description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been saved to your favorites`,
+          action: {
+            label: "View Saved",
+            onClick: () => router.push('/saved')
+          }
+        })
+      }
     }
   }
 
   const jobDetails = getJobDetails();
 
-  if (isLoading || jobLoading) {
+  if (jobLoading) {
     return <LoadingPage />
-  }
-
-  if (!user) {
-    return null
   }
 
   if (jobError) {
@@ -141,9 +207,9 @@ export default function JobDetailPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Job</h1>
             <p className="text-gray-600 mb-4">{jobError}</p>
-            <Button onClick={handleBack} className="cursor-pointer">
+            <Button onClick={()=>router.push('/')} className="cursor-pointer">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Jobs
+              Back to Home
             </Button>
           </div>
         </div>
@@ -159,9 +225,9 @@ export default function JobDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Not Found</h1>
-            <Button onClick={handleBack} className="cursor-pointer">
+            <Button onClick={()=>router.push('/')} className="cursor-pointer">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Jobs
+              Back to Home
             </Button>
           </div>
         </div>
@@ -176,7 +242,6 @@ export default function JobDetailPage() {
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
         <Button 
           variant="ghost" 
           onClick={handleBack} 
@@ -187,9 +252,7 @@ export default function JobDetailPage() {
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Job Header */}
             <Card className="mb-6">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
@@ -211,18 +274,22 @@ export default function JobDetailPage() {
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => setIsFavorite(!isFavorite)}
+                      onClick={handleFavoriteClick}
                       className="cursor-pointer"
                     >
-                      <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                      <Heart className={`h-4 w-4 ${isFavorite(job?.id, 'job') ? 'fill-red-500 text-red-500' : ''}`} />
                     </Button>
-                    <Button size="sm" variant="secondary" className="cursor-pointer">
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      onClick={handleShare}
+                      className="cursor-pointer"
+                    >
                       <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
-                {/* Job Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <DollarSign className="h-6 w-6 mx-auto mb-2 text-primary" />
@@ -240,27 +307,27 @@ export default function JobDetailPage() {
                     <div className="text-sm text-gray-600">Posted</div>
                   </div>
                 </div>
-
-                {/* Description, Responsibilities, Requirements, Benefits (unchanged) */}
-                {/* ...copy your existing content here... */}
               </CardContent>
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="lg:col-span-1">
-            {/* Apply Button with Modal */}
             <Card className="mb-6">
               <CardContent className="p-6">
                 <Button 
                   onClick={handleApply}
-                  disabled={hasApplied || job.status !== 'active' || user?.user_type !== 'EMPLOYEE'}
+                  disabled={hasApplied || (job.status !== 'ACTIVE' && job.status !== 'active' && job.status !== 'PENDING')}
                   className="w-full mb-4 cursor-pointer"
                 >
                   {hasApplied ? (
                     <>
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Applied
+                    </>
+                  ) : !user ? (
+                    <>
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Login to Apply
                     </>
                   ) : user?.user_type !== 'EMPLOYEE' ? (
                     <>
@@ -281,7 +348,6 @@ export default function JobDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Application Form Modal */}
             {showApplicationForm && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                 <Card className="w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
@@ -336,7 +402,6 @@ export default function JobDetailPage() {
               </div>
             )}
 
-            {/* Application Success Modal */}
             {openModal && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                 <Card className="w-full max-w-md relative">
@@ -370,7 +435,6 @@ export default function JobDetailPage() {
               </div>
             )}
 
-            {/* Company Info */}
             <Card className="mb-6">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">About {job.employer?.full_name}</h3>
@@ -392,15 +456,10 @@ export default function JobDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Job Details */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">Job Details</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Job Type</span>
-                    <span className="font-medium">{jobDetails.type}</span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Experience</span>
                     <span className="font-medium">{jobDetails.experience}</span>
@@ -425,6 +484,26 @@ export default function JobDetailPage() {
       </div>
 
       <Footer />
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={handleCloseLoginModal}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+      
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={handleCloseModals}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={handleCloseShareModal}
+        title={job?.title || 'Job'}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        description={job?.description || `Check out this job opportunity at ${job?.employer?.full_name}`}
+      />
     </div>
   )
 }

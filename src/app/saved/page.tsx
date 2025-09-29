@@ -15,10 +15,7 @@ export default function SavedPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   
-  // Always call the hook, but handle client-side logic inside
   const { favoriteHouses, favoriteJobs } = useFavorites()
-
- 
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -43,7 +40,6 @@ export default function SavedPage() {
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
             <Heart className="h-8 w-8 text-red-500 mr-3" />
@@ -52,7 +48,6 @@ export default function SavedPage() {
           <p className="text-gray-600">Your favorite houses and jobs all in one place.</p>
         </div>
 
-        {/* Saved Houses Section */}
         <section className="mb-12">
           <div className="flex items-center mb-6">
             <Home className="h-6 w-6 text-primary mr-2" />
@@ -83,7 +78,6 @@ export default function SavedPage() {
           )}
         </section>
 
-        {/* Saved Jobs Section */}
         <section>
           <div className="flex items-center mb-6">
             <Briefcase className="h-6 w-6 text-primary mr-2" />

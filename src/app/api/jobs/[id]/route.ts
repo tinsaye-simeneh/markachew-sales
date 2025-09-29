@@ -42,12 +42,14 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+    const authHeader = request.headers.get('authorization');
     
     const response = await fetch(`${API_BASE_URL}/api/jobs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        ...(authHeader && { 'Authorization': authHeader }),
       },
       body: JSON.stringify(body),
     });
@@ -78,11 +80,13 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const authHeader = request.headers.get('authorization');
     
     const response = await fetch(`${API_BASE_URL}/api/jobs/${id}`, {
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
+        ...(authHeader && { 'Authorization': authHeader }),
       },
     });
 

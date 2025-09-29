@@ -8,7 +8,7 @@ export const COMPANY = {
   TAGLINE: 'Your Gateway to Dreams',
   
   EMAIL: 'info@lucydelala.com',
-  PHONE: '+251-XXX-XXXX',
+  PHONE: '+251-911-123-456',
   
   SOCIAL: {
     FACEBOOK: 'https://facebook.com/lucydelala',
@@ -34,3 +34,4 @@ export const COMPANY_EMAIL = COMPANY.EMAIL
 export const COMPANY_COPYRIGHT = COMPANY.COPYRIGHT
 export const APP_TITLE = APP.TITLE
 export const APP_DESCRIPTION = APP.DESCRIPTION
+export const COMPANY_PHONE = COMPANY.PHONE

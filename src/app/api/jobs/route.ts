@@ -7,11 +7,19 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const queryString = searchParams.toString();
     
+    const authHeader = request.headers.get('authorization');
+    
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+    };
+    
+    if (authHeader) {
+      headers.Authorization = authHeader;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/api/jobs${queryString ? `?${queryString}` : ''}`, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers,
     });
 
     const data = await response.json();
@@ -35,27 +43,85 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const authHeader = request.headers.get('authorization');
+    const contentType = request.headers.get('content-type');
     
-    const response = await fetch(`${API_BASE_URL}/api/jobs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+    if (contentType && contentType.startsWith('multipart/form-data')) {
+      const formData = await request.formData();
+      
+      const response = await fetch(`${API_BASE_URL}/api/jobs`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          ...(authHeader && { 'Authorization': authHeader }),
+        },
+        body: formData,
+      });
 
-    const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', parseError);
+        const textResponse = await response.text();
+        console.error('Raw response:', textResponse);
+        return NextResponse.json(
+          { success: false, message: 'Invalid response from server', rawResponse: textResponse },
+          { status: 500 }
+        );
+      }
 
-    return NextResponse.json(data, {
-      status: response.status,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
-    });
+      return NextResponse.json(data, {
+        status: response.status,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      });
+    } else {
+      // Handle JSON requests (default for job creation)
+      let body;
+      try {
+        body = await request.json();
+      } catch (parseError: unknown) {
+        return NextResponse.json(
+          { success: false, message: parseError instanceof Error ? parseError.message : 'Invalid request format' },
+          { status: 400 }
+        );
+      }
+      const response = await fetch(`${API_BASE_URL}/api/jobs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(authHeader && { 'Authorization': authHeader }),
+        },
+        body: JSON.stringify(body),
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', parseError);
+        const textResponse = await response.text();
+        console.error('Raw response:', textResponse);
+        return NextResponse.json(
+          { success: false, message: 'Invalid response from server', rawResponse: textResponse },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(data, {
+        status: response.status,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      });
+    }
   } catch (error) {
     console.error('Create job proxy error:', error);
     return NextResponse.json(

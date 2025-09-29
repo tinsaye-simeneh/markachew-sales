@@ -6,12 +6,22 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
+    // Get the authorization header from the incoming request
+    const authHeader = request.headers.get('authorization');
+    
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    
+    // Forward the authorization header if it exists
+    if (authHeader) {
+      headers.Authorization = authHeader;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/api/admin/create`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers,
       body: JSON.stringify(body),
     });
 

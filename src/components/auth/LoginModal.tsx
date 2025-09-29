@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,13 +20,27 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { login, isLoading, error: authError } = useAuth()
+  const { login, error: authError } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
 
   const validatePhoneNumber = (phone: string): boolean => {
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
     return ethiopianPhoneRegex.test(phone)
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      setError('')
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError)
+    }
+  }, [authError])
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -44,6 +58,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     }
 
     try {
+      setIsLoading(true)
       const success = await login(email, password)
       
       if (success) {
@@ -51,12 +66,17 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         setEmail('')
         setPhone('')
         setPassword('')
+        setError('')
         window.location.reload()
       } else {
-        setError(authError || `Invalid ${loginMethod} or password`)
+        const errorMessage = authError || `Invalid ${loginMethod} or password`
+        setError(errorMessage)
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Login failed')
+      const errorMessage = error instanceof Error ? error.message : 'Login failed'
+      setError(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -82,7 +102,6 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
         </CardHeader>
         
         <CardContent>
-          {/* Login Method Switcher */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
             <button
               type="button"
@@ -148,8 +167,9 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             </div>
             
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-                {error}
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-md">
+                <div className="font-medium">Login Failed</div>
+                <div className="mt-1">{error}</div>
               </div>
             )}
             

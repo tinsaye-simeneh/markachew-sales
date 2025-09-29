@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { adminService, AdminStats, AdminUser, AdminJob, AdminHouse, AdminApplication, AdminActivity } from '@/lib/api/admin-services'
-import { UserType, HouseType } from '@/lib/api/config'
+import { categoriesService } from '@/lib/api/services'
+import { UserType, HouseType, Category } from '@/lib/api/config'
 
 // Filter interfaces
 interface AdminUserFilters {
@@ -64,7 +65,9 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchUsers = useCallback(async (newFilters = filters) => {
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
+
+  const fetchUsers = useCallback(async (newFilters = memoizedFilters) => {
     try {
       setLoading(true)
       setError(null)
@@ -80,7 +83,7 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [memoizedFilters])
 
   useEffect(() => {
     fetchUsers()
@@ -153,7 +156,9 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchJobs = useCallback(async (newFilters = filters) => {
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
+
+  const fetchJobs = useCallback(async (newFilters = memoizedFilters) => {
     try {
       setLoading(true)
       setError(null)
@@ -170,7 +175,7 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [memoizedFilters])
 
   useEffect(() => {
     fetchJobs()
@@ -243,7 +248,9 @@ export function useAdminHouses(filters: AdminHouseFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchHouses = useCallback(async (newFilters = filters) => {
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
+
+  const fetchHouses = useCallback(async (newFilters = memoizedFilters) => {
     try {
       setLoading(true)
       setError(null)
@@ -261,7 +268,7 @@ export function useAdminHouses(filters: AdminHouseFilters = {}) {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [memoizedFilters])
 
   useEffect(() => {
     fetchHouses()
@@ -334,7 +341,7 @@ export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchApplications = useCallback(async (_newFilters = filters) => {
+  const fetchApplications = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -392,6 +399,7 @@ export function useAdminApplications(filters: AdminApplicationFilters = {}) {
   }
 }
 
+//eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useAdminActivityLog(filters: { page?: number } = {}) {
   const [activities, setActivities] = useState<AdminActivity[]>([])
   const [total, setTotal] = useState(0)
@@ -400,7 +408,8 @@ export function useAdminActivityLog(filters: { page?: number } = {}) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchActivities = useCallback(async (_newFilters = filters) => {
+
+  const fetchActivities = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -414,7 +423,7 @@ export function useAdminActivityLog(filters: { page?: number } = {}) {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [])
 
   useEffect(() => {
     fetchActivities()
@@ -458,4 +467,92 @@ export function useSystemStatus() {
   }, [])
 
   return { status, loading, error, refetch: fetchStatus }
+}
+
+// Category hooks
+export function useCategories() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await categoriesService.getAllCategories()
+      setCategories(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch categories')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  return { categories, loading, error, refetch: fetchCategories }
+}
+
+export function useCreateCategory() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const createCategory = async (categoryData: { name: string }) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await categoriesService.createCategory(categoryData)
+      return response
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create category')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { createCategory, loading, error }
+}
+
+export function useUpdateCategory() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const updateCategory = async (categoryId: string, categoryData: { name: string }) => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await categoriesService.updateCategory(categoryId, categoryData)
+      return response
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update category')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { updateCategory, loading, error }
+}
+
+export function useDeleteCategory() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const deleteCategory = async (categoryId: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      await categoriesService.deleteCategory(categoryId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete category')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { deleteCategory, loading, error }
 }
