@@ -80,6 +80,34 @@ export class JobsService {
     };
   }
 
+  async getEmployerJobs(employerId: string, page = 1, limit = 10): Promise<{
+    jobs: Job[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const response = await apiClient.get<{
+      jobs: Job[];
+      meta: {
+        currentPage: number;
+        perPage: number;
+        totalItems: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+    }>(API_CONFIG.ENDPOINTS.JOBS.EMPLOYER_LIST(employerId), { page, limit });
+    
+    return {
+      jobs: response.data.jobs || [],
+      total: response.data.meta.totalItems,
+      page: response.data.meta.currentPage,
+      limit: response.data.meta.perPage,
+      totalPages: response.data.meta.totalPages,
+    };
+  }
+
   async getJob(jobId: string): Promise<Job> {
     const response = await apiClient.get<Job>(API_CONFIG.ENDPOINTS.JOBS.GET(jobId));
     return response.data;
@@ -193,6 +221,38 @@ export class HousesService {
         hasPrev: boolean;
       };
     }>(API_CONFIG.ENDPOINTS.HOUSES.ACTIVE, { page, limit });
+    
+    return {
+      houses: response.data.houses || [],
+      total: response.data.meta.totalItems,
+      page: response.data.meta.currentPage,
+      limit: response.data.meta.perPage,
+      totalPages: response.data.meta.totalPages,
+    };
+  }
+
+  async getHousesByOwner(ownerId: string, page = 1, limit = 10): Promise<{
+    houses: House[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const response = await apiClient.get<{
+      houses: House[];
+      meta: {
+        currentPage: number;
+        perPage: number;
+        totalItems: number;
+        totalPages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+    }>(API_CONFIG.ENDPOINTS.HOUSES.LIST, { 
+      page, 
+      limit, 
+      owner_id: ownerId 
+    });
     
     return {
       houses: response.data.houses || [],
@@ -609,8 +669,11 @@ export class InquiriesService {
   async updateInquiry(inquiryId: string, inquiryData: Partial<CreateInquiryRequest>): Promise<Inquiry> {
     const response = await apiClient.put<Inquiry>(API_CONFIG.ENDPOINTS.INQUIRIES.UPDATE(inquiryId), inquiryData);
     return response.data;
-  }
+  } 
+
 }
+
+
 
 export const jobsService = new JobsService();
 export const housesService = new HousesService();

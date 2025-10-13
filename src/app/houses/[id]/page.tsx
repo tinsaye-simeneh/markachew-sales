@@ -13,6 +13,8 @@ import { useHouse } from '@/hooks/useApi'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { RegisterModal } from '@/components/auth/RegisterModal'
 import { ShareModal } from '@/components/ui/share-modal'
+import { ChatModal } from '@/components/chat/ChatModal'
+import { chatService } from '@/lib/api/chat-service'
 import { 
   ArrowLeft, 
   Heart, 
@@ -27,8 +29,6 @@ import {
   Shield,
   Home,
   MessageCircle,
-  Send,
-  X
 } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
@@ -44,22 +44,16 @@ export default function HouseDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
-  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false)
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
-  const [inquiryMessage, setInquiryMessage] = useState('')
-  const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false)
+  const [chatroomId, setChatroomId] = useState<string | null>(null)
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
 
   const { house, loading: houseLoading, error: houseError } = useHouse(houseId)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
-
-  // useEffect(() => {
-  //   if (!isLoading && !user) {
-  //     router.push('/')
-  //   }
-  // }, [user, isLoading, router])
 
   const handleBack = () => {
     router.push('/houses')
@@ -98,54 +92,39 @@ export default function HouseDetailPage() {
     }
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!user) {
       setIsLoginModalOpen(true)
       return
     }
-    setIsInquiryModalOpen(true)
-  }
 
-  const handleSubmitInquiry = async () => {
-    if (!inquiryMessage.trim()) {
-      toast.error('Please enter a message')
+    if (!house?.owner?.id) {
+      toast.error('Owner information not available')
       return
     }
 
-    setIsSubmittingInquiry(true)
+    setIsCreatingChat(true)
     try {
-      const response = await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          house_id: houseId,
-          message: inquiryMessage.trim()
-        })
+      const response = await chatService.createChatRoom({
+        type: 'HOUSE',
+        item_id: houseId,
+        target_user_id: house.owner.id
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to send inquiry')
-      }
-
-      toast.success('Your inquiry has been sent successfully!')
-      setIsInquiryModalOpen(false)
-      setInquiryMessage('')
+      setChatroomId(response.chatRoom.id)
+      setIsChatModalOpen(true)
     } catch (error) {
-      console.error('Error sending inquiry:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send inquiry'
+      console.error('Error creating chat room:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create chat room'
       toast.error(errorMessage)
     } finally {
-      setIsSubmittingInquiry(false)
+      setIsCreatingChat(false)
     }
   }
 
-  const handleCloseInquiryModal = () => {
-    setIsInquiryModalOpen(false)
-    setInquiryMessage('')
+  const handleCloseChatModal = () => {
+    setIsChatModalOpen(false)
+    setChatroomId(null)
   }
 
   const handleShare = () => {
@@ -208,24 +187,12 @@ export default function HouseDetailPage() {
     
     if (house && isHouseFavorite(house.id, 'house')) {
       removeFromFavorites(house.id, 'house')
-      toast.success("Removed from favorites", {
-        description: `${house.title} at ${house.owner?.full_name || 'Unknown Owner'} has been removed from your saved list`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
+      
     } else {
       if (house) {
         addToFavorites(house, 'house')
       }
-      toast.success("Added to favorites!", {
-        description: `${house?.title} at ${house?.owner?.full_name || 'Unknown Owner'} has been saved to your favorites`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
+    
     }
   }
 
@@ -436,9 +403,10 @@ export default function HouseDetailPage() {
                     variant="outline" 
                     onClick={handleSendMessage}
                     className={`w-full cursor-pointer`}
+                    disabled={isCreatingChat}
                     >
                     <MessageCircle className="h-4 w-4 mr-2" />
-                    {!user ? "Login to Message" : "Send Message"}
+                    {!user ? "Login to Message" : isCreatingChat ? "Opening Chat..." : "Start Chat"}
                   </Button>
                 </div>
               </CardContent>
@@ -489,75 +457,13 @@ export default function HouseDetailPage() {
         onSwitchToLogin={handleSwitchToLogin}
       />
 
-      {isInquiryModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Send Inquiry</h3>
-                  <p className="text-sm text-gray-600">Send a message to the property owner</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCloseInquiryModal}
-                  className="cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Message
-                  </label>
-                  <textarea
-                    value={inquiryMessage}
-                    onChange={(e) => setInquiryMessage(e.target.value)}
-                    placeholder="Hi, I'm interested in this property. Could you please provide more information about..."
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                    rows={4}
-                    maxLength={500}
-                  />
-                  <div className="text-xs text-gray-500 mt-1">
-                    {inquiryMessage.length}/500 characters
-                  </div>
-                </div>
-
-                <div className="flex space-x-3">
-                  <Button
-                    variant="outline"
-                    onClick={handleCloseInquiryModal}
-                    className="flex-1 cursor-pointer"
-                    disabled={isSubmittingInquiry}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSubmitInquiry}
-                    className="flex-1 cursor-pointer"
-                    disabled={isSubmittingInquiry || !inquiryMessage.trim()}
-                  >
-                    {isSubmittingInquiry ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Send Message
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <ChatModal
+        isOpen={isChatModalOpen}
+        onClose={handleCloseChatModal}
+        chatroomId={chatroomId}
+        houseTitle={house?.title}
+        ownerName={house?.owner?.full_name}
+      />
 
       <ShareModal
         isOpen={isShareModalOpen}

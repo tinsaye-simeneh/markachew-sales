@@ -20,11 +20,11 @@ export default function AdminPaymentsPage() {
   const [imageModal, setImageModal] = useState<{
     isOpen: boolean
     imageUrl: string
-    paymentId: string
+    amount: string
   }>({
     isOpen: false,
     imageUrl: '',
-    paymentId: ''
+    amount: ''
   })
   const [detailModal, setDetailModal] = useState<{
     isOpen: boolean
@@ -144,10 +144,10 @@ export default function AdminPaymentsPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => openImageModal(value, 'paymentId')}
+            onClick={() => openImageModal(value, payments.find(payment => payment.receipt_image === value)?.amount.toString() || '0')}
             className="flex items-center gap-1 cursor-pointer"
           >
-            <Image src="/images/receipt.png" className="h-3 w-3" alt="View" width={16} height={16} />
+            <Image src={`${BASE_URL}/${value}`} className="h-3 w-3" alt="View" width={16} height={16} />
             View
           </Button>
         ) : (
@@ -204,15 +204,13 @@ export default function AdminPaymentsPage() {
     return actions
   }
 
-  // Handle status updates
   const handleStatusUpdate = async (payment: Payment, newStatus: PaymentStatus) => {
     try {
-      // Convert PaymentStatus enum to title case for API
       const statusMap: Record<PaymentStatus, 'Approved' | 'Rejected' | 'Pending'> = {
         [PaymentStatus.APPROVED]: 'Approved',
         [PaymentStatus.REJECTED]: 'Rejected',
         [PaymentStatus.PENDING]: 'Pending',
-        [PaymentStatus.COMPLETED]: 'Approved' // Map COMPLETED to Approved
+        [PaymentStatus.COMPLETED]: 'Approved' 
       }
       
       const apiStatus = statusMap[newStatus]
@@ -225,13 +223,12 @@ export default function AdminPaymentsPage() {
     }
   }
 
-  // Handle image modal
-  const openImageModal = (imagePath: string, paymentId: string) => {
+  const openImageModal = (imagePath: string, amount: string) => {
     const fullImageUrl = `${BASE_URL}/${imagePath}`
     setImageModal({
       isOpen: true,
       imageUrl: fullImageUrl,
-      paymentId: paymentId
+      amount: amount
     })
   }
 
@@ -239,7 +236,7 @@ export default function AdminPaymentsPage() {
     setImageModal({
       isOpen: false,
       imageUrl: '',
-      paymentId: ''
+      amount: ''
     })
   }
 
@@ -251,12 +248,6 @@ export default function AdminPaymentsPage() {
     })
   }
 
-  const closeDetailModal = () => {
-    setDetailModal({
-      isOpen: false,
-      payment: null
-    })
-  }
 
   return (
     <AdminLayout>
@@ -312,7 +303,6 @@ export default function AdminPaymentsPage() {
           />
         )}
 
-        {/* Image Modal */}
         {imageModal.isOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden">
@@ -320,9 +310,7 @@ export default function AdminPaymentsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle>Payment Receipt</CardTitle>
-                    <CardDescription>
-                      Payment ID: {imageModal.paymentId.split('-')[1].toUpperCase() + '...'}
-                    </CardDescription>
+                    <CardDescription>Amount: ETB {imageModal.amount}</CardDescription>
                   </div>
                   <Button
                     variant="ghost"
@@ -362,14 +350,12 @@ export default function AdminPaymentsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle>Payment Details</CardTitle>
-                    <CardDescription>
-                      Payment ID: {detailModal.payment.id.split('-')[1].toUpperCase() + '...'}
-                    </CardDescription>
-                  </div>
+                    <CardDescription>Amount: ETB {detailModal.payment.amount}</CardDescription>
+                    </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={closeDetailModal}
+                    onClick={() => setDetailModal({ isOpen: false, payment: null })}
                     className="cursor-pointer"
                   >
                     <X className="h-4 w-4" />
@@ -391,7 +377,6 @@ export default function AdminPaymentsPage() {
                   {getStatusBadge(detailModal.payment.status)}
                 </div>
 
-                {/* Payment Amount */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 border rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
@@ -416,7 +401,6 @@ export default function AdminPaymentsPage() {
                   </div>
                 </div>
 
-                {/* Payer Information */}
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <User className="h-4 w-4 text-blue-600" />
@@ -436,10 +420,11 @@ export default function AdminPaymentsPage() {
                   </div>
                 </div>
 
-                {/* Receipt Information */}
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
-                    <Image src="/images/receipt.png" className="h-4 w-4 text-purple-600" alt="Receipt" width={16} height={16} />
+                    {detailModal.payment.receipt_image && (
+                      <Image src={`${BASE_URL}/${detailModal.payment.receipt_image}`} className="h-4 w-4 text-purple-600" alt="Receipt" width={16} height={16} />
+                    )}
                     <span className="font-medium text-gray-900">Receipt Information</span>
                   </div>
                   {detailModal.payment.receipt_image ? (
@@ -454,13 +439,13 @@ export default function AdminPaymentsPage() {
                         variant="outline"
                         onClick={() => 
                           {
-                            closeDetailModal(),
-                            openImageModal(detailModal.payment!.receipt_image!, detailModal.payment!.id)
+                            setDetailModal({ isOpen: false, payment: null }),
+                            openImageModal(detailModal.payment!.receipt_image!, detailModal.payment!.amount.toString())
                           }
                         }
                         className="flex items-center gap-2 cursor-pointer"
                       >
-                        <Image src="/images/receipt.png" className="h-4 w-4" alt="Receipt" width={16} height={16} />
+                        <Image src={`${BASE_URL}/${detailModal.payment.receipt_image}`} className="h-4 w-4" alt="Receipt" width={16} height={16} />
                         View Receipt Image
                       </Button>
                     </div>
@@ -469,7 +454,6 @@ export default function AdminPaymentsPage() {
                   )}
                 </div>
 
-                {/* Additional Information */}
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <Clock className="h-4 w-4 text-orange-600" />

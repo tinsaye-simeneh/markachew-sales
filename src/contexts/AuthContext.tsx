@@ -17,6 +17,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+function decodeRole(encoded: string): string {
+  try {
+    const scrambled = encoded.split('-')[1]
+    if (!scrambled) return encoded
+    
+    const reversed = atob(scrambled)
+    return reversed.split('').reverse().join('')
+  } catch {
+    return encoded
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -25,17 +37,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const storedUser = authService.getStoredUser()
     if (storedUser && authService.isAuthenticated()) {
+      storedUser.user_type = decodeRole(storedUser.user_type as string) as UserType
       setUser(storedUser)
     } else {
-      const isAdmin = typeof window !== 'undefined' && localStorage.getItem('isAdmin') === 'true'
+      const isAdmin =
+        typeof window !== 'undefined' && localStorage.getItem('isAdmin') === 'true'
       if (isAdmin) {
-        const adminUserStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+        const adminUserStr =
+          typeof window !== 'undefined' ? localStorage.getItem('user') : null
         if (adminUserStr) {
           try {
             const adminUser = JSON.parse(adminUserStr)
+            adminUser.user_type = decodeRole(adminUser.user_type as string) as UserType
             setUser(adminUser)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch (error) {
+          } catch {
           }
         }
       }
@@ -44,18 +59,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    
     setError(null)
     try {
       const authResponse = await authService.login({ email, password })
+      authResponse.user.user_type = decodeRole(authResponse.user.user_type as string) as UserType
       setUser(authResponse.user)
       return true
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed'
       setError(errorMessage)
       return false
-    } finally {
-      
     }
   }
 
@@ -64,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const authResponse = await adminAuthService.login({ email, password })
       if (authResponse.success) {
+        authResponse.user.user_type = decodeRole(authResponse.user.user_type as string) as UserType
         setUser(authResponse.user)
         return true
       }
@@ -76,10 +90,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const register = async (
-    fullName: string, 
-    email: string, 
-    phone: string, 
-    password: string, 
+    fullName: string,
+    email: string,
+    phone: string,
+    password: string,
     userType: UserType
   ): Promise<boolean> => {
     setError(null)
@@ -91,29 +105,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
         user_type: userType
       })
+      authResponse.user.user_type = decodeRole(authResponse.user.user_type as string) as UserType
       setUser(authResponse.user)
       return true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed')
       return false
-    } finally {
     }
   }
 
-  const completeRegistration = () => {
-  }
+  const completeRegistration = () => {}
 
   const logout = async () => {
     setIsLoading(true)
     try {
-      const isAdmin = typeof window !== 'undefined' && localStorage.getItem('isAdmin') === 'true'
+      const isAdmin =
+        typeof window !== 'undefined' && localStorage.getItem('isAdmin') === 'true'
       if (isAdmin) {
         await adminAuthService.logout()
       } else {
         await authService.logout()
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
+    } catch {
       toast.error('Logout error:', {
         description: 'Logout error'
       })
@@ -124,16 +137,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      adminLogin,
-      register, 
-      completeRegistration, 
-      logout, 
-      isLoading, 
-      error 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        adminLogin,
+        register,
+        completeRegistration,
+        logout,
+        isLoading,
+        error
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

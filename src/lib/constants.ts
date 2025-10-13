@@ -25,6 +25,7 @@ export const APP = {
     TITLE: 'Lucy Delala - Lucy Delala Platform',
   DESCRIPTION: 'Employee Marketplace and Real Estate Platform',
 } as const
+
 export const COMPANY_NAME = COMPANY.NAME
 export const COMPANY_FULL_NAME = COMPANY.FULL_NAME
 export const COMPANY_DISPLAY_NAME = COMPANY.DISPLAY_NAME

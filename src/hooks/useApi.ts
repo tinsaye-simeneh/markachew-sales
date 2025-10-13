@@ -231,9 +231,7 @@ export function useEmployerJobs(userId?: string) {
     try {
       setLoading(true);
       setError(null);
-      const response = await jobsService.getAllJobs(page, limit);
-     
-    
+      const response = await jobsService.getEmployerJobs(userId as string, page, limit);
       
       setJobs(response.jobs);
       setTotal(response.total);
@@ -316,7 +314,6 @@ export function useEmployerApplications(jobId?: string) {
       
       let response;
       if (jobId) {
-        // Use the new API route for applications by job ID
         const res = await fetch(`/api/applications/job/${jobId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -329,7 +326,6 @@ export function useEmployerApplications(jobId?: string) {
           totalPages: data.data?.meta?.totalPages || 1
         };
       } else {
-        // Fetch all applications and filter by employer
         const res = await fetch(`/api/applications?page=${page}&limit=${limit}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -337,7 +333,6 @@ export function useEmployerApplications(jobId?: string) {
         });
         const data = await res.json();
         
-        // Get current user (employer) ID
         const userData = localStorage.getItem('user');
         if (!userData) {
           throw new Error('User not found');
@@ -345,8 +340,7 @@ export function useEmployerApplications(jobId?: string) {
         const user = JSON.parse(userData);
         const employerId = user.id;
         
-        // Filter applications to only show those for jobs posted by this employer
-        const allApplications = data.data?.applications || [];
+       const allApplications = data.data?.applications || [];
         //eslint-disable-next-line @typescript-eslint/no-explicit-any
         const employerApplications = allApplications.filter((app: any) => 
           app.job?.employer?.id === employerId
@@ -414,12 +408,15 @@ export function useSellerHouses(userId?: string) {
     try {
       setLoading(true);
       setError(null);
-      const response = await housesService.getAllHouses(1, 100); // Get more houses for seller
-      // Filter houses by owner if userId is provided
-      const sellerHouses = userId 
-        ? response.houses.filter(house => house.owner?.id === userId)
-        : response.houses;
-      setHouses(sellerHouses);
+      
+      if (userId) {
+        // Use getHousesByOwner to send owner_id parameter to API route
+        const response = await housesService.getHousesByOwner(userId, 1, 100);
+        setHouses(response.houses);
+      } else {
+        // If no userId provided, return empty array
+        setHouses([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch houses');
     } finally {
@@ -489,10 +486,20 @@ export function useSellerInquiries(houseId?: string) {
     try {
       setLoading(true);
       setError(null);
-      const response = await inquiriesService.getInquiries(houseId as string);
-      setInquiries(response);
+      
+      if (houseId) {
+        // Fetch inquiries for a specific house
+        const response = await inquiriesService.getInquiries(houseId);
+        setInquiries(response);
+      } else {
+        // For now, return empty array when no houseId is provided
+        // In a real app, you might want to fetch all inquiries for the seller
+        setInquiries([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch inquiries');
+      // Set empty array on error so the component can fall back to mock data
+      setInquiries([]);
     } finally {
       setLoading(false);
     }

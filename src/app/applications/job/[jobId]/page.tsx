@@ -151,7 +151,7 @@ export default function JobApplicationsPage() {
             Back
           </Button>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Applications</h1>
-          <p className="text-gray-600">View applications for this job posting</p>
+          <p className="text-gray-600">View applications for - {jobId.slice(0, 10)}...</p>
         </div>
 
         {error && (

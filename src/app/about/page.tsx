@@ -7,10 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { COMPANY_DISPLAY_NAME, COMPANY_EMAIL, COMPANY_PHONE } from '@/lib/constants'
 import { 
-  Building2, 
-  Users, 
+    Users, 
   Target, 
-  Award, 
   TrendingUp, 
   Globe, 
   Heart, 
@@ -20,13 +18,11 @@ import {
   Phone,
   MapPin,
   Calendar,
-  CheckCircle,
   ArrowRight,
   User,
   Briefcase,
   Home
 } from 'lucide-react'
-import Image from 'next/image'
 
 export default function AboutPage() {
   const stats = [

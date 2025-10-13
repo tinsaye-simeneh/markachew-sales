@@ -12,7 +12,7 @@ import { Job } from '@/lib/api'
 
 export function JobListings() {
   const [currentPage, setCurrentPage] = useState(1)
-  const [jobType, setJobType] = useState('all')
+  const [jobType] = useState('all')
   const [experience, setExperience] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([])

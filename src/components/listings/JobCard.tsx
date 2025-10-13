@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react'
 import { useFavorites } from '@/contexts/FavoritesContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Job, UserType } from '@/lib/api'
-import { toast } from 'sonner'
 
 interface JobCardProps {
   job: Job
@@ -21,7 +20,7 @@ export function JobCard({ job, onEdit }: JobCardProps) {
   const [isClient, setIsClient] = useState(false)
   const { user } = useAuth()
   
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+  const { toggleFavorite, isFavorite, loading } = useFavorites()
 
   useEffect(() => {
     setIsClient(true)
@@ -31,29 +30,11 @@ export function JobCard({ job, onEdit }: JobCardProps) {
     router.push(`/jobs/${jobId}`)
   }
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return
+    if (!isClient || loading) return
     
-    if (isFavorite(job.id, 'job')) {
-      removeFromFavorites(job.id, 'job')
-      toast.success("Removed from favorites", {
-        description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been removed from your saved list`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
-    } else {
-      addToFavorites(job, 'job')
-      toast.success("Added to favorites!", {
-        description: `${job.title} at ${job.employer?.full_name || 'Unknown Company'} has been saved to your favorites`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
-    }
+    await toggleFavorite(job.id, 'job')
   }
 
   const handleEditClick = (e: React.MouseEvent) => {

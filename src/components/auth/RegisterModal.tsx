@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { UserType } from '@/lib/api'
+import { UserType, otpService } from '@/lib/api'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -44,15 +44,16 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
   const [license, setLicense] = useState<File | null>(null)
   const [cv, setCv] = useState<File | null>(null)
   const [otp, setOtp] = useState('')
-  const [timeLeft] = useState(300)
+  const [timeLeft, setTimeLeft] = useState(300)
   const [error, setError] = useState('')
   const [otpError, setOtpError] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
+  const [isRequestingOTP, setIsRequestingOTP] = useState(false)
+  const [otpRequested, setOtpRequested] = useState(false)
+  const [otpMessage, setOtpMessage] = useState('')
   const { register, error: authError } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-
-  const STATIC_OTP = '123456'
 
   const validatePhoneNumber = (phone: string): boolean => {
     const ethiopianPhoneRegex = /^(\+2519\d{8}|09\d{8})$/
@@ -123,12 +124,42 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     return true
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
     setError('')
     if (currentStep === 1 && validateStep1()) {
       setCurrentStep(2)
     } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3)
+      // Request OTP when moving to step 3
+      await requestOTP()
+    }
+  }
+
+  const requestOTP = async () => {
+    setIsRequestingOTP(true)
+    setError('')
+    
+    try {
+      const response = await otpService.requestOTP({
+        full_name: name,
+        phone: phone,
+        email: email,
+        user_type: userType
+      })
+
+      if (response.success) {
+        setOtpRequested(true)
+        setOtpMessage(response.message || 'OTP sent successfully')
+        setCurrentStep(3)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const remainingTime = (response.data as any)?.remainingSeconds || 300
+        setTimeLeft(remainingTime)
+      } else {
+        setError(response.message || 'Failed to send OTP. Please try again.')
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to send OTP. Please try again.')
+    } finally {
+      setIsRequestingOTP(false)
     }
   }
 
@@ -158,8 +189,13 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     setDocument(null)
     setLicense(null)
     setOtp('')
+    setTimeLeft(300)
     setError('')
     setOtpError('')
+    setIsVerifying(false)
+    setIsRequestingOTP(false)
+    setOtpRequested(false)
+    setOtpMessage('')
   }
 
   const handleFinalSubmit = async () => {
@@ -192,16 +228,23 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     setIsVerifying(true)
     setIsLoading(true)
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const response = await otpService.verifyOTP({
+        email: email,
+        otp: otp
+      })
 
-    if (otp === STATIC_OTP) {
-      await handleFinalSubmit()
-    } else {
-      setOtpError('Invalid OTP. Please try again.')
+      if (response.success) {
+        await handleFinalSubmit()
+      } else {
+        setOtpError(response.message || 'Invalid OTP. Please try again.')
+      }
+    } catch (error) {
+      setOtpError(error instanceof Error ? error.message : 'Invalid OTP. Please try again.')
+    } finally {
+      setIsVerifying(false)
+      setIsLoading(false)
     }
-    
-    setIsVerifying(false)
-    setIsLoading(false)
   }
 
   const handleFileUpload = (setter: (file: File | null) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,6 +260,34 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
       setOtpError('')
     }
   }
+
+  const handleResendOTP = async () => {
+    setOtpError('')
+    setOtp('')
+    setTimeLeft(300)
+    await requestOTP()
+  }
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (currentStep === 3 && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [currentStep, timeLeft]);
 
   if (!isOpen) return null
 
@@ -272,11 +343,14 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                 email={email}
                 otp={otp}
                 timeLeft={timeLeft}
-                STATIC_OTP={STATIC_OTP}
                 otpError={otpError}
                 isVerifying={isVerifying}
+                isRequestingOTP={isRequestingOTP}
+                otpRequested={otpRequested}
+                otpMessage={otpMessage}
                 handleOtpChange={handleOtpChange}
                 handleOTPSubmit={handleOTPSubmit}
+                handleResendOTP={handleResendOTP}
               />
             )}
           </div>
@@ -294,7 +368,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
         <RegistrationNavigation
           currentStep={currentStep}
           totalSteps={totalSteps}
-          isLoading={isLoading}
+          isLoading={isLoading || isRequestingOTP}
           onPrevStep={prevStep}
           onNextStep={nextStep}
         /> 

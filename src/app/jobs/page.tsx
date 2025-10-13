@@ -17,7 +17,7 @@ export default function JobsPage() {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
-  const [jobType, setJobType] = useState('all')
+  const [jobType] = useState('all')
   const [category, setCategory] = useState('all')
   const [experience] = useState('all')
   const [sortBy, setSortBy] = useState('newest')

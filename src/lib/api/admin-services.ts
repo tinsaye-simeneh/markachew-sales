@@ -173,6 +173,13 @@ export class AdminService {
     return response.data;
   }
 
+  async toggleUserStatus(userId: string): Promise<AdminUser> {
+    const response = await apiClient.put<AdminUser>(
+      `/api/users/toggle/${userId}`
+    );
+    return response.data;
+  }
+
   // Job Management
   async getAllJobs(filters: AdminJobFilters = {}): Promise<{
     jobs: AdminJob[];
@@ -239,6 +246,14 @@ export class AdminService {
     const response = await apiClient.put<AdminJob>(
       API_CONFIG.ENDPOINTS.JOBS.UPDATE(jobId),
       { status: 'INACTIVE', rejection_reason: reason }
+    );
+    return response.data;
+  }
+
+  async toggleJobStatus(jobId: string, status: string): Promise<AdminJob> {
+    const response = await apiClient.put<AdminJob>(
+      API_CONFIG.ENDPOINTS.JOBS.TOGGLE(jobId),
+      { status }
     );
     return response.data;
   }

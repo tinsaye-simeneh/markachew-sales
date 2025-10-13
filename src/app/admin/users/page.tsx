@@ -16,7 +16,8 @@ import {
   Calendar,
   UserPlus,
   X,
-  Shield
+  Shield,
+  RefreshCcw
 } from 'lucide-react'
 import { useAdminUsers } from '@/hooks/useAdminApi'
 import { UserType, adminAuthService } from '@/lib/api'
@@ -45,13 +46,13 @@ export default function AdminUsersPage() {
     loading,
     deleteUser,
     suspendUser,
-    activateUser
+    activateUser,
+    toggleUserStatus,
+    refetchUsers
   } = useAdminUsers({})
 
-  // Check if current user is super admin
   const isSuperAdmin = user?.user_type === 'SUPER_ADMIN'
 
-  // Admin modal functions
   const openAdminModal = () => {
     setAdminModal({ isOpen: true })
     setError('')
@@ -129,7 +130,12 @@ export default function AdminUsersPage() {
 
   const handleUserAction = async (action: string, userId: string, reason?: string) => {
     try {
+      setIsLoading(true)
       switch (action) {
+        case 'toggle':
+          await toggleUserStatus(userId)
+          toast.success('User status updated successfully')
+          break
         case 'activate':
           await activateUser(userId)
           break
@@ -142,12 +148,19 @@ export default function AdminUsersPage() {
           }
           break
       }
+      refetchUsers()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error('Error performing user action', {
         description: 'Error performing user action'
       })
+    } finally {
+      setIsLoading(false)
     }
+  }
+
+  const handleRefresh = () => {
+    refetchUsers()
   }
 
   const getStatusBadge = (status: boolean) => {
@@ -188,7 +201,7 @@ export default function AdminUsersPage() {
       render: (value) => (
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-gray-500" />
-          <span>{value}</span>
+          <span>{value || 'Unknown'}</span>
         </div>
       )
     },
@@ -204,7 +217,7 @@ export default function AdminUsersPage() {
       ],
       render: (value) => (
         <Badge variant={value === 'EMPLOYER' ? 'default' : 'secondary'}>
-          {value}
+          {value || 'Unknown'}
         </Badge>
       )
     },
@@ -230,20 +243,14 @@ export default function AdminUsersPage() {
     }
   ]
 
-  // Define actions for DataDisplay
   const getActionsForUser = (user: AdminUser) => {
     return [
       {
-        key: 'suspend',
+        key: 'toggle',
         label: user.status === true ? 'Suspend' : 'Activate',
         icon: user.status === true ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />,
-        onClick: () => {
-          if (user.status === true) {
-            handleUserAction('suspend', user.id)
-          } else {
-            handleUserAction('activate', user.id)
-                }
-            }
+        onClick: () => handleUserAction('toggle', user.id),
+        className: user.status === true ? 'cursor-pointer text-red-600' : 'cursor-pointer text-green-600'
       }
     ]
   }
@@ -257,6 +264,12 @@ export default function AdminUsersPage() {
             <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
             <p className="text-gray-600">Manage all users in the system</p>
           </div>
+          <Button variant="outline" className="flex items-center gap-2 cursor-pointer"
+            onClick={handleRefresh}
+          >
+            <RefreshCcw className="h-4 w-4 text-black" />
+            Refresh
+          </Button>
           {isSuperAdmin && (
             <Button 
               onClick={openAdminModal}
@@ -312,7 +325,7 @@ export default function AdminUsersPage() {
           data={users}
           columns={columns}
           actions={getActionsForUser}
-          loading={loading}
+          loading={isLoading || loading}
           title="Current Page Users"
           description="A list of current page users in the system"
           defaultView="table"

@@ -22,7 +22,6 @@ export function SubscriptionManagement() {
   const subscriptionService = new SubscriptionService()
   const commissionService = new CommissionService()
 
-  // Fetch user's subscription and available commissions
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -33,7 +32,6 @@ export function SubscriptionManagement() {
         commissionService.getCommissions()
       ])
       
-      // Find current user's subscription
       const userSubscription = subscriptionsData.find(sub => sub.subscriber_id === user?.id)
       setSubscription(userSubscription || null)
       setCommissions(commissionsData)
@@ -53,7 +51,6 @@ export function SubscriptionManagement() {
     }
   }, [user?.id])
 
-  // Get status badge
   const getStatusBadge = (status: string) => {
     const variants = {
       'ACTIVE': 'default',
@@ -95,7 +92,6 @@ export function SubscriptionManagement() {
       console.error('Error creating subscription:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to create subscription'
       
-      // Check for subscription-related errors
       if (errorMessage.includes('User profile not found') || errorMessage.includes('Profile not found')) {
         toast.error('Please check your payment approval status')
       } else {
@@ -148,7 +144,6 @@ export function SubscriptionManagement() {
 
       {subscription ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Current Subscription */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -180,7 +175,6 @@ export function SubscriptionManagement() {
             </CardContent>
           </Card>
 
-          {/* Subscription Actions */}
           <Card>
             <CardHeader>
               <CardTitle>Subscription Actions</CardTitle>
@@ -203,7 +197,6 @@ export function SubscriptionManagement() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* No Subscription */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -232,7 +225,6 @@ export function SubscriptionManagement() {
             </CardContent>
           </Card>
 
-          {/* Available Plans */}
           <Card>
             <CardHeader>
               <CardTitle>Available Plans</CardTitle>
@@ -277,7 +269,7 @@ export function SubscriptionManagement() {
         </div>
       )}
 
-      {/* Subscribe Modal */}
+      
       {showSubscribeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">

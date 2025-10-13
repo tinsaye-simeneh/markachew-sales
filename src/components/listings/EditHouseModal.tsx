@@ -19,6 +19,7 @@ import {
   Plus
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface EditHouseModalProps {
   isOpen: boolean
@@ -43,7 +44,7 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
   const [status, setStatus] = useState('active')
   const [features, setFeatures] = useState<string[]>([])
   const [newFeature, setNewFeature] = useState('')
-
+  const { user } = useAuth()
   useEffect(() => {
     if (house) {
       try {
@@ -180,7 +181,6 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
               </div>
             )}
 
-            {/* Basic Information */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -293,7 +293,7 @@ export function EditHouseModal({ isOpen, onClose, house, onSuccess }: EditHouseM
                   <Select
                     value={status}
                     onValueChange={setStatus}
-                    disabled
+                    disabled={user?.user_type !== 'ADMIN' && user?.user_type !== 'SUPER_ADMIN'}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />

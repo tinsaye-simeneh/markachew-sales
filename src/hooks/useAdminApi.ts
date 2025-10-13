@@ -89,6 +89,10 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
     fetchUsers()
   }, [fetchUsers])
 
+  const refetchUsers = useCallback(async () => {
+    await fetchUsers()
+  }, [fetchUsers])
+
   const updateUser = async (userId: string, userData: Partial<AdminUser>) => {
     try {
       const updatedUser = await adminService.updateUser(userId, userData)
@@ -115,6 +119,7 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
     try {
       const updatedUser = await adminService.suspendUser(userId, reason)
       setUsers(users.map(user => user.id === userId ? updatedUser : user))
+      
       return updatedUser
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to suspend user')
@@ -126,9 +131,21 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
     try {
       const updatedUser = await adminService.activateUser(userId)
       setUsers(users.map(user => user.id === userId ? updatedUser : user))
+      
       return updatedUser
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to activate user')
+      throw err
+    }
+  }
+
+  const toggleUserStatus = async (userId: string) => {
+    try {
+      const updatedUser = await adminService.toggleUserStatus(userId)
+      setUsers(users.map(user => user.id === userId ? updatedUser : user))
+      return updatedUser
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to toggle user status')
       throw err
     }
   }
@@ -145,6 +162,8 @@ export function useAdminUsers(filters: AdminUserFilters = {}) {
     deleteUser,
     suspendUser,
     activateUser,
+    toggleUserStatus,
+    refetchUsers,
   }
 }
 
@@ -225,6 +244,17 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
     }
   }
 
+  const toggleJobStatus = async (jobId: string, status: string) => {
+    try {
+      const updatedJob = await adminService.toggleJobStatus(jobId, status)
+      setJobs(jobs.map(job => job.id === jobId ? updatedJob : job))
+      return updatedJob
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to toggle job status')
+      throw err
+    }
+  }
+
   return {
     jobs,
     total,
@@ -237,6 +267,7 @@ export function useAdminJobs(filters: AdminJobFilters = {}) {
     deleteJob,
     approveJob,
     rejectJob,
+    toggleJobStatus,
   }
 }
 

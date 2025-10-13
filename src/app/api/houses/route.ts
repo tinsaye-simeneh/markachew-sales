@@ -5,7 +5,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const queryString = searchParams.toString();
+    const ownerId = searchParams.get('owner_id');
+    
+    const filteredParams = new URLSearchParams(searchParams);
+    filteredParams.delete('owner_id');
+    const queryString = filteredParams.toString();
     
     const response = await fetch(`${API_BASE_URL}/api/houses${queryString ? `?${queryString}` : ''}`, {
       method: 'GET',
@@ -15,6 +19,35 @@ export async function GET(request: NextRequest) {
     });
 
     const data = await response.json();
+
+    if (ownerId && data.success && data.data && data.data.houses) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const filteredHouses = data.data.houses.filter((house: any) => 
+        house.owner?.id === ownerId || house.user_id === ownerId
+      );
+      
+      const filteredData = {
+        ...data,
+        data: {
+          ...data.data,
+          houses: filteredHouses,
+          meta: {
+            ...data.data.meta,
+            totalItems: filteredHouses.length,
+            totalPages: Math.ceil(filteredHouses.length / (data.data.meta?.perPage || 10))
+          }
+        }
+      };
+
+      return NextResponse.json(filteredData, {
+        status: response.status,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      });
+    }
 
     return NextResponse.json(data, {
       status: response.status,

@@ -10,15 +10,36 @@ export class AuthService {
         API_CONFIG.ENDPOINTS.USERS.LOGIN,
         credentials as unknown as Record<string, unknown>
       );
-
+  
       if (response.success) {
         apiClient.setAuthToken(response.data.accessToken);
+  
         if (typeof window !== 'undefined') {
+          const encodeRole = (role: string) => {
+            const rolePrefixes: Record<string, string> = {
+              'EMPLOYER': 'ER',
+              'EMPLOYEE': 'EE', 
+              'SELLER': 'SL',
+              'BUYER': 'BY',
+              'ADMIN': 'AD',
+              'SUPER_ADMIN': 'SA'
+            };
+            const prefix = rolePrefixes[role] || role.substring(0, 2);
+            const scrambled = btoa(role.split('').reverse().join(''));
+            return `${prefix}-${scrambled}`;
+          };
+  
+          const user = response.data.user;
+          const encodedUser = {
+            ...user,
+            user_type: encodeRole(user.user_type),
+          };
+  
           localStorage.setItem('refreshToken', response.data.refreshToken);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem('user', JSON.stringify(encodedUser));
         }
       }
-
+  
       return response.data;
     } catch (error) {
       if (isCorsError(error)) {
@@ -27,49 +48,81 @@ export class AuthService {
       throw error;
     }
   }
+  
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
+    const encodeRole = (role: string) => {
+      const rolePrefixes: Record<string, string> = {
+        'EMPLOYER': 'ER',
+        'EMPLOYEE': 'EE', 
+        'SELLER': 'SL',
+        'BUYER': 'BY',
+        'ADMIN': 'AD',
+        'SUPER_ADMIN': 'SA'
+      };
+      const prefix = rolePrefixes[role] || role.substring(0, 2);
+      const scrambled = btoa(role.split('').reverse().join(''));
+      return `${prefix}-${scrambled}`;
+    };
+  
     try {
       const response = await apiClient.post<AuthResponse>(
         API_CONFIG.ENDPOINTS.USERS.REGISTER,
         userData as unknown as Record<string, unknown>
       );
-
+  
       if (response.success) {
         apiClient.setAuthToken(response.data.accessToken);
+  
         if (typeof window !== 'undefined') {
+          const user = response.data.user;
+          const encodedUser = {
+            ...user,
+            user_type: encodeRole(user.user_type),
+          };
+  
           localStorage.setItem('refreshToken', response.data.refreshToken);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem('user', JSON.stringify(encodedUser));
         }
       }
-
+  
       return response.data;
     } catch (error) {
-      console.warn('Main API client failed, trying simple client...', error);
-      
       try {
         const response = await simpleApiClient.post<AuthResponse>(
           API_CONFIG.ENDPOINTS.USERS.REGISTER,
           userData as unknown as Record<string, unknown>
         );
-
+  
         if (response.success) {
           apiClient.setAuthToken(response.accessToken);
+  
           if (typeof window !== 'undefined') {
+            const user = response.user;
+            const encodedUser = {
+              ...user,
+              user_type: encodeRole(user.user_type),
+            };
+  
             localStorage.setItem('refreshToken', response.refreshToken);
-            localStorage.setItem('user', JSON.stringify(response.user));
+            localStorage.setItem('user', JSON.stringify(encodedUser));
           }
         }
-
+  
         return response;
       } catch (fallbackError) {
         if (isCorsError(error) || isCorsError(fallbackError)) {
-          throw new Error('CORS Error: Unable to register. Please try using a different browser or contact support.');
+          throw new Error(
+            'CORS Error: Unable to register. Please try using a different browser or contact support.'
+          );
         }
-        throw new Error('Registration failed. Please check your internet connection and try again.');
+        throw new Error(
+          'Registration failed. Please check your internet connection and try again.'
+        );
       }
     }
   }
+  
 
   async logout(): Promise<void> {
     try {
@@ -85,7 +138,7 @@ export class AuthService {
     } finally {
       apiClient.clearAuthToken();
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('user');
+        localStorage.clear()
       }
     }
   }
@@ -103,9 +156,7 @@ export class AuthService {
           return JSON.parse(userStr);
         } catch (error) {
           console.error('Error parsing stored user:', error);
-          localStorage.removeItem('user');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('isAdmin');
+          localStorage.clear()
           return null;
         }
       }
@@ -115,9 +166,7 @@ export class AuthService {
 
   clearAuthData(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('isAdmin');
+      localStorage.clear()
     }
   }
 
@@ -141,7 +190,7 @@ export class AuthService {
     await apiClient.delete(API_CONFIG.ENDPOINTS.USERS.DELETE(userId));
     apiClient.clearAuthToken();
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+      localStorage.clear()
     }
   }
 
@@ -165,6 +214,20 @@ export class AuthService {
 
 export class AdminAuthService {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
+    const encodeRole = (role: string) => {
+      const rolePrefixes: Record<string, string> = {
+        'EMPLOYER': 'ER',
+        'EMPLOYEE': 'EE', 
+        'SELLER': 'SL',
+        'BUYER': 'BY',
+        'ADMIN': 'AD',
+        'SUPER_ADMIN': 'SA'
+      };
+      const prefix = rolePrefixes[role] || role.substring(0, 2);
+      const scrambled = btoa(role.split('').reverse().join(''));
+      return `${prefix}-${scrambled}`;
+    };
+  
     try {
       const response = await apiClient.post<{
         success: boolean;
@@ -179,16 +242,35 @@ export class AdminAuthService {
         API_CONFIG.ENDPOINTS.ADMIN.LOGIN,
         credentials as unknown as Record<string, unknown>
       );
-
+  
       if (response.success) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        apiClient.setAuthToken((response as any).data.accessToken);
+        const accessToken = (response as any).data.accessToken;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const refreshToken = (response as any).data.refreshToken;
+  
+        apiClient.setAuthToken(accessToken);
+  
         if (typeof window !== 'undefined') {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          localStorage.setItem('refreshToken', (response as any).data.refreshToken);
-          localStorage.setItem('isAdmin', 'true');
-          
           const adminUser = {
+            id: 'admin',
+            full_name: 'Admin User',
+            email: credentials.email,
+            phone: '',
+            user_type: encodeRole('ADMIN'),
+            createdAt: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+  
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('isAdmin', 'true');
+          localStorage.setItem('user', JSON.stringify(adminUser));
+        }
+  
+        return {
+          accessToken,
+          refreshToken,
+          user: {
             id: 'admin',
             full_name: 'Admin User',
             email: credentials.email,
@@ -197,32 +279,17 @@ export class AdminAuthService {
             user_type: 'ADMIN' as any,
             createdAt: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          };
-          localStorage.setItem('user', JSON.stringify(adminUser));
-        }
+          },
+          success: response.success,
+        };
       }
-
-      return {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        accessToken: (response as any).data.accessToken,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        refreshToken: (response as any).data.refreshToken,
-        user: {
-          id: 'admin',
-          full_name: 'Admin User',
-          email: credentials.email,
-          phone: '',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          user_type: 'ADMIN' as any,
-          createdAt: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        success: response.success,
-      };
+  
+      throw new Error('Admin login failed.');
     } catch (error) {
       throw error;
     }
   }
+  
 
   async createAdmin(adminData: {
     email: string;
@@ -250,8 +317,7 @@ export class AdminAuthService {
     } finally {
       apiClient.clearAuthToken();
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('user');
-        localStorage.removeItem('isAdmin');
+        localStorage.clear()
       }
     }
   }

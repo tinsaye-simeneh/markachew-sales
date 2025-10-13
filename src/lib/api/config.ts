@@ -19,12 +19,18 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/users/${id}`,
       LIST: '/api/users',
     },
+    OTP: {
+      REGISTER: '/api/otp/register',
+      VERIFY: '/api/otp/register/verify',
+    },
     JOBS: {
       CREATE: process.env.NODE_ENV === 'development' ? '/api/jobs' : '/api/jobs',
       LIST: process.env.NODE_ENV === 'development' ? '/api/jobs' : '/api/jobs',
+      EMPLOYER_LIST: (employerId: string) => `/api/jobs/employer/${employerId}`,
       GET: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
       UPDATE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
       DELETE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/${id}` : `/api/jobs/${id}`,
+      TOGGLE: (id: string) => process.env.NODE_ENV === 'development' ? `/api/jobs/toggle/${id}` : `/api/jobs/toggle/${id}`,
       APPLY: '/api/jobs/apply',
     },
     APPLICATIONS: {
@@ -62,7 +68,7 @@ export const API_CONFIG = {
       CREATE: '/api/payments',
       LIST: '/api/payments',
       GET: (id: string) => `/api/payments/${id}`,
-      UPDATE: (id: string) => `/api/payments/${id}`,
+    UPDATE: (id: string) => `/api/payments/${id}`,
       DELETE: (id: string) => `/api/payments/${id}`,
     },
     RATINGS: {
@@ -91,6 +97,12 @@ export const API_CONFIG = {
       GET: (id: string) => `/api/subscriptions/${id}`,
       UPDATE: (id: string) => `/api/subscriptions/${id}`,
       DELETE: (id: string) => `/api/subscriptions/${id}`,
+    },
+    CHATS: {
+      CREATE: '/api/chats',
+      LIST: '/api/chats',
+      GET: (id: string) => `/api/chats/${id}`,
+      MESSAGE: '/api/chats/message',
     },
   },
   TIMEOUT: 10000,
@@ -149,6 +161,28 @@ export interface AuthResponse {
   refreshToken: string;
   user: User;
   success: boolean;
+}
+
+export interface OTPRegisterRequest {
+  full_name: string;
+  phone: string;
+  email: string;
+  user_type: UserType;
+}
+
+export interface OTPVerifyRequest {
+  email: string;
+  otp: string;
+}
+
+export interface OTPResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    email: string;
+    expires_at?: string;
+    remainingSeconds?: number;
+  };
 }
 
 export interface User {
@@ -441,7 +475,7 @@ export interface Inquiry {
   user_id: string;
   house_id: string;
   message: string;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'UNREAD';
   createdAt: string;
   updatedAt: string;
   user: {

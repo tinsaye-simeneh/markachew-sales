@@ -33,7 +33,7 @@ export default function CreateJobPage() {
     title: '',
     description: '',
     link: '',
-    status: 'ACTIVE'
+    status: 'PENDING'
   })
   
   const [requirements, setRequirements] = useState<string[]>([])
@@ -135,7 +135,7 @@ export default function CreateJobPage() {
 
       await jobsService.createJob(jobData)
       toast.success('Job created successfully!')
-      router.push('/dashboard?tab=jobs')
+      router.push('/')
     } catch (err) {
       console.error('Job creation error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Failed to create job posting'
@@ -210,6 +210,7 @@ export default function CreateJobPage() {
                   <Select
                     value={formData.status}
                     onValueChange={(value) => handleInputChange('status', value)}
+                    disabled={user?.user_type !== 'ADMIN' && user?.user_type !== 'SUPER_ADMIN'}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select job status" />

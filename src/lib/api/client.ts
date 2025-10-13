@@ -115,8 +115,7 @@ class ApiClient {
 
   private removeToken(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.clear()
     }
   }
 
@@ -218,6 +217,16 @@ class ApiClient {
     
     return this.request<T>(endpoint, {
       method: 'PUT',
+      body: isFormData ? data : JSON.stringify(data),
+      headers: isFormData ? {} : { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async patch<T>(endpoint: string, data?: Record<string, unknown> | FormData): Promise<ApiResponse<T>> {
+    const isFormData = data instanceof FormData;
+    
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
       body: isFormData ? data : JSON.stringify(data),
       headers: isFormData ? {} : { 'Content-Type': 'application/json' },
     });

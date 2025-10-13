@@ -1,21 +1,22 @@
 "use client"
 
-import { useFavorites } from '@/contexts/FavoritesContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { useSavedItems } from '@/hooks/useSavedItems'
 import { HouseCard } from '@/components/listings/HouseCard'
 import { JobCard } from '@/components/listings/JobCard'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { Heart, Home, Briefcase } from 'lucide-react'
+import { Heart, Home, Briefcase, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Job } from '@/lib/api'
+import { Button } from '@/components/ui/button'
 
 export default function SavedPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   
-  const { favoriteHouses, favoriteJobs } = useFavorites()
+  const { savedHouses, savedJobs, loading: savedLoading, error, refetch } = useSavedItems()
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -23,7 +24,7 @@ export default function SavedPage() {
     }
   }, [user, isLoading, router])
 
-  if (isLoading) {
+  if (isLoading || savedLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -41,11 +42,27 @@ export default function SavedPage() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <Heart className="h-8 w-8 text-red-500 mr-3" />
-            <h1 className="text-3xl font-bold text-gray-900">Saved Items</h1>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <Heart className="h-8 w-8 text-red-500 mr-3" />
+              <h1 className="text-3xl font-bold text-gray-900">Saved Items</h1>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={refetch}
+              disabled={savedLoading}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <RefreshCw className={`h-4 w-4 ${savedLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
           <p className="text-gray-600">Your favorite houses and jobs all in one place.</p>
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
         </div>
 
         <section className="mb-12">
@@ -53,13 +70,13 @@ export default function SavedPage() {
             <Home className="h-6 w-6 text-primary mr-2" />
             <h2 className="text-2xl font-semibold text-gray-900">Saved Houses</h2>
             <span className="ml-3 px-3 py-1 bg-primary text-white text-sm rounded-full">
-              {favoriteHouses.length}
+              {savedHouses.length}
             </span>
           </div>
           
-          {favoriteHouses.length > 0 ? (
+          {savedHouses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteHouses.map((house) => (
+              {savedHouses.map((house) => (
                 <HouseCard key={house.id} house={house} onEdit={undefined} />
               ))}
             </div>
@@ -70,7 +87,7 @@ export default function SavedPage() {
               <p className="text-gray-600 mb-4">Start browsing houses and save your favorites!</p>
               <button 
                 onClick={() => router.push('/houses')}
-                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
+                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors cursor-pointer"
               >
                 Browse Houses
               </button>
@@ -83,13 +100,13 @@ export default function SavedPage() {
             <Briefcase className="h-6 w-6 text-primary mr-2" />
             <h2 className="text-2xl font-semibold text-gray-900">Saved Jobs</h2>
             <span className="ml-3 px-3 py-1 bg-primary text-white text-sm rounded-full">
-              {favoriteJobs.length}
+              {savedJobs.length}
             </span>
           </div>
           
-          {favoriteJobs.length > 0 ? (
+          {savedJobs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteJobs.map((job: Job) => (
+              {savedJobs.map((job: Job) => (
                 <JobCard key={job.id} job={job} onEdit={undefined} />
               ))}
             </div>
@@ -100,7 +117,7 @@ export default function SavedPage() {
               <p className="text-gray-600 mb-4">Start browsing jobs and save your favorites!</p>
               <button 
                 onClick={() => router.push('/jobs')}
-                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors"
+                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-[#006066] transition-colors cursor-pointer"
               >
                 Browse Jobs
               </button>

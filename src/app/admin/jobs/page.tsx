@@ -26,20 +26,23 @@ export default function AdminJobsPage() {
     total,
     loading,
     fetchJobs,
-    approveJob,
-    rejectJob
+    toggleJobStatus
   } = useAdminJobs({})
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [jobToDelete, setJobToDelete] = useState<AdminJob | null>(null)
 
 
-  const handleJobAction = async (action: string, jobId: string, reason?: string) => {
+  const handleJobAction = async (action: string, jobId: string) => {
       switch (action) {
         case 'approve':
-          await approveJob(jobId)
+          await toggleJobStatus(jobId, 'ACTIVE')
+          toast.success('Job approved successfully')
+          fetchJobs()
           break
         case 'reject':
-          await rejectJob(jobId, reason || 'Administrative rejection')
+          await toggleJobStatus(jobId, 'INACTIVE')
+          toast.success('Job rejected successfully')
+          fetchJobs()
           break
           case 'delete':
               setJobToDelete(jobId as unknown as AdminJob)
@@ -127,16 +130,13 @@ export default function AdminJobsPage() {
     }
   ]
 
-  // Define actions for DataDisplay
   const actions = [
     {
       key: 'approve',
       label: 'Approve',
       icon: <CheckCircle className="h-4 w-4" />,
       onClick: (job: AdminJob) => {
-        if (job.status === JobStatus.PENDING) {
-          handleJobAction('approve', job.id, 'Approved by admin')
-        }
+        handleJobAction('approve', job.id)
       },
       className: 'text-green-600'
     },
@@ -145,9 +145,7 @@ export default function AdminJobsPage() {
       label: 'Reject',
       icon: <XCircle className="h-4 w-4" />,
       onClick: (job: AdminJob) => {
-        if (job.status === JobStatus.PENDING) {
-          handleJobAction('reject', job.id)
-        }
+        handleJobAction('reject', job.id)
       },
       variant: 'destructive' as const
     },
@@ -156,12 +154,23 @@ export default function AdminJobsPage() {
     })
   ]
 
-  // Filter actions based on job status
   const getActionsForJob = (job: AdminJob) => {
-    if (job.status === JobStatus.PENDING) {
-      return actions
+    const availableActions = []
+    
+    // Show approve button for pending, inactive, or suspended jobs
+    if (job.status === JobStatus.PENDING || job.status === JobStatus.INACTIVE || (job.status as string) === 'SUSPENDED') {
+      availableActions.push(actions[0]) // Approve action
     }
-    return [actions[2]] // Only Delete action for non-pending jobs
+    
+    // Show reject button for pending or active jobs
+    if (job.status === JobStatus.PENDING || job.status === JobStatus.ACTIVE) {
+      availableActions.push(actions[1]) // Reject action
+    }
+    
+    // Always show delete action
+    availableActions.push(actions[2]) // Delete action
+    
+    return availableActions
   }
 
   if (loading && jobs.length === 0) {
@@ -191,7 +200,6 @@ export default function AdminJobsPage() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

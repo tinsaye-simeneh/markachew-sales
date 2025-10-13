@@ -3,6 +3,7 @@ export * from './client';
 export * from './auth';
 export * from './services';
 export * from './admin-services';
+export * from './otp-service';
 
 export { apiClient } from './client';
 export { authService, adminAuthService } from './auth';
@@ -17,3 +18,4 @@ export {
   inquiriesService,
 } from './services';
 export { adminService } from './admin-services';
+export { otpService } from './otp-service';

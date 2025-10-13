@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin,  Heart, Home, Edit, MessageCircle, X } from 'lucide-react'
+import { MapPin,  Heart, Home, Edit, X, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -24,7 +24,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
   const [showInquiryModal, setShowInquiryModal] = useState(false)
   const { user } = useAuth()
   
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+  const { toggleFavorite, isFavorite, loading } = useFavorites()
 
   useEffect(() => {
     setIsClient(true)
@@ -49,22 +49,7 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
     }
   }
 
-  const getHouseFeatures = () => {
-    try {
-      const features = JSON.parse(house.features || '{}');
-      return {
-        bedrooms: features.bedrooms || 'N/A',
-        bathrooms: features.bathrooms || 'N/A',
-        area: features.area || house.area || 'N/A'
-      };
-    } catch {
-      return {
-        bedrooms: 'N/A',
-        bathrooms: 'N/A',
-        area: house.area || 'N/A'
-      };
-    }
-  }
+  
 
   const houseImage = getHouseImages();
 
@@ -76,29 +61,11 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
     setImageError(true)
   }
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!isClient) return 
+    if (!isClient || loading) return 
     
-    if (isFavorite(house.id, 'house')) {
-      removeFromFavorites(house.id, 'house')
-      toast.success("Removed from favorites", {
-        description: `${house.title} has been removed from your saved list`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
-    } else {
-      addToFavorites(house, 'house')
-      toast.success("Added to favorites!", {
-        description: `${house.title} has been saved to your favorites`,
-        action: {
-          label: "View Saved",
-          onClick: () => router.push('/saved')
-        }
-      })
-    }
+    await toggleFavorite(house.id, 'house')
   }
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -193,22 +160,14 @@ export function HouseCard({ house, onEdit }: HouseCardProps) {
       
         
         <div className="space-y-2">
-          <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
+            <Button className="w-full cursor-pointer" variant="outline" onClick={() => handleHouseClick(house.id)}>
+            <ArrowRight className="h-4 w-4 mr-2" />
             View Details
           </Button>
-          {user?.user_type === 'BUYER' && house.status === 'active' && (
-            <Button 
-              className="w-full cursor-pointer" 
-              onClick={() => setShowInquiryModal(true)}
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Send Message
-            </Button>
-          )}
+         
         </div>
       </CardContent>
 
-      {/* Inquiry Modal */}
       {showInquiryModal && (
         <InquiryModal
           house={house}

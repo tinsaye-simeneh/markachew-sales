@@ -73,13 +73,14 @@ export function Step1({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number (Optional)</Label>
+            <Label htmlFor="phone">Phone Number</Label>
             <Input
               id="phone"
               type="tel"
               placeholder="09xxxxxxxx or +2519xxxxxxxx"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              required
             />
           </div>
           

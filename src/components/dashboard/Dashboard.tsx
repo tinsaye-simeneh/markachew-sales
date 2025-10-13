@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { UserType } from '@/lib/api'
-import { EmployerDashboard } from './EmployerDashboard'
-import { SellerDashboard } from './SellerDashboard'
+import { EmployerDashboard } from './employer/EmployerDashboard'
+import { SellerDashboard } from './seller/SellerDashboard'
 import { Footer } from '../layout/Footer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { HouseListings } from '@/components/dashboard/HouseListings'
@@ -11,8 +11,6 @@ import { JobListings } from '@/components/dashboard/JobListings'
 
 export function Dashboard() {
   const { user } = useAuth()
-
-  // Show role-specific dashboards for EMPLOYER and SELLER
   if (user?.user_type === UserType.EMPLOYER) {
     return <EmployerDashboard />
   }
@@ -20,8 +18,6 @@ export function Dashboard() {
   if (user?.user_type === UserType.SELLER) {
     return <SellerDashboard />
   }
-
-  // Default dashboard for EMPLOYEE and BUYER (browsing users)
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -49,9 +45,7 @@ export function Dashboard() {
           </TabsContent>
         </Tabs>
       </div>
-      <Footer />
-
-      
+      <Footer /> 
     </>
   )
 }
